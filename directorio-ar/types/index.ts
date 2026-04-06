@@ -16,7 +16,8 @@ export interface Modulo2Resultado extends ModuloResultado {
 }
 
 export interface Modulo3Resultado extends ModuloResultado {
-  topPerfiles: { perfil: string; score: number; urgencia: string; descripcion: string }[];
+  topPerfiles: { perfil: string; score: number; urgencia: string; descripcion: string; justificacion?: string; ranking?: number }[];
+  scoresCompletos?: Record<string, number>;
 }
 
 export interface Modulo5Resultado extends ModuloResultado {

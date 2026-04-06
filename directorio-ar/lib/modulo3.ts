@@ -1,190 +1,373 @@
 import type { Modulo3Resultado } from "../types";
 
-type Perfil = "estratega" | "financiero" | "familiar" | "sector" | "legal" | "rrhh" | "digital" | "inversor" | "control" | "crisis";
+// ─── Profile types ─────────────────────────────────────────────────────────────
 
-type ScoreMap = Record<Perfil, number>;
+export type PerfilKey = "estratega" | "financiero" | "comercial" | "operaciones";
+export type NivelUrgencia = "Crítico" | "Urgente" | "Recomendado" | "Complementario";
 
-function empty(): ScoreMap {
-  return { estratega: 0, financiero: 0, familiar: 0, sector: 0, legal: 0, rrhh: 0, digital: 0, inversor: 0, control: 0, crisis: 0 };
-}
-
-function add(map: ScoreMap, updates: Partial<ScoreMap>): ScoreMap {
-  const result = { ...map };
-  for (const [k, v] of Object.entries(updates)) {
-    result[k as Perfil] = (result[k as Perfil] ?? 0) + (v ?? 0);
-  }
-  return result;
-}
-
-const PREGUNTAS_SCORING: Array<Array<Partial<ScoreMap>>> = [
-  // P1 Etapa
-  [
-    { digital: 2, legal: 1 },
-    { estratega: 2, financiero: 1, sector: 1 },
-    { estratega: 3, financiero: 2, digital: 1 },
-    { estratega: 2, control: 2, rrhh: 1 },
-  ],
-  // P2 Propiedad
-  [
-    { estratega: 2, control: 1 },
-    { estratega: 1, control: 2, legal: 1 },
-    { familiar: 3, legal: 2, crisis: 1 },
-    { familiar: 2, inversor: 3, legal: 2 },
-  ],
-  // P3 Sucesión
-  [
-    {},
-    { familiar: 1, legal: 1 },
-    { familiar: 3, legal: 2, crisis: 1 },
-    { familiar: 3, crisis: 3, legal: 2 },
-  ],
-  // P4 Financiero
-  [
-    { financiero: 1 },
-    { financiero: 2 },
-    { financiero: 3, control: 2 },
-    { financiero: 3, inversor: 2, control: 3 },
-  ],
-  // P5 Dificultades
-  [
-    {},
-    { financiero: 1, control: 1 },
-    { financiero: 3, crisis: 3, control: 2 },
-    { financiero: 3, crisis: 3, legal: 3 },
-  ],
-  // P6 Regulación
-  [
-    { sector: 1 },
-    { sector: 2, legal: 1 },
-    { legal: 3, sector: 2 },
-    { legal: 3, sector: 3, control: 2 },
-  ],
-  // P7 Internacional
-  [
-    { sector: 1 },
-    { sector: 1, estratega: 1 },
-    { estratega: 3, sector: 2 },
-    { estratega: 3, sector: 3, legal: 1 },
-  ],
-  // P8 Personas
-  [
-    { estratega: 1 },
-    { rrhh: 1, estratega: 1 },
-    { rrhh: 2, control: 1 },
-    { rrhh: 3, control: 2, estratega: 1 },
-  ],
-  // P9 Organización
-  [
-    { estratega: 2, control: 1 },
-    { estratega: 2, rrhh: 1, control: 1 },
-    { rrhh: 2, control: 2 },
-    { control: 3, rrhh: 2, financiero: 1 },
-  ],
-  // P10 Digital
-  [
-    { sector: 1 },
-    { digital: 1 },
-    { digital: 3, estratega: 1 },
-    { digital: 3, estratega: 2 },
-  ],
-  // P11 Inversores
-  [
-    { estratega: 1 },
-    { estratega: 1, financiero: 1 },
-    { inversor: 2, financiero: 2, legal: 1 },
-    { inversor: 3, financiero: 2, control: 2 },
-  ],
-  // P12 Conflictos
-  [
-    {},
-    { legal: 1, control: 1 },
-    { legal: 2, crisis: 2, familiar: 1 },
-    { legal: 3, crisis: 3, control: 2 },
-  ],
-  // P13 M&A
-  [
-    { estratega: 1 },
-    { estratega: 2, financiero: 1 },
-    { estratega: 3, financiero: 3, legal: 2 },
-    { estratega: 3, financiero: 3, legal: 3, inversor: 2 },
-  ],
-  // P14 Reputación
-  [
-    { sector: 1 },
-    { sector: 1, estratega: 1 },
-    { estratega: 2, sector: 2 },
-    { estratega: 2, legal: 2, sector: 2 },
-  ],
-  // P15 Gobierno
-  [
-    { control: 1, estratega: 1 },
-    { estratega: 2, control: 1 },
-    { estratega: 2, control: 2 },
-    { estratega: 3, control: 3, financiero: 1 },
-  ],
-];
-
-export const PREGUNTAS_M3 = [
-  { texto: "¿En qué etapa se encuentra la empresa?", opciones: ["Startup (menos de 5 años)", "PyME consolidada", "En expansión", "Empresa madura"] },
-  { texto: "¿Cómo está distribuida la propiedad?", opciones: ["Un solo dueño", "Dos o tres socios", "Familia 2da/3ra generación", "Socios mixtos (incluyendo inversores)"] },
-  { texto: "¿Existe un proceso de sucesión en el horizonte?", opciones: ["No aplica", "En el horizonte (3-5 años)", "En proceso activo", "Ya ocurrió con tensiones"] },
-  { texto: "¿Cuál es el perfil financiero de la empresa?", opciones: ["Sin deuda significativa", "Créditos bancarios", "Deuda de mediano plazo", "ONs, fondos o deuda estructurada"] },
-  { texto: "¿Ha tenido la empresa dificultades financieras o conflictos costosos?", opciones: ["Siempre estable", "Tensión puntual resuelta", "Problemas activos", "Reestructuración o crisis grave"] },
-  { texto: "¿Qué nivel de regulación enfrenta la empresa?", opciones: ["Poca regulación", "Moderada", "Alta (sector regulado)", "Nacional y provincial compleja"] },
-  { texto: "¿Tiene la empresa actividad internacional?", opciones: ["Solo Argentina", "Exportaciones menores", "Exportación activa", "Operaciones internacionales"] },
-  { texto: "¿Cuántas personas trabajan en la empresa?", opciones: ["Menos de 20", "Entre 20 y 60", "Entre 60 y 200", "Más de 200"] },
-  { texto: "¿Cómo está organizada la empresa actualmente?", opciones: ["El dueño opera el día a día", "Gerentes pero el dueño decide todo", "Gerentes con autonomía", "Gerencia independiente"] },
-  { texto: "¿Qué rol juega la tecnología en la empresa?", opciones: ["Soporte operativo básico", "Modernizando procesos", "Prioridad estratégica", "Redefine el modelo de negocio"] },
-  { texto: "¿Existen planes de incorporar inversores externos?", opciones: ["No hay planes", "En análisis inicial", "Conversaciones avanzadas", "Ya hay un inversor como socio"] },
-  { texto: "¿Existen conflictos entre socios o entre familia y empresa?", opciones: ["Tranquilo", "Roces menores", "Conflictos serios", "Conflictos activos o judicializados"] },
-  { texto: "¿Hay planes de fusión, adquisición o venta?", opciones: ["No hay planes", "Mediano plazo exploratorio", "Operación concreta en proceso", "Venta o fusión inminente"] },
-  { texto: "¿Qué importancia tiene la reputación para el negocio?", opciones: ["Sin visibilidad pública", "Reputación sectorial", "Marca importante en el mercado", "Reputación crítica para el negocio"] },
-  { texto: "¿Cuál es el nivel de formalización del gobierno actual?", opciones: ["Bajo (todo informal)", "Medio (algunas reglas)", "Alto (procesos definidos)", "Muy alto (gobierno profesional)"] },
-];
-
-export const DESCRIPCIONES_PERFILES: Record<string, string> = {
-  estratega:  "Visión de mercado y competencia. Experiencia liderando empresas o unidades complejas. Actúa como caja de resonancia del CEO en decisiones de alto impacto. Generalmente independiente.",
-  financiero: "Lectura profunda de balances, deuda y control de gestión. Imprescindible cuando hay crédito bancario o inversores. Vinculado o independiente.",
-  familiar:   "Voz de la familia propietaria. Clave en empresas de segunda generación o con conflictos entre herederos. Vinculado.",
-  sector:     "Conocimiento profundo de la industria y red de contactos. Generalmente independiente.",
-  legal:      "Riesgo regulatorio, contratos, estructura societaria. En Argentina imprescindible por la complejidad normativa. Vinculado o independiente.",
-  rrhh:       "Talento, cultura organizacional y compensaciones. Relevante cuando la empresa supera las 50 personas. Generalmente independiente.",
-  digital:    "Transformación digital aplicada al modelo de negocio. No es el CTO interno — es visión de cómo la tecnología puede cambiar la industria. Generalmente independiente.",
-  inversor:   "Si hay un fondo o inversor ángel como socio, tienen derecho a un asiento. Mejora la disciplina de reporte. Vinculado.",
-  control:    "Especialista en gobierno corporativo y control interno. Crítico cuando el directorio está en formación. Independiente.",
-  crisis:     "Experiencia en reestructuraciones y conflictos societarios. Para momentos críticos. Independiente.",
+export type PerfilDirectorio = {
+  key: PerfilKey;
+  nombre: string;
+  icono: string;
+  colorBg: string;
+  colorTexto: string;
+  independencia: string;
+  descripcion: string;
+  formacion: string;
+  rolesPrevios: string[];
+  anosExperiencia: string;
+  senalClave: string;
+  advertenciaArgentina: string;
+  tags: string[];
 };
 
-export const PERFIL_LABELS: Record<string, string> = {
-  estratega: "Estratega", financiero: "Financiero", familiar: "Familiar",
-  sector: "Experto sectorial", legal: "Legal", rrhh: "RRHH",
-  digital: "Digital", inversor: "Inversor", control: "Control", crisis: "Crisis",
+export type ResultadoPerfil = {
+  perfil: PerfilDirectorio;
+  score: number;
+  urgencia: NivelUrgencia;
+  ranking: 1 | 2 | 3 | 4;
+  justificacion: string;
 };
 
+// ─── Profiles ─────────────────────────────────────────────────────────────────
+
+export const PERFILES: Record<PerfilKey, PerfilDirectorio> = {
+  estratega: {
+    key: "estratega",
+    nombre: "Estratega de negocio",
+    icono: "ES",
+    colorBg: "#EEEDFE",
+    colorTexto: "#3C3489",
+    independencia: "Generalmente independiente",
+    descripcion:
+      "Aporta visión de largo plazo, lectura del mercado y experiencia en tomar decisiones complejas bajo incertidumbre. En una PyME argentina es la caja de resonancia del CEO — cuestiona el statu quo desde una perspectiva externa con experiencia probada en resultados reales.",
+    formacion:
+      "Administración de Empresas, Ingeniería Industrial, Economía, MBA (local o exterior). No es excluyente — hay excelentes estrategas sin MBA pero con trayectoria ejecutiva sólida.",
+    rolesPrevios: [
+      "CEO o Gerente General de empresa mediana o grande",
+      "Director de unidad de negocio con P&L propio",
+      "Country Manager de multinacional",
+      "Ex-fundador que haya escalado y vendido una empresa",
+      "Director de Desarrollo de Negocios con track record comprobable",
+    ],
+    anosExperiencia:
+      "Mínimo 15 años de trayectoria, con al menos 5 en posiciones de liderazgo con responsabilidad directa sobre resultados.",
+    senalClave:
+      "Ha tomado decisiones estratégicas propias — no solo las ha recomendado. Puede decirle al dueño algo que no quiere escuchar sin que la relación se rompa.",
+    advertenciaArgentina:
+      "Evitar confundir con el 'consultor amigo' que cobra honorarios y no tiene skin in the game. El estratega en el directorio asume responsabilidad institucional.",
+    tags: ["Estrategia", "Visión", "Liderazgo"],
+  },
+
+  financiero: {
+    key: "financiero",
+    nombre: "Director Financiero",
+    icono: "FI",
+    colorBg: "#E1F5EE",
+    colorTexto: "#085041",
+    independencia: "Vinculado o independiente",
+    descripcion:
+      "Aporta rigor en la lectura de los números, estructura para la toma de decisiones financieras y capacidad de dialogar con bancos, inversores y auditores. En PyMEs argentinas donde la contabilidad está tercerizada y los balances llegan tarde, instala disciplina financiera real.",
+    formacion:
+      "Contador Público Nacional (CPN), Licenciado en Economía o Administración con especialización en finanzas. Posgrado en Finanzas Corporativas o MBA con orientación financiera. En Argentina el CPN con experiencia en empresas (no solo en estudio contable) es el perfil más accesible y valioso.",
+    rolesPrevios: [
+      "CFO o Gerente de Administración y Finanzas en empresa mediana o grande",
+      "Controller corporativo con visión de negocio",
+      "Gerente de crédito o riesgo en banco",
+      "Socio de firma de auditoría con experiencia real en clientes PyME",
+      "Director financiero de fondo de inversión",
+    ],
+    anosExperiencia:
+      "Mínimo 12 años, con al menos 3 como responsable máximo del área financiera. Debe haber tomado decisiones de deuda, estructurado créditos y presentado balances ante terceros.",
+    senalClave:
+      "Puede leer un balance en 10 minutos y detectar lo que no cierra. Entiende el sistema bancario argentino (SGR, leasing, descuento de cheques, ONs) y el impacto inflacionario en los estados contables.",
+    advertenciaArgentina:
+      "El contador de la empresa de toda la vida no es este perfil. El director financiero independiente tiene criterio propio — no defiende las decisiones pasadas que él mismo firmó.",
+    tags: ["Finanzas", "Control", "Deuda"],
+  },
+
+  comercial: {
+    key: "comercial",
+    nombre: "Director Comercial",
+    icono: "CO",
+    colorBg: "#FAECE7",
+    colorTexto: "#712B13",
+    independencia: "Generalmente independiente",
+    descripcion:
+      "Aporta visión del mercado desde el lado de los ingresos: cómo crecer, cómo posicionarse, cómo desarrollar canales y cómo retener clientes clave. En PyMEs argentinas donde el dueño suele ser el principal vendedor, ayuda a despersonalizar la relación comercial y construir una fuerza de ventas escalable.",
+    formacion:
+      "Licenciado en Administración, Marketing, Comercialización o Comunicación. MBA con orientación comercial. También perfiles con formación técnica que hayan construido una carrera comercial sólida — muy común en industrias como agro, construcción o manufactura.",
+    rolesPrevios: [
+      "Director Comercial o Gerente de Ventas en empresa mediana o grande",
+      "Gerente de Desarrollo de Negocios con track record medible",
+      "Country Manager con responsabilidad directa sobre ingresos",
+      "Director de Marketing con impacto directo en revenue",
+      "Fundador de empresa con componente comercial fuerte y escalable",
+    ],
+    anosExperiencia:
+      "Mínimo 12 años, con al menos 5 liderando equipos comerciales con metas de facturación. Debe haber gestionado carteras de clientes relevantes y diseñado estrategias go-to-market.",
+    senalClave:
+      "Tiene red de contactos en la industria que puede abrir puertas. Ha diseñado estructuras de incentivos para equipos de venta. Entiende cómo vender en contexto inflacionario argentino (listas de precios, descuentos, financiación en cuotas).",
+    advertenciaArgentina:
+      "Evitar al 'vendedor estrella' que fue muy bueno vendiendo pero nunca lideró un equipo ni pensó estratégicamente. El director comercial en el directorio opera desde la supervisión, no desde la ejecución.",
+    tags: ["Comercial", "Ventas", "Mercado"],
+  },
+
+  operaciones: {
+    key: "operaciones",
+    nombre: "Director de Operaciones",
+    icono: "OP",
+    colorBg: "#EAF3DE",
+    colorTexto: "#27500A",
+    independencia: "Generalmente independiente",
+    descripcion:
+      "Aporta experiencia en escalar procesos, estructurar la organización interna y hacer que la empresa funcione de forma ordenada cuando crece. En PyMEs argentinas que pasaron de 10 a 50 personas sin sistematizar nada, pone orden sin ahogar la agilidad. Es el perfil más 'tierra' de los cuatro — habla de procesos, métricas, estructura y ejecución.",
+    formacion:
+      "Ingeniería Industrial, Licenciatura en Administración, Ingeniería en Sistemas o carreras técnicas afines. Posgrados en Operaciones, Supply Chain o Gestión de Proyectos (PMP). En PyMEs industriales o de servicios, la formación técnica combinada con experiencia de gestión es muy valorada.",
+    rolesPrevios: [
+      "COO o Gerente de Operaciones en empresa mediana",
+      "Gerente de Planta o Producción con responsabilidad ampliada a logística",
+      "Gerente de Proyectos que haya liderado transformaciones organizacionales",
+      "Director de Supply Chain con visión end-to-end",
+      "Consultor de operaciones que haya implementado mejoras en PyMEs",
+    ],
+    anosExperiencia:
+      "Mínimo 12 años, con al menos 4 en rol de liderazgo operativo con equipo a cargo y responsabilidad sobre KPIs de eficiencia, calidad o entrega.",
+    senalClave:
+      "Ha implementado sistemas de gestión (ERP, CRM, ISO) en organizaciones que no los tenían. Sabe cómo diseñar procesos que escalen sin depender de personas clave. Entiende los desafíos de operar en Argentina: logística, importaciones, costos variables, ausentismo.",
+    advertenciaArgentina:
+      "No confundir con el gerente operativo interno que conoce el negocio de memoria pero nunca miró hacia afuera. El director de operaciones en el directorio tiene perspectiva comparada.",
+    tags: ["Operaciones", "Procesos", "Escala"],
+  },
+};
+
+// ─── Questions ─────────────────────────────────────────────────────────────────
+
+type PesosRespuesta = Partial<Record<PerfilKey, number>>;
+type OpcionM3 = { texto: string; pesos: PesosRespuesta };
+type PreguntaM3 = { numero: number; dimension: string; texto: string; aclaracion: string; opciones: [OpcionM3, OpcionM3, OpcionM3, OpcionM3] };
+
+export const PREGUNTAS_M3: PreguntaM3[] = [
+  {
+    numero: 1, dimension: "Etapa",
+    texto: "¿En qué etapa se encuentra tu empresa hoy?",
+    aclaracion: "Esto define qué tipo de perspectiva necesita el directorio con más urgencia.",
+    opciones: [
+      { texto: "Startup o empresa joven, menos de 5 años",        pesos: { operaciones: 2 } },
+      { texto: "PyME consolidada, crecimiento estable",           pesos: { estratega: 2, financiero: 1 } },
+      { texto: "Empresa en expansión activa o transformación",    pesos: { estratega: 3, comercial: 2 } },
+      { texto: "Empresa madura buscando profesionalizarse",       pesos: { estratega: 2, operaciones: 2 } },
+    ],
+  },
+  {
+    numero: 2, dimension: "Propiedad",
+    texto: "¿Cómo es la propiedad de la empresa?",
+    aclaracion: "La composición accionaria determina qué perfiles son más urgentes.",
+    opciones: [
+      { texto: "Un solo dueño fundador",                          pesos: { estratega: 2 } },
+      { texto: "Dos o tres socios fundadores",                    pesos: { estratega: 1, financiero: 1 } },
+      { texto: "Empresa familiar con segunda o tercera generación", pesos: { estratega: 1, financiero: 2 } },
+      { texto: "Socios mixtos: familia más inversores externos",  pesos: { financiero: 3, estratega: 1 } },
+    ],
+  },
+  {
+    numero: 3, dimension: "Propiedad",
+    texto: "¿Existe o está planificado un proceso de sucesión o traspaso generacional?",
+    aclaracion: "La sucesión es el momento de mayor riesgo en empresas familiares argentinas.",
+    opciones: [
+      { texto: "No aplica a nuestra empresa",                     pesos: {} },
+      { texto: "Está en el horizonte pero no es inmediato",       pesos: { financiero: 1 } },
+      { texto: "Está en proceso activo",                          pesos: { financiero: 2, estratega: 1 } },
+      { texto: "Ya ocurrió y hay tensiones sin resolver",         pesos: { financiero: 2, estratega: 2 } },
+    ],
+  },
+  {
+    numero: 4, dimension: "Finanzas",
+    texto: "¿Cuál es la situación financiera actual de la empresa?",
+    aclaracion: "El nivel de deuda define la urgencia del perfil financiero.",
+    opciones: [
+      { texto: "Sin deuda estructural, operamos con capital propio",           pesos: { operaciones: 1 } },
+      { texto: "Créditos bancarios habituales de corto plazo",                 pesos: { financiero: 2 } },
+      { texto: "Deuda de mediano o largo plazo activa o planificada",          pesos: { financiero: 3 } },
+      { texto: "Obligaciones negociables, fondos o deuda estructurada",        pesos: { financiero: 3, estratega: 1 } },
+    ],
+  },
+  {
+    numero: 5, dimension: "Finanzas",
+    texto: "¿La empresa ha tenido o tiene dificultades financieras significativas?",
+    aclaracion: "Las crisis financieras activan necesidades de gobierno muy específicas.",
+    opciones: [
+      { texto: "No, la situación financiera siempre fue estable",              pesos: {} },
+      { texto: "Tuvimos tensiones puntuales ya superadas",                     pesos: { financiero: 1 } },
+      { texto: "Hay problemas activos que impactan la operación",              pesos: { financiero: 3, operaciones: 1 } },
+      { texto: "Estamos en reestructuración o proceso concursal",              pesos: { financiero: 3, estratega: 1 } },
+    ],
+  },
+  {
+    numero: 6, dimension: "Industria",
+    texto: "¿Qué tan regulada es la industria en la que opera la empresa?",
+    aclaracion: "Sectores como alimentos, salud o financiero tienen alta carga regulatoria en Argentina.",
+    opciones: [
+      { texto: "Poca regulación específica de la industria",                   pesos: { operaciones: 1 } },
+      { texto: "Regulación moderada, cumplimos sin dificultad",                pesos: { operaciones: 1, financiero: 1 } },
+      { texto: "Alta regulación sectorial o habilitaciones críticas",          pesos: { financiero: 2, operaciones: 2 } },
+      { texto: "Regulación nacional y provincial compleja, riesgo de sanciones", pesos: { financiero: 2, operaciones: 2, estratega: 1 } },
+    ],
+  },
+  {
+    numero: 7, dimension: "Mercado",
+    texto: "¿La empresa exporta o tiene planes serios de expansión internacional?",
+    aclaracion: "La internacionalización exige un perfil que el mercado local raramente provee.",
+    opciones: [
+      { texto: "No, operamos exclusivamente en Argentina",                     pesos: { comercial: 1 } },
+      { texto: "Exportaciones menores o esporádicas",                          pesos: { comercial: 2 } },
+      { texto: "Exportación activa o expansión regional en curso",             pesos: { comercial: 3, estratega: 2 } },
+      { texto: "Internacionalización como eje estratégico central",            pesos: { estratega: 3, comercial: 3 } },
+    ],
+  },
+  {
+    numero: 8, dimension: "Personas",
+    texto: "¿Cuántas personas trabajan en la empresa?",
+    aclaracion: "El tamaño del equipo determina si la gestión operativa necesita representación en el directorio.",
+    opciones: [
+      { texto: "Menos de 20 personas",       pesos: { operaciones: 1 } },
+      { texto: "Entre 20 y 60 personas",     pesos: { operaciones: 2 } },
+      { texto: "Entre 60 y 200 personas",    pesos: { operaciones: 3 } },
+      { texto: "Más de 200 personas",        pesos: { operaciones: 3, estratega: 1 } },
+    ],
+  },
+  {
+    numero: 9, dimension: "Organización",
+    texto: "¿El dueño opera el día a día o hay gerentes con autonomía real?",
+    aclaracion: "La brecha entre propiedad y gestión es el indicador más claro de madurez organizacional.",
+    opciones: [
+      { texto: "El dueño opera todo directamente",                             pesos: { operaciones: 2, estratega: 1 } },
+      { texto: "Hay gerentes pero el dueño decide todo",                       pesos: { operaciones: 2, estratega: 1 } },
+      { texto: "Hay gerentes con algo de autonomía real",                      pesos: { operaciones: 1, estratega: 2 } },
+      { texto: "La gerencia opera con independencia clara",                    pesos: { estratega: 2, financiero: 1 } },
+    ],
+  },
+  {
+    numero: 10, dimension: "Tecnología",
+    texto: "¿Cuán central es la transformación digital para el negocio?",
+    aclaracion: "No hablamos de tener una web — hablamos de si la tecnología puede cambiar el modelo de negocio.",
+    opciones: [
+      { texto: "La tecnología es un soporte, no un diferenciador",             pesos: { operaciones: 1 } },
+      { texto: "Estamos modernizando procesos pero no es urgente",             pesos: { operaciones: 2 } },
+      { texto: "La digitalización es una prioridad estratégica activa",        pesos: { operaciones: 2, estratega: 1 } },
+      { texto: "La tecnología puede redefinir nuestro modelo de negocio",      pesos: { estratega: 2, operaciones: 2 } },
+    ],
+  },
+  {
+    numero: 11, dimension: "Mercado",
+    texto: "¿La empresa tiene competidores fuertes o el mercado está cambiando rápido?",
+    aclaracion: "La presión competitiva define la urgencia del perfil comercial y estratégico.",
+    opciones: [
+      { texto: "Mercado estable, sin presión competitiva relevante",            pesos: { operaciones: 1 } },
+      { texto: "Algo de presión pero manejable",                               pesos: { comercial: 1, estratega: 1 } },
+      { texto: "Competencia intensa o mercado en cambio",                      pesos: { comercial: 2, estratega: 2 } },
+      { texto: "El negocio actual está en riesgo si no cambiamos algo pronto", pesos: { estratega: 3, comercial: 3 } },
+    ],
+  },
+  {
+    numero: 12, dimension: "Comercial",
+    texto: "¿Cómo llegan hoy los nuevos clientes a la empresa?",
+    aclaracion: "La dependencia comercial del dueño es uno de los riesgos más subestimados en PyMEs argentinas.",
+    opciones: [
+      { texto: "Por el dueño y sus contactos personales exclusivamente",       pesos: { comercial: 3 } },
+      { texto: "Por boca a boca sin acción comercial activa",                  pesos: { comercial: 2 } },
+      { texto: "Hay un equipo comercial pero sin estrategia clara",            pesos: { comercial: 2, estratega: 1 } },
+      { texto: "Tenemos canales y procesos comerciales bien definidos",        pesos: { estratega: 1 } },
+    ],
+  },
+  {
+    numero: 13, dimension: "Estrategia",
+    texto: "¿La empresa tiene planes de adquisición, fusión, venta total o parcial?",
+    aclaracion: "Las operaciones de M&A son las que más requieren gobierno sofisticado.",
+    opciones: [
+      { texto: "No está en los planes",                          pesos: { operaciones: 1 } },
+      { texto: "Se evalúa en el mediano plazo",                  pesos: { estratega: 1, financiero: 1 } },
+      { texto: "Hay una operación concreta en proceso",          pesos: { estratega: 3, financiero: 3 } },
+      { texto: "La empresa está en venta o proceso de fusión activo", pesos: { estratega: 3, financiero: 3 } },
+    ],
+  },
+  {
+    numero: 14, dimension: "Operaciones",
+    texto: "¿La empresa tiene procesos documentados y sistemas de gestión implementados?",
+    aclaracion: "La informalidad operativa es el principal freno al crecimiento en PyMEs argentinas.",
+    opciones: [
+      { texto: "Todo está en la cabeza de las personas clave",                         pesos: { operaciones: 3 } },
+      { texto: "Hay algo documentado pero muy informal",                               pesos: { operaciones: 2 } },
+      { texto: "Procesos documentados pero no siempre respetados",                     pesos: { operaciones: 1 } },
+      { texto: "Sistemas y procesos funcionando con métricas de seguimiento",          pesos: { estratega: 1 } },
+    ],
+  },
+  {
+    numero: 15, dimension: "Gobierno",
+    texto: "¿Cuál es la disposición real del CEO o dueño a rendir cuentas ante un directorio?",
+    aclaracion: "Esta pregunta define qué tan rápido y profundo puede ser el proceso de gobierno.",
+    opciones: [
+      { texto: "Baja — prefiere decidir solo, sin supervisión externa",              pesos: { operaciones: 1 } },
+      { texto: "Media — lo acepta pero genera algo de incomodidad",                  pesos: { estratega: 1, operaciones: 1 } },
+      { texto: "Alta — lo busca activamente aunque de forma informal",               pesos: { estratega: 2, financiero: 1 } },
+      { texto: "Muy alta — está listo/a para implementar gobierno formal",           pesos: { estratega: 3, financiero: 1, comercial: 1 } },
+    ],
+  },
+];
+
+// ─── Calculator ────────────────────────────────────────────────────────────────
+
+export function calcularUrgencia(score: number): NivelUrgencia {
+  if (score >= 10) return "Crítico";
+  if (score >= 7)  return "Urgente";
+  if (score >= 4)  return "Recomendado";
+  return "Complementario";
+}
+
+// respuestas: number[] indexed 0–14 (option index chosen per question)
 export function calcularModulo3(respuestas: number[]): Modulo3Resultado {
-  let scores = empty();
-  respuestas.forEach((optionIdx, preguntaIdx) => {
-    const scoring = PREGUNTAS_SCORING[preguntaIdx]?.[optionIdx];
-    if (scoring) scores = add(scores, scoring);
+  const scores: Record<PerfilKey, number> = { estratega: 0, financiero: 0, comercial: 0, operaciones: 0 };
+  const dimensionesActivadas: Record<PerfilKey, string[]> = { estratega: [], financiero: [], comercial: [], operaciones: [] };
+
+  PREGUNTAS_M3.forEach((pregunta, idx) => {
+    const opcionIdx = respuestas[idx];
+    if (opcionIdx === undefined || opcionIdx < 0) return;
+    const pesos = pregunta.opciones[opcionIdx].pesos;
+    (Object.entries(pesos) as [PerfilKey, number][]).forEach(([key, peso]) => {
+      if (!peso) return;
+      scores[key] += peso;
+      if (peso >= 2 && !dimensionesActivadas[key].includes(pregunta.dimension)) {
+        dimensionesActivadas[key].push(pregunta.dimension);
+      }
+    });
   });
 
-  const ranked = (Object.entries(scores) as [Perfil, number][])
-    .sort((a, b) => b[1] - a[1])
-    .slice(0, 4);
+  const ordenados = (Object.keys(scores) as PerfilKey[]).sort((a, b) => scores[b] - scores[a]);
 
-  const topPerfiles = ranked.map(([perfil, score]) => {
-    let urgencia: string;
-    if (score >= 8) urgencia = "Crítico";
-    else if (score >= 5) urgencia = "Urgente";
-    else if (score >= 3) urgencia = "Recomendado";
-    else urgencia = "Complementario";
-    return { perfil, score, urgencia, descripcion: DESCRIPCIONES_PERFILES[perfil] ?? "" };
+  const topPerfiles = ordenados.slice(0, 4).map((key, i) => {
+    const perfil = PERFILES[key];
+    const score = scores[key];
+    const urgencia = calcularUrgencia(score);
+    const dims = dimensionesActivadas[key];
+    const justificacion = dims.length > 0
+      ? `${perfil.descripcion} Lo señalan especialmente: ${dims.slice(0, 2).join(" y ")}.`
+      : perfil.descripcion;
+
+    return {
+      perfil: key,
+      score,
+      urgencia,
+      ranking: (i + 1) as 1 | 2 | 3 | 4,
+      justificacion,
+      descripcion: justificacion,
+    };
   });
 
   return {
-    score: ranked.reduce((sum, [, v]) => sum + v, 0),
-    nivel: topPerfiles[0]?.perfil ?? "",
+    score: scores[ordenados[0]] ?? 0,
+    nivel: ordenados[0] ?? "",
     porcentaje: undefined,
     topPerfiles,
+    scoresCompletos: scores,
   };
 }
