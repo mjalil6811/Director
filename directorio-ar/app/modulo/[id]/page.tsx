@@ -7,23 +7,20 @@ import Modulo1 from './Modulo1';
 import Modulo2 from './Modulo2';
 import Modulo3 from './Modulo3';
 import Modulo4 from './Modulo4';
-import Modulo5 from './Modulo5';
 
 function isModuloUnlocked(id: number): boolean {
   if (id === 1) return true;
   if (id === 2) return !!storage.getModulo1Resultado();
   if (id === 3) return !!storage.getModulo2Resultado();
   if (id === 4) return !!storage.getModulo3Resultado();
-  if (id === 5) return !!storage.getModulo4Frecuencia();
   return false;
 }
 
 const MODULO_LABELS: Record<number, string> = {
   1: '¿Necesitás un directorio?',
-  2: 'Clasificador de roles',
+  2: 'Mapa de decisiones',
   3: '¿Qué perfiles necesitás?',
-  4: 'Dinámica de reuniones',
-  5: 'Directorio y gerencia',
+  4: 'Dinámica y funcionamiento',
 };
 
 export default function ModuloPage() {
@@ -34,7 +31,12 @@ export default function ModuloPage() {
   const [blocked, setBlocked] = useState(false);
 
   useEffect(() => {
-    if (isNaN(id) || id < 1 || id > 5) {
+    // Redirect old M5 to M4
+    if (id === 5) {
+      router.replace('/modulo/4');
+      return;
+    }
+    if (isNaN(id) || id < 1 || id > 4) {
       router.replace('/');
       return;
     }
@@ -82,7 +84,6 @@ export default function ModuloPage() {
   if (id === 2) return <Modulo2 />;
   if (id === 3) return <Modulo3 />;
   if (id === 4) return <Modulo4 />;
-  if (id === 5) return <Modulo5 />;
 
   return null;
 }

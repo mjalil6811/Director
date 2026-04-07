@@ -1,203 +1,181 @@
 import type { Modulo2Resultado } from "../types";
 
-// Each situation now has its OWN set of options (not the same 4 for all)
-export type OpcionM2 = { label: string; rol: string }; // rol: A/D/G/M
 export type SituacionM2 = {
   texto: string;
   aclaracion: string;
-  opciones: OpcionM2[];
-  correcta: string; // which rol is correct
+  opciones: { label: string; tipo: 'concentrada' | 'parcial' | 'delegada' | 'gris' }[];
+  beneficioDirectorio: string;
 };
 
 export const SITUACIONES_M2: SituacionM2[] = [
-  // 1 — Crédito bancario → Director
   {
-    texto: "El banco ofrece una línea de crédito importante. ¿Quién debería decidir si se toma?",
+    texto: "El banco ofrece una línea de crédito importante. ¿Quién decide si se toma?",
     aclaracion: "Endeudarse afecta el patrimonio de todos los socios.",
     opciones: [
-      { label: "El dueño o CEO, que conoce las necesidades de caja", rol: "G" },
-      { label: "El directorio, evaluando riesgo y capacidad de repago", rol: "D" },
-      { label: "Los accionistas en asamblea", rol: "A" },
-      { label: "El CFO o gerente de finanzas", rol: "G" },
-      { label: "Entre todos informalmente, como siempre", rol: "M" },
+      { label: "El dueño solo, sin consultar", tipo: "concentrada" },
+      { label: "El dueño con el CFO o contador", tipo: "parcial" },
+      { label: "Se analiza formalmente con datos antes de decidir", tipo: "delegada" },
+      { label: "No hay un proceso claro, depende del momento", tipo: "gris" },
     ],
-    correcta: "D",
+    beneficioDirectorio: "Un directorio evalúa el endeudamiento con independencia, protegiendo el patrimonio de todos los socios.",
   },
-
-  // 2 — Contratar vendedores → Gerente
   {
-    texto: "El gerente comercial quiere contratar dos vendedores nuevos. ¿Quién da el visto bueno?",
+    texto: "El gerente comercial quiere contratar dos vendedores nuevos. ¿Cómo se resuelve?",
     aclaracion: "Es una decisión operativa dentro de un presupuesto ya aprobado.",
     opciones: [
-      { label: "El gerente comercial, dentro de su presupuesto", rol: "G" },
-      { label: "El directorio, que aprueba cada incorporación", rol: "D" },
-      { label: "El dueño, que siempre decide las contrataciones", rol: "A" },
-      { label: "El COO o gerente de operaciones", rol: "G" },
-      { label: "Se decide entre todos en una reunión informal", rol: "M" },
+      { label: "El dueño aprueba cada contratación personalmente", tipo: "concentrada" },
+      { label: "El gerente propone y el dueño da el OK", tipo: "parcial" },
+      { label: "El gerente decide dentro de su presupuesto aprobado", tipo: "delegada" },
+      { label: "No hay regla clara, a veces sí a veces no", tipo: "gris" },
     ],
-    correcta: "G",
+    beneficioDirectorio: "El directorio aprueba el presupuesto de personal y le da autonomía real al gerente para ejecutar.",
   },
-
-  // 3 — Abrir sucursal, socios en desacuerdo → Director
   {
-    texto: "Dos socios están en desacuerdo sobre abrir una sucursal en el interior. ¿Quién resuelve?",
+    texto: "Dos socios no se ponen de acuerdo sobre expandir a otra provincia. ¿Qué pasa?",
     aclaracion: "Es una decisión estratégica con impacto en la operación y el capital.",
     opciones: [
-      { label: "El socio mayoritario tiene la última palabra", rol: "A" },
-      { label: "El directorio analiza el caso y decide con independencia", rol: "D" },
-      { label: "El gerente comercial que conoce el mercado del interior", rol: "G" },
-      { label: "Se contrata un consultor externo que recomiende", rol: "M" },
-      { label: "Se posterga hasta que se pongan de acuerdo solos", rol: "M" },
+      { label: "El socio con más poder decide", tipo: "concentrada" },
+      { label: "Negocian entre ellos hasta que uno cede", tipo: "parcial" },
+      { label: "Se analizan los números y se decide con criterio objetivo", tipo: "delegada" },
+      { label: "Se posterga indefinidamente sin resolución", tipo: "gris" },
     ],
-    correcta: "D",
+    beneficioDirectorio: "El directorio es el árbitro natural entre socios. Analiza con datos y decide con independencia.",
   },
-
-  // 4 — Queja de cliente urgente → Gerente
   {
-    texto: "Un cliente importante llama con una queja urgente. El equipo no sabe cómo responder. ¿Quién resuelve?",
+    texto: "Un cliente clave tiene una queja grave. El equipo no sabe qué hacer. ¿Quién resuelve?",
     aclaracion: "Es una situación operativa que requiere respuesta inmediata.",
     opciones: [
-      { label: "El gerente comercial o de atención al cliente", rol: "G" },
-      { label: "El dueño, que conoce al cliente personalmente", rol: "A" },
-      { label: "El directorio en su próxima reunión", rol: "D" },
-      { label: "El COO que coordina la operación diaria", rol: "G" },
-      { label: "Cualquiera que esté disponible en el momento", rol: "M" },
+      { label: "El dueño, porque es el único que puede hablar con ese cliente", tipo: "concentrada" },
+      { label: "El gerente comercial consulta al dueño y después actúa", tipo: "parcial" },
+      { label: "El gerente comercial tiene autonomía para resolver esto", tipo: "delegada" },
+      { label: "No hay protocolo, se resuelve como se puede", tipo: "gris" },
     ],
-    correcta: "G",
+    beneficioDirectorio: "Un directorio detectaría esta dependencia del dueño y trabajaría para que la gerencia pueda operar con autonomía.",
   },
-
-  // 5 — Sueldo del CEO → Director
   {
-    texto: "Hay que definir el sueldo del CEO para el año que viene. ¿Quién tiene autoridad legítima?",
+    texto: "Hay que definir cuánto cobra el CEO o dueño-gerente este año. ¿Cómo se decide?",
     aclaracion: "Si el CEO fija su propio sueldo, hay un conflicto de interés evidente.",
     opciones: [
-      { label: "El directorio, basándose en resultados y estudios de mercado", rol: "D" },
-      { label: "Los accionistas en asamblea", rol: "A" },
-      { label: "El propio CEO según lo que considere justo", rol: "G" },
-      { label: "El CFO, comparando con empresas del sector", rol: "G" },
-      { label: "Se mantiene igual que siempre, sin revisión formal", rol: "M" },
+      { label: "El dueño fija su propio sueldo", tipo: "concentrada" },
+      { label: "Se conversa informalmente con los socios", tipo: "parcial" },
+      { label: "Hay un criterio formal basado en resultados y mercado", tipo: "delegada" },
+      { label: "No se revisa nunca, siempre fue igual", tipo: "gris" },
     ],
-    correcta: "D",
+    beneficioDirectorio: "La compensación del CEO es una función central del directorio. Elimina el conflicto de interés.",
   },
-
-  // 6 — Comprar competidor → Director
   {
-    texto: "Apareció la oportunidad de comprar una empresa competidora. ¿Quién evalúa y aprueba?",
+    texto: "Apareció la oportunidad de comprar un competidor. ¿Cómo se maneja?",
     aclaracion: "Una adquisición compromete capital, estrategia y riesgo al mismo tiempo.",
     opciones: [
-      { label: "El directorio evalúa, pide due diligence y aprueba formalmente", rol: "D" },
-      { label: "El dueño decide porque es su plata", rol: "A" },
-      { label: "El gerente de desarrollo de negocios recomienda y ejecuta", rol: "G" },
-      { label: "El CFO analiza los números y da el OK financiero", rol: "G" },
-      { label: "Se decide en una charla informal entre los socios", rol: "M" },
+      { label: "El dueño decide solo si le parece buena idea", tipo: "concentrada" },
+      { label: "Se comenta entre socios pero no hay análisis formal", tipo: "parcial" },
+      { label: "Se hace un análisis financiero y estratégico antes de decidir", tipo: "delegada" },
+      { label: "Probablemente se deje pasar por falta de proceso", tipo: "gris" },
     ],
-    correcta: "D",
+    beneficioDirectorio: "Las decisiones de M&A son exactamente el tipo de decisión que justifica un directorio: alto impacto, irreversibles, requieren análisis independiente.",
   },
-
-  // 7 — Malos resultados trimestrales → Director (gerente rinde al directorio)
   {
-    texto: "Los resultados del trimestre fueron malos. ¿Quién le rinde cuentas a quién?",
+    texto: "Los resultados del trimestre fueron malos. ¿Qué pasa?",
     aclaracion: "La cadena de rendición de cuentas define la salud del gobierno corporativo.",
     opciones: [
-      { label: "El CEO o gerente general presenta los resultados al directorio", rol: "D" },
-      { label: "El gerente le informa directamente a los accionistas", rol: "A" },
-      { label: "El CFO le explica al dueño lo que pasó", rol: "G" },
-      { label: "El director le pide explicaciones al accionista mayoritario", rol: "M" },
-      { label: "Nadie rinde cuentas formalmente — se habla cuando se puede", rol: "M" },
+      { label: "El dueño lo absorbe solo y ajusta sobre la marcha", tipo: "concentrada" },
+      { label: "Se comenta con el equipo pero no hay rendición de cuentas formal", tipo: "parcial" },
+      { label: "La gerencia presenta un informe y explica las causas", tipo: "delegada" },
+      { label: "Nadie rinde cuentas formalmente", tipo: "gris" },
     ],
-    correcta: "D",
+    beneficioDirectorio: "El directorio instala disciplina de rendición de cuentas. La gerencia presenta, el directorio cuestiona, los socios se informan.",
   },
-
-  // 8 — Hijo del dueño quiere entrar → Director
   {
-    texto: "Un hijo del dueño quiere entrar a trabajar en la empresa. ¿Quién decide si ingresa, en qué rol y con qué sueldo?",
+    texto: "Un hijo del dueño quiere entrar a trabajar en la empresa. ¿Cómo se decide?",
     aclaracion: "Mezclar familia y empresa sin reglas claras genera conflictos que pueden destruir ambas.",
     opciones: [
-      { label: "El directorio, aplicando una política de ingreso para familiares", rol: "D" },
-      { label: "El dueño, que es su empresa y su familia", rol: "A" },
-      { label: "El gerente de RRHH, con el mismo proceso que cualquier empleado", rol: "G" },
-      { label: "El COO que define los roles operativos", rol: "G" },
-      { label: "Se resuelve en familia y después se comunica a la empresa", rol: "M" },
+      { label: "El dueño lo incorpora directamente", tipo: "concentrada" },
+      { label: "Se habla en familia y se comunica a la empresa", tipo: "parcial" },
+      { label: "Hay una política de ingreso de familiares con criterios claros", tipo: "delegada" },
+      { label: "Genera incomodidad y nadie quiere tomar la decisión", tipo: "gris" },
     ],
-    correcta: "D",
+    beneficioDirectorio: "El directorio establece reglas de juego para familiares que protegen tanto a la empresa como a la familia.",
   },
-
-  // 9 — Intimación de proveedor → Director
   {
-    texto: "La empresa recibió una intimación judicial de un proveedor importante. ¿Quién tiene la responsabilidad de responder?",
+    texto: "La empresa recibe una demanda judicial de un proveedor. ¿Quién se hace cargo?",
     aclaracion: "En una SA, los directores tienen responsabilidad personal ante conflictos legales.",
     opciones: [
-      { label: "El directorio aprueba la estrategia legal y autoriza acuerdos", rol: "D" },
-      { label: "El gerente de legales o abogado externo maneja todo solo", rol: "G" },
-      { label: "El dueño habla con el proveedor y arregla directamente", rol: "A" },
-      { label: "El gerente de compras que tiene la relación con el proveedor", rol: "G" },
-      { label: "Se delega al estudio jurídico y nadie más se involucra", rol: "M" },
+      { label: "El dueño habla con el proveedor y trata de arreglar", tipo: "concentrada" },
+      { label: "Se delega al abogado externo sin seguimiento formal", tipo: "parcial" },
+      { label: "Se define una estrategia legal con responsable y plazos", tipo: "delegada" },
+      { label: "Nadie asume la responsabilidad claramente", tipo: "gris" },
     ],
-    correcta: "D",
+    beneficioDirectorio: "Los directores tienen responsabilidad legal personal. El directorio aprueba la estrategia y protege a la empresa institucionalmente.",
   },
-
-  // 10 — Distribución de dividendos → Accionista
   {
-    texto: "Cerró bien el año. Los socios quieren saber cuánto se van a llevar. ¿Quién decide la distribución?",
-    aclaracion: "La distribución de utilidades es un derecho de los accionistas, no una decisión gerencial.",
+    texto: "Cerró bien el año. ¿Cómo se decide cuánto se reparte entre socios?",
+    aclaracion: "La distribución de utilidades es un derecho de los accionistas.",
     opciones: [
-      { label: "Los accionistas en asamblea, con recomendación del directorio", rol: "A" },
-      { label: "El directorio define cuánto se reparte", rol: "D" },
-      { label: "El CFO calcula lo distribuible y el CEO aprueba", rol: "G" },
-      { label: "El socio mayoritario decide y comunica a los demás", rol: "M" },
-      { label: "Se reinvierte todo sin consultar a los socios minoritarios", rol: "M" },
+      { label: "El dueño mayoritario decide cuánto y cuándo", tipo: "concentrada" },
+      { label: "Se conversa entre socios informalmente", tipo: "parcial" },
+      { label: "Hay una política de dividendos aprobada y se respeta", tipo: "delegada" },
+      { label: "Genera conflicto cada vez, no hay reglas claras", tipo: "gris" },
     ],
-    correcta: "A",
+    beneficioDirectorio: "El directorio recomienda una política de dividendos al cierre de cada ejercicio. Los socios aprueban en asamblea con reglas claras.",
   },
 ];
 
-// ─── Calculator ───────────────────────────────────────────────────────────────
+// ─── Scoring ────────────────────────────────────────────────────────────────
+
+const TIPO_SCORE: Record<string, number> = {
+  concentrada: 3,
+  gris: 2,
+  parcial: 1,
+  delegada: 0,
+};
 
 export function calcularModulo2(respuestas: number[]): Modulo2Resultado {
-  const elegidos = respuestas.map((opIdx, sitIdx) => {
+  const conteos = { concentrada: 0, parcial: 0, delegada: 0, gris: 0 };
+  const tensiones: { pregunta: number; tipo: string; beneficio: string }[] = [];
+
+  respuestas.forEach((opIdx, sitIdx) => {
     const sit = SITUACIONES_M2[sitIdx];
-    if (!sit || opIdx < 0 || opIdx >= sit.opciones.length) return "M";
-    return sit.opciones[opIdx].rol;
-  });
+    if (!sit || opIdx < 0 || opIdx >= sit.opciones.length) {
+      conteos.gris++;
+      return;
+    }
+    const tipo = sit.opciones[opIdx].tipo;
+    conteos[tipo]++;
 
-  const conteos = { A: 0, D: 0, G: 0, M: 0 };
-  elegidos.forEach(v => {
-    if (v === "A") conteos.A++;
-    else if (v === "D") conteos.D++;
-    else if (v === "G") conteos.G++;
-    else conteos.M++;
-  });
-
-  let perfil: string;
-  const mPct = conteos.M / 10;
-  if (mPct >= 0.4) {
-    perfil = "Rol híbrido no diferenciado";
-  } else if (conteos.A >= conteos.D && conteos.A >= conteos.G) {
-    perfil = "Perfil accionista dominante";
-  } else if (conteos.D >= conteos.A && conteos.D >= conteos.G) {
-    perfil = "Perfil director predominante";
-  } else {
-    perfil = "Perfil gerente ejecutor";
-  }
-
-  const tensiones: { pregunta: number; elegido: string; correcto: string }[] = [];
-  elegidos.forEach((elegido, idx) => {
-    if (elegido !== SITUACIONES_M2[idx].correcta && elegido !== "M" && tensiones.length < 3) {
+    if (tipo === 'concentrada' || tipo === 'gris') {
       tensiones.push({
-        pregunta: idx + 1,
-        elegido,
-        correcto: SITUACIONES_M2[idx].correcta,
+        pregunta: sitIdx + 1,
+        tipo,
+        beneficio: sit.beneficioDirectorio,
       });
     }
   });
 
-  const correctCount = elegidos.filter((v, i) => v === SITUACIONES_M2[i].correcta).length;
-  const porcentaje = Math.round((correctCount / 10) * 100);
+  const totalScore = respuestas.reduce((sum, opIdx, sitIdx) => {
+    const sit = SITUACIONES_M2[sitIdx];
+    if (!sit || opIdx < 0 || opIdx >= sit.opciones.length) return sum + 2;
+    return sum + (TIPO_SCORE[sit.opciones[opIdx].tipo] ?? 0);
+  }, 0);
+
+  const maxScore = 10 * 3;
+  const concentracionPct = Math.round(((conteos.concentrada + conteos.gris) / 10) * 100);
+
+  let perfil: string;
+  if (concentracionPct >= 70) perfil = "Concentración crítica";
+  else if (concentracionPct >= 50) perfil = "Concentración alta";
+  else if (concentracionPct >= 30) perfil = "Concentración moderada";
+  else perfil = "Buena delegación";
+
+  let nivel: string;
+  if (concentracionPct >= 70) nivel = "Las decisiones están peligrosamente concentradas. El directorio es urgente.";
+  else if (concentracionPct >= 50) nivel = "Hay una concentración significativa. Un directorio aportaría mucho valor.";
+  else if (concentracionPct >= 30) nivel = "Algunas decisiones necesitan mejor gobierno. Un directorio ayudaría.";
+  else nivel = "Buen nivel de delegación. Un directorio consolidaría las buenas prácticas.";
 
   return {
-    score: correctCount,
-    nivel: perfil,
-    porcentaje,
+    score: totalScore,
+    nivel,
+    porcentaje: concentracionPct,
     conteos,
     perfil,
     tensiones,

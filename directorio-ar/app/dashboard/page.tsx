@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { storage } from '../../lib/storage';
 import ProgressBar from '../../components/ProgressBar';
-import type { Modulo1Resultado, Modulo2Resultado, Modulo3Resultado, Modulo5Resultado } from '../../types';
+import type { Modulo1Resultado, Modulo2Resultado, Modulo3Resultado, Modulo4Diagnostico } from '../../types';
 
 const PERFIL_LABELS: Record<string, string> = {
   estratega: "Estratega",
@@ -28,7 +28,7 @@ export default function DashboardPage() {
   const [m2, setM2] = useState<Modulo2Resultado | null>(null);
   const [m3, setM3] = useState<Modulo3Resultado | null>(null);
   const [m4freq, setM4freq] = useState<string | null>(null);
-  const [m5, setM5] = useState<Modulo5Resultado | null>(null);
+  const [m4diag, setM4diag] = useState<Modulo4Diagnostico | null>(null);
   const [pdfLoading, setPdfLoading] = useState(false);
   const [ready, setReady] = useState(false);
 
@@ -46,7 +46,7 @@ export default function DashboardPage() {
     setM2(storage.getModulo2Resultado());
     setM3(storage.getModulo3Resultado());
     setM4freq(storage.getModulo4Frecuencia());
-    setM5(storage.getModulo5Resultado());
+    setM4diag(storage.getModulo4Diagnostico());
     setReady(true);
   }, [router]);
 
@@ -69,7 +69,7 @@ export default function DashboardPage() {
     try {
       const { generatePDF } = await import('../../components/PDFReport');
       const fecha = new Date().toLocaleDateString('es-AR', { year: 'numeric', month: 'long', day: 'numeric' });
-      const blob = await generatePDF({ empresa: nombre, m1, m2, m3, m4frecuencia: m4freq, m5, fecha });
+      const blob = await generatePDF({ empresa: nombre, m1, m2, m3, m4frecuencia: m4freq, m4diagnostico: m4diag, fecha });
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
@@ -86,8 +86,8 @@ export default function DashboardPage() {
     }
   }
 
-  const completedModules = [!!m1, !!m2, !!m3, !!m4freq, !!m5].filter(Boolean).length;
-  const allComplete = completedModules === 5;
+  const completedModules = [!!m1, !!m2, !!m3, !!(m4freq || m4diag)].filter(Boolean).length;
+  const allComplete = completedModules === 4;
 
   const levelBadge = (nivel: string) => {
     if (!nivel) return 'bg-gray-100 text-gray-600';
@@ -95,10 +95,10 @@ export default function DashboardPage() {
     if (nivel === 'Señales tempranas') return 'bg-yellow-100 text-yellow-800';
     if (nivel === 'Momento de transición') return 'bg-purple-100 text-purple-700';
     if (nivel === 'Necesidad urgente') return 'bg-red-100 text-red-700';
-    if (nivel.includes('sana')) return 'bg-green-100 text-green-700';
-    if (nivel.includes('construcción')) return 'bg-yellow-100 text-yellow-800';
-    if (nivel.includes('serias')) return 'bg-orange-100 text-orange-700';
-    if (nivel.includes('crítica')) return 'bg-red-100 text-red-700';
+    if (nivel.includes('sana') || nivel.includes('Alta')) return 'bg-green-100 text-green-700';
+    if (nivel.includes('construcción') || nivel.includes('Buena')) return 'bg-yellow-100 text-yellow-800';
+    if (nivel.includes('serias') || nivel.includes('parcial')) return 'bg-orange-100 text-orange-700';
+    if (nivel.includes('crítica') || nivel.includes('Baja')) return 'bg-red-100 text-red-700';
     return 'bg-purple-100 text-purple-700';
   };
 
@@ -166,10 +166,23 @@ export default function DashboardPage() {
         <div className="border border-gray-200 rounded-xl bg-white p-4">
           <div className="flex items-center justify-between mb-2">
             <span className="text-sm font-semibold text-gray-900">Progreso del diagnóstico</span>
-            <span className="text-sm font-bold text-[#534AB7]">{completedModules}/5</span>
+            <span className="text-sm font-bold text-[#534AB7]">{completedModules}/4</span>
           </div>
-          <ProgressBar percentage={(completedModules / 5) * 100} />
+          <ProgressBar percentage={(completedModules / 4) * 100} />
         </div>
+
+        {/* Ver resultado final */}
+        {allComplete && (
+          <button
+            onClick={() => router.push('/resultado')}
+            className="w-full py-4 bg-[#534AB7] hover:bg-[#3C3489] text-white rounded-xl text-sm font-semibold transition-colors flex items-center justify-center gap-2"
+          >
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" /><polyline points="22 4 12 14.01 9 11.01" />
+            </svg>
+            Ver resultado final integrado
+          </button>
+        )}
 
         {/* Module summaries */}
         {/* M1 */}
@@ -200,7 +213,7 @@ export default function DashboardPage() {
           <div className="flex items-center justify-between mb-3">
             <div className="flex items-center gap-2">
               <span className="w-6 h-6 rounded-full bg-[#534AB7] text-white text-xs font-bold flex items-center justify-center">2</span>
-              <span className="text-sm font-semibold text-gray-900">Clasificador de roles</span>
+              <span className="text-sm font-semibold text-gray-900">Mapa de decisiones</span>
             </div>
             <button onClick={() => router.push('/modulo/2')} className="text-xs text-[#534AB7] font-medium hover:underline">
               {m2 ? 'Revisar' : 'Completar'}
@@ -208,11 +221,15 @@ export default function DashboardPage() {
           </div>
           {m2 ? (
             <>
-              <div className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold ${levelBadge(m2.perfil)} mb-2`}>
+              <div className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold mb-2
+                ${(m2.porcentaje ?? 0) >= 70 ? 'bg-red-100 text-red-700' :
+                  (m2.porcentaje ?? 0) >= 50 ? 'bg-orange-100 text-orange-700' :
+                  (m2.porcentaje ?? 0) >= 30 ? 'bg-yellow-100 text-yellow-800' :
+                  'bg-green-100 text-green-700'}`}>
                 {m2.perfil}
               </div>
               <p className="text-xs text-gray-500">
-                Confusión de roles: {100 - (m2.porcentaje ?? 0)}% de respuestas incorrectas
+                Índice de concentración: {m2.porcentaje}%
               </p>
             </>
           ) : (
@@ -255,39 +272,26 @@ export default function DashboardPage() {
           <div className="flex items-center justify-between mb-3">
             <div className="flex items-center gap-2">
               <span className="w-6 h-6 rounded-full bg-[#534AB7] text-white text-xs font-bold flex items-center justify-center">4</span>
-              <span className="text-sm font-semibold text-gray-900">Dinámica de reuniones</span>
+              <span className="text-sm font-semibold text-gray-900">Dinámica y funcionamiento</span>
             </div>
             <button onClick={() => router.push('/modulo/4')} className="text-xs text-[#534AB7] font-medium hover:underline">
-              {m4freq ? 'Revisar' : 'Completar'}
+              {(m4freq || m4diag) ? 'Revisar' : 'Completar'}
             </button>
           </div>
           {m4freq ? (
-            <div className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-purple-100 text-purple-700`}>
-              {m4freq}
-            </div>
-          ) : (
-            <p className="text-xs text-gray-400">No completado</p>
-          )}
-        </div>
-
-        {/* M5 */}
-        <div className="border border-gray-200 rounded-xl bg-white p-4">
-          <div className="flex items-center justify-between mb-3">
-            <div className="flex items-center gap-2">
-              <span className="w-6 h-6 rounded-full bg-[#534AB7] text-white text-xs font-bold flex items-center justify-center">5</span>
-              <span className="text-sm font-semibold text-gray-900">Directorio y gerencia</span>
-            </div>
-            <button onClick={() => router.push('/modulo/5')} className="text-xs text-[#534AB7] font-medium hover:underline">
-              {m5 ? 'Revisar' : 'Completar'}
-            </button>
-          </div>
-          {m5 ? (
-            <>
-              <div className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold ${levelBadge(m5.nivel)} mb-1`}>
-                {m5.nivel}
+            <div className="space-y-2">
+              <div className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-purple-100 text-purple-700">
+                {m4freq}
               </div>
-              <p className="text-xs text-gray-500">{m5.porcentaje}% de cumplimiento</p>
-            </>
+              {m4diag && (
+                <div>
+                  <p className="text-xs text-gray-500">Disposición: {m4diag.porcentaje}%</p>
+                  <div className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold mt-1 ${levelBadge(m4diag.nivel)}`}>
+                    {m4diag.nivel}
+                  </div>
+                </div>
+              )}
+            </div>
           ) : (
             <p className="text-xs text-gray-400">No completado</p>
           )}
@@ -319,7 +323,7 @@ export default function DashboardPage() {
                   <line x1="16" y1="17" x2="8" y2="17" />
                   <polyline points="10 9 9 9 8 9" />
                 </svg>
-                {allComplete ? 'Generar reporte PDF' : `Completá todos los módulos para generar el PDF (${completedModules}/5)`}
+                {allComplete ? 'Generar reporte PDF' : `Completá todos los módulos para generar el PDF (${completedModules}/4)`}
               </>
             )}
           </button>
@@ -335,8 +339,8 @@ export default function DashboardPage() {
         {/* Module navigation */}
         <div className="border border-gray-200 rounded-xl bg-white p-4">
           <h3 className="text-sm font-semibold text-gray-700 mb-3">Ir a módulo</h3>
-          <div className="grid grid-cols-5 gap-2">
-            {[1, 2, 3, 4, 5].map(n => (
+          <div className="grid grid-cols-4 gap-2">
+            {[1, 2, 3, 4].map(n => (
               <button
                 key={n}
                 onClick={() => router.push(`/modulo/${n}`)}

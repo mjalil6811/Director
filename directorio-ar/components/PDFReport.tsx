@@ -1,7 +1,7 @@
 'use client';
 
 import { Document, Page, Text, View, StyleSheet, pdf } from '@react-pdf/renderer';
-import type { Modulo1Resultado, Modulo2Resultado, Modulo3Resultado, Modulo5Resultado } from '../types';
+import type { Modulo1Resultado, Modulo2Resultado, Modulo3Resultado, Modulo4Diagnostico } from '../types';
 
 const styles = StyleSheet.create({
   page: {
@@ -207,7 +207,7 @@ interface PDFReportData {
   m2: Modulo2Resultado | null;
   m3: Modulo3Resultado | null;
   m4frecuencia: string | null;
-  m5: Modulo5Resultado | null;
+  m4diagnostico: Modulo4Diagnostico | null;
   fecha: string;
 }
 
@@ -222,6 +222,13 @@ const PERFIL_LABELS: Record<string, string> = {
   inversor: "Inversor",
   control: "Control",
   crisis: "Crisis",
+};
+
+const TIPO_LABEL: Record<string, string> = {
+  concentrada: 'Concentrada',
+  parcial: 'Parcial',
+  delegada: 'Delegada',
+  gris: 'Zona gris',
 };
 
 function Footer({ pageNum }: { pageNum: number }) {
@@ -300,24 +307,24 @@ function PDFDocument({ data }: { data: PDFReportData }) {
       {/* Module 2 */}
       {data.m2 && (
         <Page size="A4" style={styles.page}>
-          <Text style={styles.sectionHeader}>Módulo 2 — Clasificador de roles</Text>
+          <Text style={styles.sectionHeader}>Módulo 2 — Mapa de decisiones</Text>
           <View style={styles.card}>
             <View style={styles.row}>
-              <Text style={styles.label}>Perfil predominante:</Text>
+              <Text style={styles.label}>Perfil:</Text>
               <Text style={styles.value}>{data.m2.perfil}</Text>
             </View>
             <View style={styles.row}>
-              <Text style={styles.label}>Respuestas correctas:</Text>
+              <Text style={styles.label}>Índice de concentración:</Text>
               <Text style={styles.value}>{data.m2.porcentaje}%</Text>
             </View>
           </View>
 
-          <Text style={styles.moduleTitle}>Distribución de respuestas</Text>
+          <Text style={styles.moduleTitle}>Distribución de decisiones</Text>
           <View style={styles.conteoGrid}>
-            {(['A', 'D', 'G', 'M'] as const).map(key => (
+            {(['concentrada', 'parcial', 'delegada', 'gris'] as const).map(key => (
               <View key={key} style={styles.conteoBox}>
                 <Text style={styles.conteoNum}>{data.m2!.conteos[key]}</Text>
-                <Text style={styles.conteoLabel}>{key === 'A' ? 'Accionista' : key === 'D' ? 'Director' : key === 'G' ? 'Gerente' : 'Mezclado'}</Text>
+                <Text style={styles.conteoLabel}>{TIPO_LABEL[key]}</Text>
               </View>
             ))}
           </View>
@@ -325,12 +332,15 @@ function PDFDocument({ data }: { data: PDFReportData }) {
           {data.m2.tensiones.length > 0 && (
             <>
               <View style={styles.spacer} />
-              <Text style={styles.moduleTitle}>Tensiones identificadas</Text>
+              <Text style={styles.moduleTitle}>Decisiones con problemas detectados</Text>
               <View style={styles.card}>
                 {data.m2.tensiones.map((t, i) => (
-                  <Text key={i} style={styles.small}>
-                    Pregunta {t.pregunta}: elegiste {t.elegido === 'A' ? 'Accionista' : t.elegido === 'D' ? 'Director' : 'Gerente'}, correcto era {t.correcto === 'A' ? 'Accionista' : t.correcto === 'D' ? 'Director' : 'Gerente'}
-                  </Text>
+                  <View key={i} style={{ marginBottom: 8 }}>
+                    <Text style={[styles.small, { fontFamily: 'Helvetica-Bold' }]}>
+                      Pregunta {t.pregunta} — {TIPO_LABEL[t.tipo] ?? t.tipo}
+                    </Text>
+                    <Text style={styles.small}>{t.beneficio}</Text>
+                  </View>
                 ))}
               </View>
             </>
@@ -361,39 +371,30 @@ function PDFDocument({ data }: { data: PDFReportData }) {
 
       {/* Module 4 */}
       <Page size="A4" style={styles.page}>
-        <Text style={styles.sectionHeader}>Módulo 4 — Dinámica de reuniones</Text>
+        <Text style={styles.sectionHeader}>Módulo 4 — Dinámica y funcionamiento</Text>
         <View style={styles.card}>
           <Text style={styles.moduleTitle}>Frecuencia recomendada</Text>
           <Text style={styles.value}>{data.m4frecuencia ?? 'No calculada'}</Text>
         </View>
+        {data.m4diagnostico && (
+          <View style={styles.card}>
+            <Text style={styles.moduleTitle}>Autoevaluación de disposición</Text>
+            <View style={styles.row}>
+              <Text style={styles.label}>Puntuación:</Text>
+              <Text style={styles.value}>{data.m4diagnostico.porcentaje}%</Text>
+            </View>
+            <View style={styles.row}>
+              <Text style={styles.label}>Nivel:</Text>
+              <Text style={styles.value}>{data.m4diagnostico.nivel}</Text>
+            </View>
+          </View>
+        )}
         <Text style={styles.small}>
           La frecuencia se determina según el nivel de necesidad de gobierno corporativo identificado en el Módulo 1.
           A mayor complejidad, mayor es la frecuencia recomendada.
         </Text>
         <Footer pageNum={5} />
       </Page>
-
-      {/* Module 5 */}
-      {data.m5 && (
-        <Page size="A4" style={styles.page}>
-          <Text style={styles.sectionHeader}>Módulo 5 — Relación directorio y gerencia</Text>
-          <View style={styles.card}>
-            <View style={styles.row}>
-              <Text style={styles.label}>Estado:</Text>
-              <Text style={styles.value}>{data.m5.nivel}</Text>
-            </View>
-            <View style={styles.row}>
-              <Text style={styles.label}>Puntuación:</Text>
-              <Text style={styles.value}>{data.m5.porcentaje}%</Text>
-            </View>
-          </View>
-          <Text style={[styles.small, { marginTop: 8 }]}>
-            Basado en 10 afirmaciones sobre la dinámica entre el directorio y la gerencia,
-            valoradas como Sí (1), Parcial (0.5) y No (0).
-          </Text>
-          <Footer pageNum={6} />
-        </Page>
-      )}
     </Document>
   );
 }

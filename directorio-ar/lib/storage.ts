@@ -1,4 +1,4 @@
-import type { Modulo1Resultado, Modulo2Resultado, Modulo3Resultado, Modulo5Resultado } from "../types";
+import type { Modulo1Resultado, Modulo2Resultado, Modulo3Resultado, Modulo4Diagnostico, Modulo5Resultado } from "../types";
 
 const KEYS = {
   modulo1Respuestas: "directorio_ar:modulo1:respuestas",
@@ -8,6 +8,7 @@ const KEYS = {
   modulo3Respuestas: "directorio_ar:modulo3:respuestas",
   modulo3Resultado: "directorio_ar:modulo3:resultado",
   modulo4Frecuencia: "directorio_ar:modulo4:frecuencia",
+  modulo4Diagnostico: "directorio_ar:modulo4:diagnostico",
   modulo5Respuestas: "directorio_ar:modulo5:respuestas",
   modulo5Resultado: "directorio_ar:modulo5:resultado",
   empresaNombre: "directorio_ar:empresa:nombre",
@@ -64,6 +65,8 @@ export const storage = {
 
   getModulo4Frecuencia: () => getItem<string>(KEYS.modulo4Frecuencia),
   setModulo4Frecuencia: (v: string) => setItem(KEYS.modulo4Frecuencia, v),
+  getModulo4Diagnostico: () => getItem<Modulo4Diagnostico>(KEYS.modulo4Diagnostico),
+  setModulo4Diagnostico: (v: Modulo4Diagnostico) => setItem(KEYS.modulo4Diagnostico, v),
 
   getModulo5Respuestas: () => getItem<(1 | 0.5 | 0)[]>(KEYS.modulo5Respuestas),
   setModulo5Respuestas: (v: (1 | 0.5 | 0)[]) => setItem(KEYS.modulo5Respuestas, v),

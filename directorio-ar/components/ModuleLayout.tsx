@@ -10,7 +10,7 @@ interface ModuleLayoutProps {
   children: React.ReactNode;
 }
 
-export default function ModuleLayout({ moduleNumber, totalModules = 5, title, subtitle, children }: ModuleLayoutProps) {
+export default function ModuleLayout({ moduleNumber, totalModules = 4, title, subtitle, children }: ModuleLayoutProps) {
   const router = useRouter();
 
   return (

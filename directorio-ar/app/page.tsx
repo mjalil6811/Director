@@ -8,7 +8,7 @@ const MODULOS = [
   {
     n: 1,
     label: '¿Necesitás un directorio?',
-    desc: '12 preguntas · 6 dimensiones',
+    desc: '15 preguntas · 6 dimensiones',
     icon: (
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
         <circle cx="12" cy="12" r="10" /><path d="M12 8v4l3 3" />
@@ -17,8 +17,8 @@ const MODULOS = [
   },
   {
     n: 2,
-    label: 'Clasificador de roles',
-    desc: '10 situaciones concretas',
+    label: 'Mapa de decisiones',
+    desc: '10 situaciones · tensiones',
     icon: (
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
         <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /><path d="M23 21v-2a4 4 0 0 0-3-3.87" /><path d="M16 3.13a4 4 0 0 1 0 7.75" />
@@ -28,7 +28,7 @@ const MODULOS = [
   {
     n: 3,
     label: 'Perfiles del directorio',
-    desc: '15 preguntas · 10 perfiles',
+    desc: '13 preguntas · 4 perfiles',
     icon: (
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
         <rect x="3" y="3" width="7" height="7" /><rect x="14" y="3" width="7" height="7" /><rect x="3" y="14" width="7" height="7" /><rect x="14" y="14" width="7" height="7" />
@@ -37,21 +37,11 @@ const MODULOS = [
   },
   {
     n: 4,
-    label: 'Dinámica de reuniones',
-    desc: 'Agenda, decisiones y actas',
+    label: 'Dinámica y funcionamiento',
+    desc: 'Agenda, tensiones y autoevaluación',
     icon: (
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
         <rect x="3" y="4" width="18" height="18" rx="2" /><line x1="16" y1="2" x2="16" y2="6" /><line x1="8" y1="2" x2="8" y2="6" /><line x1="3" y1="10" x2="21" y2="10" />
-      </svg>
-    ),
-  },
-  {
-    n: 5,
-    label: 'Directorio y gerencia',
-    desc: '7 tensiones · diagnóstico',
-    icon: (
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
       </svg>
     ),
   },
@@ -60,7 +50,7 @@ const MODULOS = [
 export default function HomePage() {
   const router = useRouter();
   const [nombre, setNombre] = useState('');
-  const [completados, setCompletados] = useState<boolean[]>([false, false, false, false, false]);
+  const [completados, setCompletados] = useState<boolean[]>([false, false, false, false]);
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   useEffect(() => {
@@ -70,8 +60,7 @@ export default function HomePage() {
       !!storage.getModulo1Resultado(),
       !!storage.getModulo2Resultado(),
       !!storage.getModulo3Resultado(),
-      !!storage.getModulo4Frecuencia(),
-      !!storage.getModulo5Resultado(),
+      !!(storage.getModulo4Diagnostico() || storage.getModulo4Frecuencia()),
     ]);
   }, []);
 
@@ -91,12 +80,16 @@ export default function HomePage() {
 
   function handleContinuar() {
     if (nombre.trim()) storage.setEmpresaNombre(nombre.trim());
-    router.push(nextModulo ? `/modulo/${nextModulo}` : '/dashboard');
+    if (completedCount === 4) {
+      router.push('/resultado');
+    } else {
+      router.push(nextModulo ? `/modulo/${nextModulo}` : '/dashboard');
+    }
   }
 
   function handleReiniciar() {
     storage.clearAll();
-    setCompletados([false, false, false, false, false]);
+    setCompletados([false, false, false, false]);
     setNombre('');
   }
 
@@ -132,7 +125,7 @@ export default function HomePage() {
         <div className="px-5 py-4 border-b border-gray-100">
           <div className="flex items-center justify-between mb-2">
             <span className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Progreso</span>
-            <span className="text-xs font-bold text-[#534AB7]">{completedCount}/5</span>
+            <span className="text-xs font-bold text-[#534AB7]">{completedCount}/4</span>
           </div>
           <div className="flex gap-1">
             {completados.map((done, i) => (
@@ -188,9 +181,18 @@ export default function HomePage() {
           })}
         </div>
 
-        {completedCount === 5 && (
+        {completedCount === 4 && (
           <>
             <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider px-2 mb-2 mt-5">Resultados</p>
+            <button
+              onClick={() => router.push('/resultado')}
+              className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-left transition-colors text-sm text-[#534AB7] bg-purple-50 hover:bg-purple-100 font-medium"
+            >
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-[#534AB7]">
+                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" /><polyline points="22 4 12 14.01 9 11.01" />
+              </svg>
+              <span>Resultado final</span>
+            </button>
             <button
               onClick={() => router.push('/dashboard')}
               className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-left transition-colors text-sm text-gray-700 hover:bg-gray-100"
@@ -274,11 +276,11 @@ export default function HomePage() {
                   <p className="text-xs text-gray-400 mt-0.5">Módulos completados</p>
                 </div>
                 <div className="bg-white border border-gray-200 rounded-xl p-4 text-center">
-                  <p className="text-2xl font-bold text-gray-900">{Math.round((completedCount / 5) * 100)}%</p>
+                  <p className="text-2xl font-bold text-gray-900">{Math.round((completedCount / 4) * 100)}%</p>
                   <p className="text-xs text-gray-400 mt-0.5">Progreso total</p>
                 </div>
                 <div className="bg-white border border-gray-200 rounded-xl p-4 text-center">
-                  <p className="text-2xl font-bold text-gray-900">{5 - completedCount}</p>
+                  <p className="text-2xl font-bold text-gray-900">{4 - completedCount}</p>
                   <p className="text-xs text-gray-400 mt-0.5">Módulos restantes</p>
                 </div>
               </div>
@@ -289,7 +291,7 @@ export default function HomePage() {
               <div className="px-6 pt-6 pb-5 border-b border-gray-100">
                 <h2 className="text-lg font-bold text-gray-900 mb-1">Diagnóstico de Gobierno Corporativo</h2>
                 <p className="text-sm text-gray-500">
-                  5 módulos para diagnosticar la necesidad, composición y dinámica de un directorio.
+                  4 módulos para diagnosticar la necesidad, composición y dinámica de un directorio.
                 </p>
               </div>
 
@@ -313,9 +315,9 @@ export default function HomePage() {
                       onClick={handleContinuar}
                       className="w-full py-3 px-4 bg-[#534AB7] hover:bg-[#3C3489] text-white font-semibold rounded-lg transition-colors text-sm"
                     >
-                      {completedCount === 5 ? 'Ver diagnóstico completo' : `Continuar — Módulo ${nextModulo}`}
+                      {completedCount === 4 ? 'Ver resultado final' : `Continuar — Módulo ${nextModulo}`}
                     </button>
-                    {completedCount < 5 && (
+                    {completedCount < 4 && (
                       <button
                         onClick={handleComenzar}
                         className="w-full py-2.5 px-4 border border-gray-200 text-gray-600 font-medium rounded-lg hover:bg-gray-50 transition-colors text-sm"

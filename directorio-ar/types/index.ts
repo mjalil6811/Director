@@ -10,14 +10,20 @@ export interface Modulo1Resultado extends ModuloResultado {
 }
 
 export interface Modulo2Resultado extends ModuloResultado {
-  conteos: { A: number; D: number; G: number; M: number };
+  conteos: { concentrada: number; parcial: number; delegada: number; gris: number };
   perfil: string;
-  tensiones: { pregunta: number; elegido: string; correcto: string }[];
+  tensiones: { pregunta: number; tipo: string; beneficio: string }[];
 }
 
 export interface Modulo3Resultado extends ModuloResultado {
   topPerfiles: { perfil: string; score: number; urgencia: string; descripcion: string; justificacion?: string; ranking?: number }[];
   scoresCompletos?: Record<string, number>;
+}
+
+export interface Modulo4Diagnostico {
+  score: number;
+  porcentaje: number;
+  nivel: string;
 }
 
 export interface Modulo5Resultado extends ModuloResultado {
