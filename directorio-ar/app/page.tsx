@@ -261,6 +261,11 @@ export default function HomePage() {
         <main className="flex-1 flex flex-col items-center justify-center px-4 py-12">
           <div className="w-full max-w-lg">
 
+            {/* Hero title */}
+            <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 text-center leading-tight mb-8">
+              ¿Tu empresa necesita empezar<br className="hidden sm:block" /> a armar un directorio?
+            </h1>
+
             {/* Stats row — only when has data */}
             {hasData && (
               <div className="grid grid-cols-3 gap-3 mb-8">
@@ -282,9 +287,9 @@ export default function HomePage() {
             {/* Main card */}
             <div className="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden">
               <div className="px-6 pt-6 pb-5 border-b border-gray-100">
-                <h1 className="text-xl font-bold text-gray-900 mb-1">Diagnóstico de Gobierno Corporativo</h1>
+                <h2 className="text-lg font-bold text-gray-900 mb-1">Diagnóstico de Gobierno Corporativo</h2>
                 <p className="text-sm text-gray-500">
-                  5 módulos para diagnosticar la necesidad, composición y dinámica de un directorio adaptado al contexto argentino.
+                  5 módulos para diagnosticar la necesidad, composición y dinámica de un directorio.
                 </p>
               </div>
 
