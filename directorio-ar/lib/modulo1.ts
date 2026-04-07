@@ -27,12 +27,12 @@ export const DIMENSIONES: Dimension[] = [
       {
         numero: 2,
         texto: "¿Cuál es la facturación anual aproximada de la empresa?",
-        aclaracion: "En pesos constantes actuales.",
+        aclaracion: "A mayor facturación, mayor es el impacto de cada decisión mal tomada — y mayor el valor que un directorio puede aportar como control estratégico.",
         opciones: [
           { texto: "Menos de $50 millones", puntaje: 0 },
-          { texto: "Entre $50 y $200 millones", puntaje: 1 },
-          { texto: "Entre $200 millones y $1.000 millones", puntaje: 2 },
-          { texto: "Más de $1.000 millones", puntaje: 3 },
+          { texto: "Entre $50 y $200 millones — el directorio puede aportar mucho valor", puntaje: 1 },
+          { texto: "Entre $200 millones y $1.000 millones — necesidad urgente de gobierno", puntaje: 3 },
+          { texto: "Más de $1.000 millones — operar sin directorio es un riesgo alto", puntaje: 3 },
         ],
       },
     ],
@@ -44,23 +44,23 @@ export const DIMENSIONES: Dimension[] = [
       {
         numero: 3,
         texto: "¿Cómo está distribuida la propiedad de la empresa?",
-        aclaracion: "La composición accionaria es uno de los factores más determinantes para la necesidad de un directorio.",
+        aclaracion: "Un solo dueño tiene libertad total pero cero contrapeso — las decisiones dependen de su criterio sin revisión externa. A medida que se suman socios, la necesidad de reglas claras crece exponencialmente.",
         opciones: [
-          { texto: "Un solo dueño, sin socios", puntaje: 0 },
-          { texto: "Dos o tres socios fundadores", puntaje: 1 },
-          { texto: "Familia ampliada o segunda generación involucrada", puntaje: 2 },
-          { texto: "Múltiples socios, incluyendo inversores o fondos", puntaje: 3 },
+          { texto: "Un solo dueño — toda la decisión recae en una persona sin control externo", puntaje: 1 },
+          { texto: "Dos o tres socios fundadores — hay que coordinar visiones, el conflicto es cuestión de tiempo", puntaje: 2 },
+          { texto: "Familia ampliada o segunda generación — los conflictos familiares impactan directamente en el negocio", puntaje: 3 },
+          { texto: "Múltiples socios con inversores o fondos — sin directorio formal es ingobernable", puntaje: 3 },
         ],
       },
       {
         numero: 4,
         texto: "¿Existe o existirá en los próximos 3 años algún proceso de sucesión o cambio de control?",
-        aclaracion: "Venta parcial, incorporación de nuevos socios, traspaso generacional, ingreso de inversores.",
+        aclaracion: "La sucesión sin un directorio es como navegar una tormenta sin timón. Cada etapa de cambio multiplica la necesidad de gobierno formal.",
         opciones: [
-          { texto: "No está previsto ningún cambio", puntaje: 0 },
-          { texto: "Hay conversaciones pero nada concreto", puntaje: 1 },
-          { texto: "Está en proceso o muy próximo", puntaje: 2 },
-          { texto: "Ya ocurrió y hay tensiones no resueltas", puntaje: 3 },
+          { texto: "No está previsto ningún cambio — pero la empresa igualmente necesita prepararse", puntaje: 1 },
+          { texto: "Hay conversaciones — es el momento ideal para armar un directorio antes del conflicto", puntaje: 2 },
+          { texto: "Está en proceso — el directorio debería estar funcionando ya", puntaje: 3 },
+          { texto: "Ya ocurrió con tensiones — el directorio es imprescindible para ordenar lo que quedó", puntaje: 3 },
         ],
       },
     ],
@@ -72,23 +72,23 @@ export const DIMENSIONES: Dimension[] = [
       {
         numero: 5,
         texto: "¿Cómo se toman hoy las decisiones estratégicas importantes en la empresa?",
-        aclaracion: "Expansión, deuda significativa, nuevos socios, cambios en la dirección.",
+        aclaracion: "Si una sola persona toma todas las decisiones estratégicas, la empresa está a un error de distancia de una crisis. El directorio existe para evitar exactamente eso.",
         opciones: [
-          { texto: "Las toma el dueño o CEO solo", puntaje: 0 },
-          { texto: "Se discuten entre los socios informalmente", puntaje: 1 },
-          { texto: "Hay reuniones periódicas pero sin estructura formal", puntaje: 2 },
-          { texto: "Existe algún órgano de gobierno aunque sea informal", puntaje: 3 },
+          { texto: "Las toma el dueño o CEO solo — sin consulta ni contrapeso", puntaje: 3 },
+          { texto: "Se discuten entre socios informalmente — sin registro ni seguimiento", puntaje: 2 },
+          { texto: "Hay reuniones periódicas pero sin estructura formal", puntaje: 1 },
+          { texto: "Existe algún órgano de gobierno aunque sea informal", puntaje: 0 },
         ],
       },
       {
         numero: 6,
         texto: "¿Existe hoy alguna diferencia real entre quién es dueño y quién gerencia la empresa?",
-        aclaracion: "En muchas PyMEs argentinas los dueños son también los gerentes.",
+        aclaracion: "Cuando el dueño es también el gerente, no hay nadie que le diga que no. El directorio rompe esa concentración de poder y protege el patrimonio de todos.",
         opciones: [
-          { texto: "Los dueños operan el día a día completamente", puntaje: 0 },
-          { texto: "Hay gerentes pero los dueños deciden todo", puntaje: 1 },
-          { texto: "Hay gerentes con algo de autonomía real", puntaje: 2 },
-          { texto: "La gerencia opera con independencia clara de la propiedad", puntaje: 3 },
+          { texto: "Los dueños operan el día a día completamente — no hay separación alguna", puntaje: 3 },
+          { texto: "Hay gerentes pero los dueños deciden todo — la separación es cosmética", puntaje: 2 },
+          { texto: "Hay gerentes con algo de autonomía real", puntaje: 1 },
+          { texto: "La gerencia opera con independencia clara de la propiedad", puntaje: 0 },
         ],
       },
     ],
@@ -102,10 +102,10 @@ export const DIMENSIONES: Dimension[] = [
         texto: "Cuando surge una decisión importante que no estaba prevista, ¿cómo se resuelve habitualmente?",
         aclaracion: "Pensá en las últimas 3 decisiones relevantes que tomó la empresa.",
         opciones: [
-          { texto: "El dueño decide solo en el momento, sin consultar a nadie", puntaje: 0 },
-          { texto: "Se consulta informalmente con algún socio o persona de confianza", puntaje: 1 },
-          { texto: "Se posterga hasta poder reunir a las personas clave", puntaje: 2 },
-          { texto: "Hay un proceso definido para este tipo de situaciones", puntaje: 3 },
+          { texto: "El dueño decide solo en el momento, sin consultar a nadie", puntaje: 3 },
+          { texto: "Se consulta informalmente con algún socio o gerente de confianza", puntaje: 2 },
+          { texto: "Se consulta con gerentes o empleados clave antes de decidir", puntaje: 1 },
+          { texto: "Hay un proceso definido con roles claros para cada tipo de decisión", puntaje: 0 },
         ],
       },
       {
@@ -122,12 +122,12 @@ export const DIMENSIONES: Dimension[] = [
       {
         numero: 9,
         texto: "¿Con qué frecuencia los socios o líderes se reúnen formalmente para revisar el rumbo del negocio?",
-        aclaracion: "No las reuniones operativas del día a día — las conversaciones sobre estrategia y futuro.",
+        aclaracion: "Si los líderes de la empresa no se juntan nunca a pensar en el futuro, nadie lo está haciendo. El directorio fuerza esa conversación.",
         opciones: [
-          { texto: "Casi nunca o solo cuando hay una crisis", puntaje: 0 },
-          { texto: "Una o dos veces al año, sin agenda estructurada", puntaje: 1 },
-          { texto: "Trimestralmente, con algún orden pero sin formato fijo", puntaje: 2 },
-          { texto: "Mensual o bimestralmente, con agenda y seguimiento de acuerdos", puntaje: 3 },
+          { texto: "Casi nunca o solo cuando hay una crisis — la estrategia no se discute", puntaje: 3 },
+          { texto: "Una o dos veces al año, sin agenda estructurada", puntaje: 2 },
+          { texto: "Trimestralmente, con algún orden pero sin formato fijo", puntaje: 1 },
+          { texto: "Mensual o bimestralmente, con agenda y seguimiento de acuerdos", puntaje: 0 },
         ],
       },
     ],
@@ -261,10 +261,10 @@ export function calcularModulo1(respuestas: number[]): Modulo1Resultado {
 
   if ((get("propiedad")?.porcentaje ?? 0) >= 60)
     recs.push("La estructura de propiedad es compleja: formalizar quién decide qué y en qué calidad es una prioridad antes de armar el directorio.");
-  if ((get("gobierno")?.porcentaje ?? 100) <= 33)
-    recs.push("El gobierno actual es muy informal. Un primer paso puede ser instaurar reuniones mensuales de socios con agenda estructurada.");
-  if ((get("decisiones")?.porcentaje ?? 100) <= 33)
-    recs.push("Las decisiones hoy dependen de una sola persona o del azar. El directorio no puede funcionar bien sobre esa base — hay que construir el hábito de decidir en equipo primero.");
+  if ((get("gobierno")?.porcentaje ?? 0) >= 60)
+    recs.push("El gobierno actual está muy concentrado en el dueño. El directorio es urgente para instalar un contrapeso real en las decisiones estratégicas.");
+  if ((get("decisiones")?.porcentaje ?? 0) >= 60)
+    recs.push("Las decisiones hoy dependen de una sola persona. Sin un directorio, la empresa está a un error de distancia de una crisis seria.");
   if ((get("disponibilidad")?.porcentaje ?? 100) <= 33)
     recs.push("La disponibilidad y el presupuesto son limitados. Un directorio mal financiado o que no puede reunirse regularmente se convierte rápidamente en una formalidad vacía.");
   if ((get("tamano")?.porcentaje ?? 0) >= 60)
@@ -308,16 +308,27 @@ export function generarInformeParcial(respuestas: number[]): string {
 
   const get = (idx: number) => (respuestas[idx] >= 0 ? respuestas[idx] : -1);
 
+  // P1 — equipo grande
   if (get(0) >= 2) signals.push('el tamaño del equipo');
-  if (get(1) >= 2) signals.push('el volumen de facturación');
+  // P2 — facturación alta (ahora idx 2=3pts, idx 3=3pts)
+  if (get(1) >= 2) signals.push('el volumen de facturación justifica control formal');
+  // P3 — propiedad compleja (ahora todas suman, idx 2-3 = alta)
   if (get(2) >= 2) signals.push('la complejidad en la estructura de propiedad');
+  // P4 — sucesión (ahora todas suman, idx 2-3 = urgente)
   if (get(3) >= 2) signals.push('la proximidad de un proceso de sucesión');
-  if (get(4) <= 1 && get(4) >= 0) signals.push('la informalidad en la toma de decisiones estratégicas');
-  if (get(5) <= 1 && get(5) >= 0) signals.push('la falta de separación entre dueño y gerencia');
-  if (get(6) <= 1 && get(6) >= 0) signals.push('la ausencia de un proceso claro para decisiones imprevistas');
-  if (get(7) <= 1 && get(7) >= 0) signals.push('la concentración del poder en una sola persona');
-  if (get(8) <= 1 && get(8) >= 0) signals.push('la escasa frecuencia de reuniones estratégicas');
+  // P5 — decisiones: ahora invertido (idx 0=3pts = dueño solo = urgente)
+  if (get(4) >= 2) signals.push('que las decisiones estratégicas recaen en una sola persona sin contrapeso');
+  // P6 — separación dueño/gerencia: invertido (idx 0=3pts = sin separación)
+  if (get(5) >= 2) signals.push('la falta de separación entre quién es dueño y quién gerencia');
+  // P7 — decisiones imprevistas: invertido (idx 0=3pts = dueño solo)
+  if (get(6) >= 2) signals.push('la ausencia de un proceso para decisiones imprevistas');
+  // P8 — última palabra (original)
+  if (get(7) <= 1 && get(7) >= 0) signals.push('la concentración del poder de decisión final');
+  // P9 — frecuencia reuniones: invertido (idx 0=3pts = nunca)
+  if (get(8) >= 2) signals.push('que los líderes de la empresa no se reúnen a pensar en el futuro');
+  // P12 — disponibilidad
   if (get(11) >= 2) signals.push('la disponibilidad para reunirse regularmente');
+  // P14 — presupuesto
   if (get(13) <= 1 && get(13) >= 0) signals.push('las restricciones de presupuesto para el directorio');
 
   const cap = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
