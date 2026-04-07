@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import ModuleLayout from '../../../components/ModuleLayout';
-import { PREGUNTAS_M3, PERFILES, calcularModulo3, type PerfilKey, type NivelUrgencia } from '../../../lib/modulo3';
+import { PREGUNTAS_M3, PERFILES, calcularModulo3, TOTAL_PREGUNTAS_M3, type PerfilKey, type NivelUrgencia } from '../../../lib/modulo3';
 import { storage } from '../../../lib/storage';
 import type { Modulo3Resultado } from '../../../types';
 
@@ -16,10 +16,61 @@ const URGENCIA_STYLE: Record<NivelUrgencia, { badge: string; bar: string; border
   "Complementario": { badge: "bg-gray-100 text-gray-500",      bar: "bg-gray-300",     border: "border-gray-200" },
 };
 
+const PERFIL_COLORS: Record<PerfilKey, string> = {
+  estratega:   "#534AB7",
+  financiero:  "#10B981",
+  comercial:   "#F97316",
+  operaciones: "#6BBF3B",
+};
+
+// ─── Pie chart SVG ─────────────────────────────────────────────────────────────
+
+function PieChart({ data }: { data: { key: PerfilKey; nombre: string; pct: number }[] }) {
+  const cx = 70;
+  const cy = 70;
+  const r = 55;
+  const circ = 2 * Math.PI * r;
+  let offset = 0;
+
+  return (
+    <div className="flex flex-col items-center">
+      <svg width="140" height="140" viewBox="0 0 140 140">
+        <circle cx={cx} cy={cy} r={r} fill="none" stroke="#f3f4f6" strokeWidth="22" />
+        {data.map(({ key, pct }) => {
+          const dash = (pct / 100) * circ;
+          const currentOffset = offset;
+          offset += dash;
+          if (pct === 0) return null;
+          return (
+            <circle
+              key={key}
+              cx={cx} cy={cy} r={r}
+              fill="none"
+              stroke={PERFIL_COLORS[key]}
+              strokeWidth="22"
+              strokeDasharray={`${dash} ${circ - dash}`}
+              strokeDashoffset={-currentOffset}
+              transform={`rotate(-90 ${cx} ${cy})`}
+            />
+          );
+        })}
+      </svg>
+      <div className="flex flex-wrap gap-x-4 gap-y-1.5 mt-3 justify-center">
+        {data.map(({ key, nombre, pct }) => (
+          <div key={key} className="flex items-center gap-1.5">
+            <div className="w-2.5 h-2.5 rounded-full shrink-0" style={{ backgroundColor: PERFIL_COLORS[key] }} />
+            <span className="text-xs text-gray-500">{nombre} <strong className="text-gray-700">{pct}%</strong></span>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 // ─── Profile card ─────────────────────────────────────────────────────────────
 
-function PerfilCard({ perfilKey, score, urgencia, justificacion, rank }: {
-  perfilKey: string; score: number; urgencia: string; justificacion: string; rank: number;
+function PerfilCard({ perfilKey, score, urgencia, justificacion, rank, pct }: {
+  perfilKey: string; score: number; urgencia: string; justificacion: string; rank: number; pct: number;
 }) {
   const [open, setOpen] = useState(rank === 1);
   const perfil = PERFILES[perfilKey as PerfilKey];
@@ -30,30 +81,24 @@ function PerfilCard({ perfilKey, score, urgencia, justificacion, rank }: {
 
   return (
     <div className={`border rounded-xl bg-white overflow-hidden ${style.border}`}>
-
-      {/* Header */}
       <button
         onClick={() => setOpen(!open)}
         className="w-full flex items-center gap-3 px-5 py-4 text-left hover:bg-gray-50 transition-colors"
       >
-        {/* Avatar */}
         <div
           className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0 text-sm font-bold"
           style={{ backgroundColor: perfil.colorBg, color: perfil.colorTexto }}
         >
           {perfil.icono}
         </div>
-
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 flex-wrap">
             <span className="font-semibold text-gray-900 text-sm">{perfil.nombre}</span>
-            <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${style.badge}`}>
-              {urgencia}
-            </span>
+            <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${style.badge}`}>{urgencia}</span>
+            <span className="text-xs font-bold" style={{ color: PERFIL_COLORS[perfilKey as PerfilKey] }}>{pct}%</span>
           </div>
           <p className="text-xs text-gray-400 mt-0.5">{perfil.independencia}</p>
         </div>
-
         <div className="flex items-center gap-2 shrink-0">
           <span className="text-xs font-bold text-gray-300">#{rank}</span>
           <svg
@@ -65,55 +110,36 @@ function PerfilCard({ perfilKey, score, urgencia, justificacion, rank }: {
         </div>
       </button>
 
-      {/* Score bar */}
       <div className="px-5 pb-3">
         <div className="flex items-center gap-2">
           <div className="flex-1 h-1.5 bg-gray-100 rounded-full overflow-hidden">
-            <div
-              className={`h-full rounded-full transition-all duration-500 ${style.bar}`}
-              style={{ width: `${Math.min(100, Math.round((score / 20) * 100))}%` }}
-            />
+            <div className={`h-full rounded-full transition-all duration-500 ${style.bar}`}
+              style={{ width: `${Math.min(100, Math.round((score / 20) * 100))}%` }} />
           </div>
           <span className="text-xs text-gray-400 font-medium shrink-0">Score {score}</span>
         </div>
       </div>
 
-      {/* Expanded */}
       {open && (
         <div className="border-t border-gray-100 divide-y divide-gray-100">
-
-          {/* Tags */}
           <div className="px-5 py-3 flex gap-1.5 flex-wrap">
             {perfil.tags.map(t => (
-              <span
-                key={t}
-                className="text-xs px-2.5 py-1 rounded-full font-medium"
-                style={{ backgroundColor: perfil.colorBg, color: perfil.colorTexto }}
-              >
-                {t}
-              </span>
+              <span key={t} className="text-xs px-2.5 py-1 rounded-full font-medium"
+                style={{ backgroundColor: perfil.colorBg, color: perfil.colorTexto }}>{t}</span>
             ))}
           </div>
-
-          {/* Por qué lo necesitás */}
           <div className="px-5 py-4">
             <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">Por qué lo necesitás</p>
             <p className="text-sm text-gray-700 leading-relaxed">{justificacion}</p>
           </div>
-
-          {/* Experiencia */}
           <div className="px-5 py-4">
             <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-1.5">Experiencia requerida</p>
             <p className="text-sm text-gray-700">{perfil.anosExperiencia}</p>
           </div>
-
-          {/* Formación */}
           <div className="px-5 py-4">
             <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">Formación típica</p>
             <p className="text-sm text-gray-700 leading-relaxed">{perfil.formacion}</p>
           </div>
-
-          {/* Roles previos */}
           <div className="px-5 py-4">
             <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">Roles y cargos previos</p>
             <ul className="space-y-1.5">
@@ -127,14 +153,10 @@ function PerfilCard({ perfilKey, score, urgencia, justificacion, rank }: {
               ))}
             </ul>
           </div>
-
-          {/* Señal clave */}
           <div className="px-5 py-4">
             <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-1.5">Señal clave para identificarlo</p>
             <p className="text-sm text-gray-700 leading-relaxed">{perfil.senalClave}</p>
           </div>
-
-          {/* Advertencia argentina */}
           <div className="px-5 py-4" style={{ backgroundColor: perfil.colorBg }}>
             <div className="flex items-center gap-1.5 mb-1.5">
               <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ color: perfil.colorTexto }}>
@@ -144,7 +166,6 @@ function PerfilCard({ perfilKey, score, urgencia, justificacion, rank }: {
             </div>
             <p className="text-sm leading-relaxed" style={{ color: perfil.colorTexto }}>{perfil.advertenciaArgentina}</p>
           </div>
-
         </div>
       )}
     </div>
@@ -157,12 +178,12 @@ export default function Modulo3() {
   const router = useRouter();
   const [step, setStep] = useState<'quiz' | 'result'>('quiz');
   const [current, setCurrent] = useState(0);
-  const [respuestas, setRespuestas] = useState<number[]>(new Array(15).fill(-1));
+  const [respuestas, setRespuestas] = useState<number[]>(new Array(TOTAL_PREGUNTAS_M3).fill(-1));
   const [resultado, setResultado] = useState<Modulo3Resultado | null>(null);
 
   useEffect(() => {
     const saved = storage.getModulo3Respuestas();
-    if (saved && saved.length === 15 && saved.every(v => v >= 0)) {
+    if (saved && saved.length === TOTAL_PREGUNTAS_M3 && saved.every(v => v >= 0)) {
       setRespuestas(saved);
       const res = storage.getModulo3Resultado();
       if (res) { setResultado(res); setStep('result'); }
@@ -177,7 +198,7 @@ export default function Modulo3() {
   }
 
   function handleNext() {
-    if (current < 14) {
+    if (current < TOTAL_PREGUNTAS_M3 - 1) {
       setCurrent(current + 1);
     } else {
       const res = calcularModulo3(respuestas);
@@ -192,7 +213,7 @@ export default function Modulo3() {
   }
 
   function handleRetry() {
-    const empty = new Array(15).fill(-1);
+    const empty = new Array(TOTAL_PREGUNTAS_M3).fill(-1);
     setRespuestas(empty);
     setCurrent(0);
     setStep('quiz');
@@ -204,14 +225,35 @@ export default function Modulo3() {
 
   // ── Result ────────────────────────────────────────────────────────────────
   if (step === 'result' && resultado) {
+    // Calculate percentages for pie chart
+    const scores = resultado.scoresCompletos ?? {};
+    const totalScore = Object.values(scores).reduce((a, b) => a + b, 0) || 1;
+    const pieData = resultado.topPerfiles.map(p => ({
+      key: p.perfil as PerfilKey,
+      nombre: PERFILES[p.perfil as PerfilKey]?.nombre ?? p.perfil,
+      pct: Math.round((scores[p.perfil] ?? p.score) / totalScore * 100),
+    }));
+
     return (
       <ModuleLayout moduleNumber={3} title="¿Qué perfiles necesitás?">
         <div className="space-y-4">
 
+          {/* Pie chart */}
+          <div className="border border-gray-200 rounded-xl bg-white overflow-hidden">
+            <div className="px-5 pt-5 pb-3 border-b border-gray-100">
+              <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-1">Composición recomendada del directorio</p>
+              <p className="text-sm text-gray-500">Porcentaje de relevancia de cada perfil según tu empresa.</p>
+            </div>
+            <div className="px-5 py-6">
+              <PieChart data={pieData} />
+            </div>
+          </div>
+
+          {/* Intro */}
           <div className="border border-gray-200 rounded-xl bg-white px-5 py-4">
-            <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-1">Perfiles recomendados</p>
+            <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-1">Perfiles detallados</p>
             <p className="text-sm text-gray-500">
-              Rankeados por prioridad. Expandí cada ficha para ver el perfil completo con formación, cargos y advertencias.
+              Expandí cada ficha para ver formación, cargos, experiencia y advertencias para el contexto argentino.
             </p>
           </div>
 
@@ -223,6 +265,7 @@ export default function Modulo3() {
               urgencia={p.urgencia}
               justificacion={p.justificacion ?? p.descripcion}
               rank={p.ranking ?? 1}
+              pct={pieData.find(d => d.key === p.perfil)?.pct ?? 0}
             />
           ))}
 
@@ -248,25 +291,24 @@ export default function Modulo3() {
 
   return (
     <ModuleLayout moduleNumber={3} title="¿Qué perfiles necesitás?">
-      {/* Progress */}
       <div className="mb-5">
         <div className="flex justify-between text-xs text-gray-400 mb-1.5">
-          <span>{answeredCount} de 15 respondidas</span>
-          <span>{Math.round((answeredCount / 15) * 100)}%</span>
+          <span>{answeredCount} de {TOTAL_PREGUNTAS_M3} respondidas</span>
+          <span>{Math.round((answeredCount / TOTAL_PREGUNTAS_M3) * 100)}%</span>
         </div>
         <div className="w-full h-1.5 bg-gray-100 rounded-full overflow-hidden">
-          <div className="h-full bg-[#534AB7] rounded-full transition-all duration-300" style={{ width: `${(answeredCount / 15) * 100}%` }} />
+          <div className="h-full bg-[#534AB7] rounded-full transition-all duration-300"
+            style={{ width: `${(answeredCount / TOTAL_PREGUNTAS_M3) * 100}%` }} />
         </div>
       </div>
 
-      {/* Question */}
       <div className="border border-gray-200 rounded-xl bg-white overflow-hidden mb-4">
         <div className="px-5 pt-5 pb-4 border-b border-gray-100">
           <div className="flex items-center gap-2 mb-3">
             <span className="w-6 h-6 rounded-full bg-[#534AB7] text-white text-xs font-bold flex items-center justify-center shrink-0">
               {current + 1}
             </span>
-            <span className="text-xs text-gray-400">de 15 · {pregunta.dimension}</span>
+            <span className="text-xs text-gray-400">de {TOTAL_PREGUNTAS_M3} · {pregunta.dimension}</span>
           </div>
           <p className="text-sm font-semibold text-gray-900 leading-snug mb-2">{pregunta.texto}</p>
           {pregunta.aclaracion && (
@@ -290,7 +332,6 @@ export default function Modulo3() {
         </div>
       </div>
 
-      {/* Navigation */}
       <div className="flex gap-3">
         {current > 0 && (
           <button onClick={handlePrev} className="flex-1 py-3 border border-gray-200 rounded-xl text-sm font-medium text-gray-600 hover:bg-gray-50">
@@ -303,7 +344,7 @@ export default function Modulo3() {
           className={`flex-1 py-3 rounded-xl text-sm font-semibold transition-colors
             ${selected >= 0 ? 'bg-[#534AB7] hover:bg-[#3C3489] text-white' : 'bg-gray-100 text-gray-400 cursor-not-allowed'}`}
         >
-          {current === 14 ? 'Ver perfiles →' : 'Siguiente →'}
+          {current === TOTAL_PREGUNTAS_M3 - 1 ? 'Ver perfiles →' : 'Siguiente →'}
         </button>
       </div>
     </ModuleLayout>

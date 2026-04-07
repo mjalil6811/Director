@@ -153,7 +153,7 @@ export const PREGUNTAS_M3: PreguntaM3[] = [
     texto: "¿En qué etapa se encuentra tu empresa hoy?",
     aclaracion: "Esto define qué tipo de perspectiva necesita el directorio con más urgencia.",
     opciones: [
-      { texto: "Startup o empresa joven, menos de 5 años",        pesos: { operaciones: 2 } },
+      { texto: "Empresa joven, menos de 5 años",                   pesos: { operaciones: 2 } },
       { texto: "PyME consolidada, crecimiento estable",           pesos: { estratega: 2, financiero: 1 } },
       { texto: "Empresa en expansión activa o transformación",    pesos: { estratega: 3, comercial: 2 } },
       { texto: "Empresa madura buscando profesionalizarse",       pesos: { estratega: 2, operaciones: 2 } },
@@ -226,29 +226,7 @@ export const PREGUNTAS_M3: PreguntaM3[] = [
     ],
   },
   {
-    numero: 8, dimension: "Personas",
-    texto: "¿Cuántas personas trabajan en la empresa?",
-    aclaracion: "El tamaño del equipo determina si la gestión operativa necesita representación en el directorio.",
-    opciones: [
-      { texto: "Menos de 20 personas",       pesos: { operaciones: 1 } },
-      { texto: "Entre 20 y 60 personas",     pesos: { operaciones: 2 } },
-      { texto: "Entre 60 y 200 personas",    pesos: { operaciones: 3 } },
-      { texto: "Más de 200 personas",        pesos: { operaciones: 3, estratega: 1 } },
-    ],
-  },
-  {
-    numero: 9, dimension: "Organización",
-    texto: "¿El dueño opera el día a día o hay gerentes con autonomía real?",
-    aclaracion: "La brecha entre propiedad y gestión es el indicador más claro de madurez organizacional.",
-    opciones: [
-      { texto: "El dueño opera todo directamente",                             pesos: { operaciones: 2, estratega: 1 } },
-      { texto: "Hay gerentes pero el dueño decide todo",                       pesos: { operaciones: 2, estratega: 1 } },
-      { texto: "Hay gerentes con algo de autonomía real",                      pesos: { operaciones: 1, estratega: 2 } },
-      { texto: "La gerencia opera con independencia clara",                    pesos: { estratega: 2, financiero: 1 } },
-    ],
-  },
-  {
-    numero: 10, dimension: "Tecnología",
+    numero: 8, dimension: "Tecnología",
     texto: "¿Cuán central es la transformación digital para el negocio?",
     aclaracion: "No hablamos de tener una web — hablamos de si la tecnología puede cambiar el modelo de negocio.",
     opciones: [
@@ -259,7 +237,7 @@ export const PREGUNTAS_M3: PreguntaM3[] = [
     ],
   },
   {
-    numero: 11, dimension: "Mercado",
+    numero: 9, dimension: "Mercado",
     texto: "¿La empresa tiene competidores fuertes o el mercado está cambiando rápido?",
     aclaracion: "La presión competitiva define la urgencia del perfil comercial y estratégico.",
     opciones: [
@@ -270,7 +248,7 @@ export const PREGUNTAS_M3: PreguntaM3[] = [
     ],
   },
   {
-    numero: 12, dimension: "Comercial",
+    numero: 10, dimension: "Comercial",
     texto: "¿Cómo llegan hoy los nuevos clientes a la empresa?",
     aclaracion: "La dependencia comercial del dueño es uno de los riesgos más subestimados en PyMEs argentinas.",
     opciones: [
@@ -281,7 +259,7 @@ export const PREGUNTAS_M3: PreguntaM3[] = [
     ],
   },
   {
-    numero: 13, dimension: "Estrategia",
+    numero: 11, dimension: "Estrategia",
     texto: "¿La empresa tiene planes de adquisición, fusión, venta total o parcial?",
     aclaracion: "Las operaciones de M&A son las que más requieren gobierno sofisticado.",
     opciones: [
@@ -292,7 +270,7 @@ export const PREGUNTAS_M3: PreguntaM3[] = [
     ],
   },
   {
-    numero: 14, dimension: "Operaciones",
+    numero: 12, dimension: "Operaciones",
     texto: "¿La empresa tiene procesos documentados y sistemas de gestión implementados?",
     aclaracion: "La informalidad operativa es el principal freno al crecimiento en PyMEs argentinas.",
     opciones: [
@@ -303,7 +281,7 @@ export const PREGUNTAS_M3: PreguntaM3[] = [
     ],
   },
   {
-    numero: 15, dimension: "Gobierno",
+    numero: 13, dimension: "Gobierno",
     texto: "¿Cuál es la disposición real del CEO o dueño a rendir cuentas ante un directorio?",
     aclaracion: "Esta pregunta define qué tan rápido y profundo puede ser el proceso de gobierno.",
     opciones: [
@@ -324,7 +302,9 @@ export function calcularUrgencia(score: number): NivelUrgencia {
   return "Complementario";
 }
 
-// respuestas: number[] indexed 0–14 (option index chosen per question)
+export const TOTAL_PREGUNTAS_M3 = PREGUNTAS_M3.length; // 13
+
+// respuestas: number[] indexed 0–12 (option index chosen per question)
 export function calcularModulo3(respuestas: number[]): Modulo3Resultado {
   const scores: Record<PerfilKey, number> = { estratega: 0, financiero: 0, comercial: 0, operaciones: 0 };
   const dimensionesActivadas: Record<PerfilKey, string[]> = { estratega: [], financiero: [], comercial: [], operaciones: [] };
