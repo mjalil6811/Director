@@ -205,23 +205,6 @@ export default function Modulo4() {
               A mayor complejidad y necesidad de gobierno, mayor es la frecuencia recomendada de reuniones del directorio.
             </p>
           </div>
-          <div className="border border-gray-200 rounded-xl bg-white p-5">
-            <h3 className="text-sm font-semibold text-gray-700 mb-3">Referencia de frecuencias</h3>
-            <div className="space-y-2">
-              {[
-                { nivel: "Directorio prematuro", freq: "No aplica aún", color: "bg-gray-100 text-gray-600" },
-                { nivel: "Señales tempranas", freq: "Trimestral", color: "bg-yellow-100 text-yellow-800" },
-                { nivel: "Momento de transición", freq: "Bimestral", color: "bg-purple-100 text-purple-700" },
-                { nivel: "Necesidad urgente", freq: "Mensual", color: "bg-red-100 text-red-700" },
-              ].map(item => (
-                <div key={item.nivel} className="flex items-center justify-between p-3 border border-gray-100 rounded-xl">
-                  <span className="text-sm text-gray-700">{item.nivel}</span>
-                  <span className={`text-xs font-semibold px-2.5 py-1 rounded-full ${item.color}`}>{item.freq}</span>
-                </div>
-              ))}
-            </div>
-          </div>
-
           <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Tipos de reuniones</p>
           <Accordion title="Reunión ordinaria">
             <div className="mt-2 space-y-0.5">
