@@ -437,14 +437,18 @@ export default function HomePage() {
               </div>
             )}
 
-            {/* Credibility footer */}
-            <div className="mt-10 space-y-2 text-center">
-              <p className="text-xs text-gray-400">
-                Metodología basada en mejores prácticas de gobierno corporativo
+            {/* Methodology section */}
+            <div className="mt-8 border border-[#E5E7EB] rounded-2xl bg-white p-5 shadow-sm">
+              <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">Metodología</p>
+              <p className="text-sm text-gray-600 leading-relaxed mb-3">
+                Este diagnóstico integra principios de gobierno corporativo moderno basados en los marcos de referencia más reconocidos internacionalmente, adaptados a la realidad de las empresas argentinas.
               </p>
-              <p className="text-xs text-gray-400">
-                Desarrollado para el contexto empresarial argentino
-              </p>
+              <div className="flex flex-wrap gap-2">
+                <span className="text-xs bg-gray-100 text-gray-500 px-3 py-1.5 rounded-full">Gobierno corporativo</span>
+                <span className="text-xs bg-gray-100 text-gray-500 px-3 py-1.5 rounded-full">Board effectiveness</span>
+                <span className="text-xs bg-gray-100 text-gray-500 px-3 py-1.5 rounded-full">Mejores prácticas PyME</span>
+                <span className="text-xs bg-gray-100 text-gray-500 px-3 py-1.5 rounded-full">Contexto argentino</span>
+              </div>
               <p className="text-xs text-gray-300 mt-3">
                 Todo el diagnóstico se guarda localmente en tu dispositivo. Sin registro, sin servidor.
               </p>

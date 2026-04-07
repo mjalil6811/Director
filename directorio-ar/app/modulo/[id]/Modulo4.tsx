@@ -57,44 +57,44 @@ const PRACTICA_ITEMS = [
   {
     titulo: "Micro-gestión encubierta",
     loQuePasa: "El directorio opina sobre decisiones operativas que corresponden a la gerencia. En Argentina el dueño-director usa el directorio como extensión de su rol ejecutivo.",
-    loQueDeberiaPasar: "El directorio se enfoca en decisiones estratégicas y reservadas. La gerencia opera con autonomía dentro de los límites aprobados.",
-    comoLograrlo: "Definir un mapa de decisiones reservadas claro. Todo lo que no está en ese mapa es responsabilidad de la gerencia.",
+    loQueDeberiaPasar: "El directorio aplica el principio de 'stay out' para decisiones operativas: se enfoca en lo estratégico y reservado. La gerencia opera con autonomía real dentro de los límites aprobados.",
+    comoLograrlo: "Definir un mapa de decisiones reservadas claro que distinga tres modos: qué lidera el directorio ('take charge'), qué acompaña ('partner') y de qué se mantiene al margen ('stay out'). Todo lo que no está en ese mapa es responsabilidad de la gerencia.",
   },
   {
     titulo: "Información filtrada",
     loQuePasa: "La gerencia filtra qué información llega al directorio. En Argentina la información financiera real solo circula entre los dueños.",
-    loQueDeberiaPasar: "El directorio recibe un paquete de información completo y estandarizado antes de cada reunión.",
-    comoLograrlo: "Acordar un formato de paquete de información y enviarlo 5 días hábiles antes de cada reunión. Sin excepciones.",
+    loQueDeberiaPasar: "El directorio recibe un paquete de información completo y estandarizado antes de cada reunión. La calidad de las decisiones depende de la calidad de la información.",
+    comoLograrlo: "Acordar un formato de paquete de información y enviarlo 5 días hábiles antes de cada reunión. Sin excepciones. El directorio debe definir qué información necesita — no esperar que la gerencia decida qué mostrar.",
   },
   {
     titulo: "El CEO que evita al directorio",
     loQuePasa: "El CEO ve al directorio como una carga o pérdida de control. En Argentina cuando el CEO es el fundador, esto se siente como amenaza.",
-    loQueDeberiaPasar: "El CEO valora al directorio como un espacio de respaldo y perspectiva que mejora sus decisiones.",
-    comoLograrlo: "Trabajar la disposición del CEO antes de armar el directorio. Empezar con un advisory board informal si es necesario.",
+    loQueDeberiaPasar: "El CEO valora al directorio como socio estratégico que mejora sus decisiones. El directorio no está para controlar al CEO — está para hacerlo mejor.",
+    comoLograrlo: "Trabajar la disposición del CEO antes de armar el directorio. Practicar la 'indagación antes que la recomendación': que el CEO sienta que el directorio pregunta para entender, no para juzgar. Empezar con un advisory board informal si es necesario.",
   },
   {
     titulo: "Presidente y CEO en la misma persona",
     loQuePasa: "Elimina el principal mecanismo de control. En Argentina esta figura está tan instalada que parece innecesario separarlos.",
-    loQueDeberiaPasar: "Las funciones de presidencia del directorio y gerencia general están separadas, al menos funcionalmente.",
-    comoLograrlo: "Separar roles progresivamente o designar un lead director independiente que lidere las reuniones.",
+    loQueDeberiaPasar: "Las funciones de presidencia del directorio y gerencia general están separadas, al menos funcionalmente. El directorio funciona como equipo con liderazgo propio.",
+    comoLograrlo: "Separar roles progresivamente o designar un lead director independiente que lidere las reuniones. El presidente del directorio fija la agenda y facilita el debate — el CEO presenta y responde.",
   },
   {
     titulo: "Directorio que solo aprueba",
     loQuePasa: "Nunca rechaza ni cuestiona en profundidad. En Argentina el directorio decorativo es la norma.",
-    loQueDeberiaPasar: "El directorio debate, cuestiona y a veces rechaza propuestas. Eso es sano.",
-    comoLograrlo: "Incluir un espacio de debate estructurado antes de cualquier votación. Fomentar que al menos un director haga de 'abogado del diablo'.",
+    loQueDeberiaPasar: "El directorio debate, cuestiona y a veces rechaza propuestas. La efectividad del directorio como equipo depende de la calidad del debate, no de la rapidez de la aprobación.",
+    comoLograrlo: "Practicar la 'indagación antes que la recomendación': antes de votar, hacer rondas de preguntas abiertas. Fomentar que al menos un director haga de 'abogado del diablo'. La diversidad de perspectivas solo agrega valor si hay debate genuino.",
   },
   {
     titulo: "Directores que contactan la gerencia media",
-    loQuePasa: "Rompe la cadena de mando y genera confusión. En Argentina la informalidad facilita este error.",
-    loQueDeberiaPasar: "Toda la comunicación entre directorio y empresa pasa a través del CEO.",
-    comoLograrlo: "Establecer un acuerdo explícito desde el día 1. La única excepción es la auditoría formal.",
+    loQuePasa: "Rompe la cadena de mando y genera confusión. En Argentina la informalidad facilita este error. Es la diferencia entre gobernar y gestionar.",
+    loQueDeberiaPasar: "Toda la comunicación entre directorio y empresa pasa a través del CEO. El directorio gobierna — la gerencia gestiona.",
+    comoLograrlo: "Establecer un acuerdo explícito desde el día 1: el directorio se mantiene al margen de la operación diaria ('stay out'). La única excepción es la auditoría formal.",
   },
   {
     titulo: "Ausencia de evaluación mutua",
     loQuePasa: "Nadie mide cómo funciona la relación directorio-gerencia. En Argentina la evaluación del CEO por el directorio es prácticamente inexistente.",
-    loQueDeberiaPasar: "Hay una evaluación anual del CEO y una autoevaluación del directorio.",
-    comoLograrlo: "Definir criterios de evaluación en enero. Evaluar en diciembre. Publicar conclusiones internamente.",
+    loQueDeberiaPasar: "Hay una evaluación anual del CEO y una autoevaluación del directorio como equipo. No alcanza con evaluar individuos — hay que evaluar cómo funciona el equipo en conjunto.",
+    comoLograrlo: "Definir criterios de evaluación en enero. Evaluar en diciembre. Incluir preguntas clave: ¿estamos enfocados en los temas correctos? ¿desafiamos constructivamente? ¿funcionamos como equipo o como grupo de individuos?",
   },
 ];
 
@@ -105,6 +105,7 @@ const PROTOCOLO = [
   { number: 4, title: "Evaluación anual del CEO", detail: "Criterios acordados en enero, evaluación en diciembre." },
   { number: 5, title: "Mapa de decisiones reservadas vigente", detail: "Revisado anualmente, publicado formalmente." },
   { number: 6, title: "Autoevaluación anual del directorio", detail: "El directorio se pregunta si está funcionando bien." },
+  { number: 7, title: "Mapa de modos de intervención", detail: "Definir para cada tipo de decisión si el directorio lidera, acompaña o se mantiene al margen. Revisarlo cada semestre." },
 ];
 
 const DIAG_PREGUNTAS = [

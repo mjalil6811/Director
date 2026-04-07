@@ -315,7 +315,7 @@ export default function Modulo3() {
         </div>
       )}
 
-      <div className="border border-gray-200 rounded-xl bg-white overflow-hidden mb-4">
+      <div className="border border-gray-200 rounded-xl bg-white overflow-hidden mb-4 shadow-sm">
         <div className="px-5 pt-5 pb-4 border-b border-gray-100">
           <div className="flex items-center gap-2 mb-3">
             <span className="w-6 h-6 rounded-full bg-[#534AB7] text-white text-xs font-bold flex items-center justify-center shrink-0">
@@ -333,9 +333,9 @@ export default function Modulo3() {
             <button
               key={idx}
               onClick={() => handleSelect(idx)}
-              className={`w-full text-left px-4 py-3 rounded-lg border text-sm transition-colors
+              className={`w-full text-left px-4 py-3 rounded-lg border text-sm transition-all hover:shadow-md transition-shadow
                 ${selected === idx
-                  ? 'border-[#534AB7] bg-purple-50 text-[#534AB7] font-medium'
+                  ? 'border-[#534AB7] border-l-4 border-l-[#534AB7] bg-purple-50 text-[#534AB7] font-medium'
                   : 'border-gray-200 text-gray-700 hover:border-gray-300 hover:bg-gray-50'
                 }`}
             >

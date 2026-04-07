@@ -151,6 +151,46 @@ export default function InformePreliminar() {
           <p className="text-3xl sm:text-4xl font-bold tracking-tight" style={{ color: diagColor }}>{diagnostico}</p>
         </div>
 
+        {/* Educational box */}
+        <div className="border border-[#E5E7EB] rounded-2xl bg-white p-5 shadow-sm">
+          <p className="text-xs font-semibold text-[#534AB7] uppercase tracking-wider mb-3">¿Qué es un directorio y por qué importa?</p>
+          <div className="space-y-3">
+            <div className="flex gap-3">
+              <div className="w-8 h-8 rounded-lg bg-[#EEEDFE] flex items-center justify-center shrink-0 mt-0.5">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#534AB7" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+                </svg>
+              </div>
+              <div>
+                <p className="text-sm font-semibold text-gray-900 mb-0.5">Socio estratégico, no solo supervisor</p>
+                <p className="text-xs text-gray-500 leading-relaxed">Un directorio moderno no se limita a controlar — actúa como socio estratégico del CEO, alternando entre liderar, acompañar y delegar según la situación.</p>
+              </div>
+            </div>
+            <div className="flex gap-3">
+              <div className="w-8 h-8 rounded-lg bg-[#EEEDFE] flex items-center justify-center shrink-0 mt-0.5">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#534AB7" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <circle cx="12" cy="12" r="10" /><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" /><line x1="12" y1="17" x2="12.01" y2="17" />
+                </svg>
+              </div>
+              <div>
+                <p className="text-sm font-semibold text-gray-900 mb-0.5">Preguntar antes de opinar</p>
+                <p className="text-xs text-gray-500 leading-relaxed">Los mejores directorios practican la &quot;indagación antes que la recomendación&quot; — hacen las preguntas correctas antes de dar su opinión, lo que genera decisiones más sólidas.</p>
+              </div>
+            </div>
+            <div className="flex gap-3">
+              <div className="w-8 h-8 rounded-lg bg-[#EEEDFE] flex items-center justify-center shrink-0 mt-0.5">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#534AB7" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /><path d="M23 21v-2a4 4 0 0 0-3-3.87" /><path d="M16 3.13a4 4 0 0 1 0 7.75" />
+                </svg>
+              </div>
+              <div>
+                <p className="text-sm font-semibold text-gray-900 mb-0.5">Equipo, no grupo de individuos</p>
+                <p className="text-xs text-gray-500 leading-relaxed">La efectividad del directorio depende de cómo funciona como equipo — la diversidad de perfiles solo agrega valor si hay confianza, debate genuino y decisión colectiva.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
         {/* Two donut charts side by side */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           {/* M1 — Nivel de necesidad */}

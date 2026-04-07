@@ -416,35 +416,43 @@ export default function ResultadoPage() {
               {/* Paragraph 1: M1 assessment */}
               <p className="text-sm text-gray-700 leading-relaxed">
                 {m1Pct >= 75
-                  ? "Tu empresa presenta una necesidad clara y urgente de formalizar un directorio. La combinación de tamaño, complejidad societaria y nivel de gobierno actual hacen que operar sin este órgano represente un riesgo real para el negocio."
+                  ? "Tu empresa presenta una necesidad clara y urgente de formalizar un directorio. La combinación de tamaño, complejidad societaria y nivel de gobierno actual hacen que operar sin este órgano represente un riesgo real para el negocio. Un directorio no es solo un órgano de control — es un socio estratégico que alterna entre liderar, acompañar y delegar según la situación."
                   : m1Pct >= 55
-                  ? "Tu empresa está en un momento de transición donde un directorio agregaría valor concreto. Las señales son claras: hay complejidad suficiente para justificar una estructura de gobierno más formal."
+                  ? "Tu empresa está en un momento de transición donde un directorio agregaría valor concreto como socio estratégico del CEO. Las señales son claras: hay complejidad suficiente para justificar una estructura de gobierno más formal que no solo supervise, sino que participe activamente en las decisiones clave."
                   : m1Pct >= 30
-                  ? "Tu empresa muestra señales tempranas de necesidad. Si bien no es urgente, hay factores que indican que en los próximos 12-18 meses sería estratégico comenzar a construir las bases de un directorio."
-                  : "En esta etapa, la empresa aún no reúne las condiciones para que un directorio formal agregue valor. Recomendamos enfocarse primero en profesionalizar la gestión interna."}
+                  ? "Tu empresa muestra señales tempranas de necesidad. Si bien no es urgente, hay factores que indican que en los próximos 12-18 meses sería estratégico comenzar a construir las bases de un directorio que funcione como verdadero socio estratégico."
+                  : "En esta etapa, la empresa aún no reúne las condiciones para que un directorio formal agregue valor. Recomendamos enfocarse primero en profesionalizar la gestión interna y construir la cultura de rendición de cuentas."}
               </p>
 
               {/* Paragraph 2: M2 concentration */}
               <p className="text-sm text-gray-700 leading-relaxed">
                 {m2Pct >= 60
-                  ? "El mapa de decisiones revela una concentración preocupante: la mayoría de las decisiones estratégicas recaen en una sola persona. Esto no solo es un riesgo operativo — es un riesgo patrimonial. Un directorio distribuiría esta carga de forma institucional."
+                  ? "El mapa de decisiones revela una concentración preocupante: la mayoría de las decisiones estratégicas recaen en una sola persona. Esto no solo es un riesgo operativo — es un riesgo patrimonial. Un directorio distribuiría esta carga de forma institucional, sabiendo cuándo liderar las decisiones y cuándo mantenerse al margen de lo operativo."
                   : m2Pct >= 40
-                  ? "Hay un nivel de concentración de decisiones que merece atención. Algunas decisiones clave ya están parcialmente delegadas, pero las más importantes siguen dependiendo del dueño. El directorio completaría esta transición."
-                  : "Las decisiones ya muestran un buen nivel de delegación. El directorio consolidaría estas buenas prácticas y agregaría una capa de supervisión estratégica."}
+                  ? "Hay un nivel de concentración de decisiones que merece atención. Algunas decisiones clave ya están parcialmente delegadas, pero las más importantes siguen dependiendo del dueño. El directorio completaría esta transición, definiendo con claridad qué decisiones le corresponden y cuáles deja en manos de la gerencia."
+                  : "Las decisiones ya muestran un buen nivel de delegación. El directorio consolidaría estas buenas prácticas y agregaría una capa de visión estratégica, enfocándose en acompañar las decisiones más complejas y mantenerse al margen de lo operativo."}
               </p>
 
-              {/* Paragraph 3: M3 top profile */}
+              {/* Paragraph 3: M3 top profile — board as team */}
               <p className="text-sm text-gray-700 leading-relaxed">
-                {`El primer perfil que recomendamos incorporar es un ${topProfile}. ${(PERFIL_JUSTIFICACIONES[topPerfiles[0]?.perfil] ?? '').split('.')[0]}. Este perfil debería ser la prioridad número uno al momento de conformar el directorio.`}
+                {`El primer perfil que recomendamos incorporar es un ${topProfile}. ${(PERFIL_JUSTIFICACIONES[topPerfiles[0]?.perfil] ?? '').split('.')[0]}. Pero recordá que la efectividad del directorio depende de cómo funciona como equipo — la diversidad de perfiles solo agrega valor real si hay confianza, debate genuino y decisión colectiva.`}
               </p>
 
               {/* Paragraph 4: M4 readiness */}
               <p className="text-sm text-gray-700 leading-relaxed">
                 {diagPct >= 80
-                  ? "La buena noticia es que tu empresa ya muestra disposición real al cambio. Las condiciones están dadas para iniciar el proceso de conformación del directorio en el corto plazo."
+                  ? "La buena noticia es que tu empresa ya muestra disposición real al cambio. Las condiciones están dadas para iniciar el proceso de conformación del directorio en el corto plazo. La clave es practicar la indagación antes que la recomendación: un buen directorio hace las preguntas correctas antes de dar su opinión."
                   : diagPct >= 50
-                  ? "Hay disposición al cambio, aunque con algunos puntos por resolver. Recomendamos trabajar en la apertura del CEO a la rendición de cuentas y en la separación formal de roles antes de arrancar."
-                  : "La disposición al cambio todavía es baja. Antes de conformar un directorio, es fundamental trabajar en la cultura de gobierno: reuniones periódicas, rendición de cuentas y apertura a perspectivas externas."}
+                  ? "Hay disposición al cambio, aunque con algunos puntos por resolver. Recomendamos trabajar en la apertura del CEO a la rendición de cuentas y en la separación formal de roles. El directorio debe poder preguntar antes de opinar — si el CEO no está listo para eso, conviene trabajarlo primero."
+                  : "La disposición al cambio todavía es baja. Antes de conformar un directorio, es fundamental trabajar en la cultura de gobierno: reuniones periódicas, rendición de cuentas y apertura a perspectivas externas. Un directorio solo funciona si el CEO lo ve como aliado, no como amenaza."}
+              </p>
+
+              {/* Paragraph 5: First 100 days */}
+              <p className="text-sm text-gray-700 leading-relaxed">
+                <strong className="text-gray-900">Los primeros 100 días son clave.</strong>{" "}
+                {m1Pct >= 55
+                  ? "En los primeros 3 meses después de conformar el directorio, enfocate en tres cosas: (1) definir el mapa de decisiones reservadas — qué lidera el directorio, qué acompaña y de qué se mantiene al margen; (2) establecer el paquete de información que la gerencia debe entregar antes de cada reunión; y (3) construir confianza entre los directores como equipo, con al menos una sesión dedicada a conocerse y alinear expectativas. Los directorios que fallan en los primeros 100 días rara vez se recuperan."
+                  : "Si bien todavía no es momento de formalizar un directorio, podés empezar a construir las bases: definir qué decisiones hoy son estratégicas y cuáles operativas, instalar reuniones periódicas de rendición de cuentas, y buscar una o dos personas de confianza con experiencia que te den perspectiva externa. Estos hábitos son los cimientos de un futuro directorio efectivo."}
               </p>
             </div>
           </div>
