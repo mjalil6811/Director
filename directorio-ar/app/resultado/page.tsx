@@ -61,8 +61,8 @@ function DonutChart({ conteos }: { conteos: { concentrada: number; parcial: numb
             strokeDasharray={`${a.dash} ${circ}`} strokeDashoffset={-a.offset}
             transform={`rotate(-90 ${cx} ${cy})`} strokeLinecap="round" />
         ))}
-        <text x={cx} y={cy - 6} textAnchor="middle" fontSize="18" fontWeight="700" fill="#111827">{concentracionPct}%</text>
-        <text x={cx} y={cy + 10} textAnchor="middle" fontSize="8" fill="#9ca3af">concentracion</text>
+        <text x={cx} y={cy - 6} textAnchor="middle" fontSize="18" fontWeight="700" fill="#1A1D26">{concentracionPct}%</text>
+        <text x={cx} y={cy + 10} textAnchor="middle" fontSize="8" fill="#6B7280">concentracion</text>
       </svg>
       <div className="flex flex-wrap gap-3 mt-2 justify-center">
         {segments.filter(s => s.count > 0).map(s => (
@@ -132,7 +132,7 @@ export default function ResultadoPage() {
 
   if (!ready) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="min-h-screen flex items-center justify-center bg-[#FAFBFC]">
         <div className="text-gray-400 text-sm">Cargando...</div>
       </div>
     );
@@ -190,32 +190,40 @@ export default function ResultadoPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col">
+    <div className="min-h-screen bg-[#FAFBFC] flex flex-col">
+      {/* Gradient header bar */}
+      <div className="h-1.5 w-full bg-gradient-to-r from-[#534AB7] via-[#7C6FDB] to-[#534AB7]" />
+
       {/* Header */}
-      <header className="bg-white border-b border-gray-200 px-4 py-3 flex items-center gap-3">
-        <button onClick={() => router.push('/dashboard')} className="flex items-center gap-1 text-sm text-gray-500 hover:text-gray-900 transition-colors">
+      <header className="bg-white/80 backdrop-blur-md border-b border-[#E5E7EB] px-4 py-3 flex items-center gap-3 sticky top-0 z-20">
+        <button onClick={() => router.push('/dashboard')} className="flex items-center justify-center w-8 h-8 rounded-lg text-gray-500 hover:text-gray-900 hover:bg-gray-100">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <path d="M19 12H5M5 12l7 7M5 12l7-7" />
           </svg>
         </button>
-        <div className="flex items-center gap-2 flex-1">
-          <div className="w-6 h-6 rounded-lg bg-[#534AB7] flex items-center justify-center">
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+        <div className="flex items-center gap-2.5 flex-1">
+          <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-[#534AB7] to-[#7C6FDB] flex items-center justify-center shadow-sm">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
               <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" /><polyline points="22 4 12 14.01 9 11.01" />
             </svg>
           </div>
-          <span className="text-sm font-semibold text-gray-900">Resultado final</span>
+          <span className="text-sm font-bold text-gray-900 tracking-tight">Resultado final</span>
         </div>
+        {nombre && (
+          <span className="text-xs text-gray-400 font-medium">{nombre}</span>
+        )}
       </header>
 
-      <main className="flex-1 px-4 py-6 max-w-2xl mx-auto w-full space-y-6">
+      <main className="flex-1 px-4 py-8 max-w-2xl mx-auto w-full space-y-6">
 
         {/* Section 1 — Score M1 */}
-        <div className="border border-gray-200 rounded-xl bg-white p-6 text-center">
-          {nombre && <p className="text-xs text-gray-400 uppercase tracking-wider mb-3">{nombre}</p>}
-          <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">Necesidad de directorio</p>
-          <p className={`text-5xl font-bold ${levelColor} mb-2`}>{m1Pct}%</p>
-          <div className={`inline-flex items-center px-3 py-1.5 rounded-full text-sm font-semibold ${levelBg} mb-3`}>
+        <div className="border border-[#E5E7EB] rounded-2xl bg-white p-8 text-center shadow-sm">
+          {nombre && <p className="text-xs text-gray-400 uppercase tracking-wider mb-4 font-medium">{nombre}</p>}
+          <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">Necesidad de directorio</p>
+          <p className="text-6xl sm:text-7xl font-bold tracking-tight mb-3">
+            <span className="bg-gradient-to-r from-[#534AB7] to-[#7C6FDB] bg-clip-text text-transparent">{m1Pct}%</span>
+          </p>
+          <div className={`inline-flex items-center px-4 py-2 rounded-full text-sm font-semibold ${levelBg} mb-4`}>
             {m1Label}
           </div>
           <p className="text-sm text-gray-500 max-w-md mx-auto leading-relaxed">{m1Desc}</p>
@@ -224,31 +232,31 @@ export default function ResultadoPage() {
         {/* 4 Visual indicators grid */}
         <div className="grid grid-cols-2 gap-3">
           {/* Indicator 1: Nivel de necesidad (M1) */}
-          <div className="border border-gray-200 rounded-xl bg-white p-4 flex flex-col items-center">
+          <div className="border border-[#E5E7EB] rounded-2xl bg-white p-4 flex flex-col items-center shadow-sm hover:shadow-md transition-shadow">
             <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2 text-center">Nivel de necesidad</p>
             <svg width="80" height="50" viewBox="0 0 120 70">
               <path d="M 10 60 A 50 50 0 0 1 110 60" fill="none" stroke="#f3f4f6" strokeWidth="10" strokeLinecap="round" />
               <path d="M 10 60 A 50 50 0 0 1 110 60" fill="none" stroke={m1Pct >= 75 ? '#ef4444' : m1Pct >= 55 ? '#534AB7' : m1Pct >= 30 ? '#eab308' : '#9ca3af'} strokeWidth="10" strokeLinecap="round"
                 strokeDasharray={`${(m1Pct / 100) * 157} 157`} />
-              <text x="60" y="58" textAnchor="middle" fontSize="16" fontWeight="700" fill="#111827">{m1Pct}%</text>
+              <text x="60" y="58" textAnchor="middle" fontSize="16" fontWeight="700" fill="#1A1D26">{m1Pct}%</text>
             </svg>
             <p className="text-xs text-gray-500 mt-1 text-center">Módulo 1</p>
           </div>
 
           {/* Indicator 2: Concentración de decisiones (M2) */}
-          <div className="border border-gray-200 rounded-xl bg-white p-4 flex flex-col items-center">
+          <div className="border border-[#E5E7EB] rounded-2xl bg-white p-4 flex flex-col items-center shadow-sm hover:shadow-md transition-shadow">
             <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2 text-center">Concentración</p>
             <svg width="80" height="50" viewBox="0 0 120 70">
               <path d="M 10 60 A 50 50 0 0 1 110 60" fill="none" stroke="#f3f4f6" strokeWidth="10" strokeLinecap="round" />
               <path d="M 10 60 A 50 50 0 0 1 110 60" fill="none" stroke={m2Pct >= 60 ? '#ef4444' : m2Pct >= 40 ? '#eab308' : '#22c55e'} strokeWidth="10" strokeLinecap="round"
                 strokeDasharray={`${(m2Pct / 100) * 157} 157`} />
-              <text x="60" y="58" textAnchor="middle" fontSize="16" fontWeight="700" fill="#111827">{m2Pct}%</text>
+              <text x="60" y="58" textAnchor="middle" fontSize="16" fontWeight="700" fill="#1A1D26">{m2Pct}%</text>
             </svg>
             <p className="text-xs text-gray-500 mt-1 text-center">Módulo 2</p>
           </div>
 
           {/* Indicator 3: Perfil más crítico (M3) */}
-          <div className="border border-gray-200 rounded-xl bg-white p-4">
+          <div className="border border-[#E5E7EB] rounded-2xl bg-white p-4 shadow-sm hover:shadow-md transition-shadow">
             <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2 text-center">Perfil más crítico</p>
             <p className="text-sm font-bold text-[#534AB7] text-center mb-2">{topProfile}</p>
             {topPerfiles[0] && (() => {
@@ -258,7 +266,7 @@ export default function ResultadoPage() {
               return (
                 <div>
                   <div className="w-full h-2 bg-gray-100 rounded-full overflow-hidden">
-                    <div className="h-full rounded-full bg-[#534AB7] transition-all duration-500" style={{ width: `${topPct}%` }} />
+                    <div className="h-full rounded-full bg-gradient-to-r from-[#534AB7] to-[#7C6FDB] transition-all duration-500" style={{ width: `${topPct}%` }} />
                   </div>
                   <p className="text-xs text-gray-500 text-center mt-1">{topPct}%</p>
                 </div>
@@ -267,13 +275,13 @@ export default function ResultadoPage() {
           </div>
 
           {/* Indicator 4: Disposición al cambio (M4) */}
-          <div className="border border-gray-200 rounded-xl bg-white p-4 flex flex-col items-center">
+          <div className="border border-[#E5E7EB] rounded-2xl bg-white p-4 flex flex-col items-center shadow-sm hover:shadow-md transition-shadow">
             <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2 text-center">Disposición</p>
             <svg width="80" height="50" viewBox="0 0 120 70">
               <path d="M 10 60 A 50 50 0 0 1 110 60" fill="none" stroke="#f3f4f6" strokeWidth="10" strokeLinecap="round" />
               <path d="M 10 60 A 50 50 0 0 1 110 60" fill="none" stroke={diagPct >= 80 ? '#22c55e' : diagPct >= 50 ? '#eab308' : '#ef4444'} strokeWidth="10" strokeLinecap="round"
                 strokeDasharray={`${(diagPct / 100) * 157} 157`} />
-              <text x="60" y="58" textAnchor="middle" fontSize="16" fontWeight="700" fill="#111827">{diagPct}%</text>
+              <text x="60" y="58" textAnchor="middle" fontSize="16" fontWeight="700" fill="#1A1D26">{diagPct}%</text>
             </svg>
             <p className="text-xs text-gray-500 mt-1 text-center">Módulo 4</p>
           </div>
@@ -281,7 +289,7 @@ export default function ResultadoPage() {
 
         {/* Top 2 perfiles (M3) — right after indicators */}
         {topPerfiles.length > 0 && (
-          <div className="border border-gray-200 rounded-xl bg-white overflow-hidden">
+          <div className="border border-[#E5E7EB] rounded-2xl bg-white overflow-hidden shadow-sm">
             <div className="px-5 pt-5 pb-3 border-b border-gray-100">
               <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Los 2 perfiles mas criticos para tu directorio</p>
             </div>
@@ -293,10 +301,10 @@ export default function ResultadoPage() {
                   ? 'bg-orange-100 text-orange-700'
                   : 'bg-yellow-100 text-yellow-800';
                 return (
-                  <div key={p.perfil} className="border border-gray-200 rounded-xl p-4">
+                  <div key={p.perfil} className="border border-[#E5E7EB] rounded-xl p-4 hover:shadow-sm transition-shadow">
                     <div className="flex items-center justify-between mb-2">
                       <div className="flex items-center gap-2">
-                        <span className="w-6 h-6 rounded-full bg-[#534AB7] text-white text-xs font-bold flex items-center justify-center">{i + 1}</span>
+                        <span className="w-6 h-6 rounded-full bg-gradient-to-br from-[#534AB7] to-[#7C6FDB] text-white text-xs font-bold flex items-center justify-center">{i + 1}</span>
                         <span className="text-sm font-semibold text-gray-900">{PERFIL_LABELS[p.perfil] ?? p.perfil}</span>
                       </div>
                       <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${urgColor}`}>
@@ -314,7 +322,7 @@ export default function ResultadoPage() {
         )}
 
         {/* Mapa de decisiones (M2) — without tensions */}
-        <div className="border border-gray-200 rounded-xl bg-white overflow-hidden">
+        <div className="border border-[#E5E7EB] rounded-2xl bg-white overflow-hidden shadow-sm">
           <div className="px-5 pt-5 pb-3 border-b border-gray-100">
             <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Mapa de decisiones — Como se toman las decisiones hoy</p>
           </div>
@@ -347,20 +355,20 @@ export default function ResultadoPage() {
         </div>
 
         {/* Dinamica (M4) */}
-        <div className="border border-gray-200 rounded-xl bg-white overflow-hidden">
+        <div className="border border-[#E5E7EB] rounded-2xl bg-white overflow-hidden shadow-sm">
           <div className="px-5 pt-5 pb-3 border-b border-gray-100">
             <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Dinamica y funcionamiento</p>
           </div>
           <div className="px-5 py-4 space-y-4">
             {/* Frecuencia */}
-            <div className="flex items-center justify-between p-3 bg-purple-50 rounded-xl">
+            <div className="flex items-center justify-between p-3 bg-[#EEEDFE] rounded-xl">
               <span className="text-sm text-gray-700">Frecuencia recomendada</span>
               <span className="text-sm font-bold text-[#534AB7]">{freqText}</span>
             </div>
 
             {/* Autoevaluacion score */}
             {m4diag && (
-              <div className="flex items-center justify-between p-3 bg-gray-50 rounded-xl">
+              <div className="flex items-center justify-between p-3 bg-[#FAFBFC] rounded-xl border border-[#E5E7EB]">
                 <span className="text-sm text-gray-700">Disposicion</span>
                 <span className={`text-sm font-bold ${m4ReadyColor}`}>{m4ReadyMsg}</span>
               </div>
@@ -400,43 +408,45 @@ export default function ResultadoPage() {
           </div>
         </div>
 
-        {/* Diagnóstico y sugerencias */}
-        <div className="border-l-4 border-[#534AB7] bg-white rounded-r-xl p-5">
-          <p className="text-xs font-semibold text-[#534AB7] uppercase tracking-wider mb-3">Diagnóstico y sugerencias</p>
-          <div className="space-y-3">
-            {/* Paragraph 1: M1 assessment */}
-            <p className="text-sm text-gray-700 leading-relaxed">
-              {m1Pct >= 75
-                ? "Tu empresa presenta una necesidad clara y urgente de formalizar un directorio. La combinación de tamaño, complejidad societaria y nivel de gobierno actual hacen que operar sin este órgano represente un riesgo real para el negocio."
-                : m1Pct >= 55
-                ? "Tu empresa está en un momento de transición donde un directorio agregaría valor concreto. Las señales son claras: hay complejidad suficiente para justificar una estructura de gobierno más formal."
-                : m1Pct >= 30
-                ? "Tu empresa muestra señales tempranas de necesidad. Si bien no es urgente, hay factores que indican que en los próximos 12-18 meses sería estratégico comenzar a construir las bases de un directorio."
-                : "En esta etapa, la empresa aún no reúne las condiciones para que un directorio formal agregue valor. Recomendamos enfocarse primero en profesionalizar la gestión interna."}
-            </p>
+        {/* Diagnostico y sugerencias */}
+        <div className="border border-[#E5E7EB] rounded-2xl overflow-hidden shadow-sm">
+          <div className="border-l-4 border-[#534AB7] bg-[#FDFCFF] p-6">
+            <p className="text-xs font-semibold text-[#534AB7] uppercase tracking-wider mb-4">Diagnóstico y sugerencias</p>
+            <div className="space-y-4">
+              {/* Paragraph 1: M1 assessment */}
+              <p className="text-sm text-gray-700 leading-relaxed">
+                {m1Pct >= 75
+                  ? "Tu empresa presenta una necesidad clara y urgente de formalizar un directorio. La combinación de tamaño, complejidad societaria y nivel de gobierno actual hacen que operar sin este órgano represente un riesgo real para el negocio."
+                  : m1Pct >= 55
+                  ? "Tu empresa está en un momento de transición donde un directorio agregaría valor concreto. Las señales son claras: hay complejidad suficiente para justificar una estructura de gobierno más formal."
+                  : m1Pct >= 30
+                  ? "Tu empresa muestra señales tempranas de necesidad. Si bien no es urgente, hay factores que indican que en los próximos 12-18 meses sería estratégico comenzar a construir las bases de un directorio."
+                  : "En esta etapa, la empresa aún no reúne las condiciones para que un directorio formal agregue valor. Recomendamos enfocarse primero en profesionalizar la gestión interna."}
+              </p>
 
-            {/* Paragraph 2: M2 concentration */}
-            <p className="text-sm text-gray-700 leading-relaxed">
-              {m2Pct >= 60
-                ? "El mapa de decisiones revela una concentración preocupante: la mayoría de las decisiones estratégicas recaen en una sola persona. Esto no solo es un riesgo operativo — es un riesgo patrimonial. Un directorio distribuiría esta carga de forma institucional."
-                : m2Pct >= 40
-                ? "Hay un nivel de concentración de decisiones que merece atención. Algunas decisiones clave ya están parcialmente delegadas, pero las más importantes siguen dependiendo del dueño. El directorio completaría esta transición."
-                : "Las decisiones ya muestran un buen nivel de delegación. El directorio consolidaría estas buenas prácticas y agregaría una capa de supervisión estratégica."}
-            </p>
+              {/* Paragraph 2: M2 concentration */}
+              <p className="text-sm text-gray-700 leading-relaxed">
+                {m2Pct >= 60
+                  ? "El mapa de decisiones revela una concentración preocupante: la mayoría de las decisiones estratégicas recaen en una sola persona. Esto no solo es un riesgo operativo — es un riesgo patrimonial. Un directorio distribuiría esta carga de forma institucional."
+                  : m2Pct >= 40
+                  ? "Hay un nivel de concentración de decisiones que merece atención. Algunas decisiones clave ya están parcialmente delegadas, pero las más importantes siguen dependiendo del dueño. El directorio completaría esta transición."
+                  : "Las decisiones ya muestran un buen nivel de delegación. El directorio consolidaría estas buenas prácticas y agregaría una capa de supervisión estratégica."}
+              </p>
 
-            {/* Paragraph 3: M3 top profile */}
-            <p className="text-sm text-gray-700 leading-relaxed">
-              {`El primer perfil que recomendamos incorporar es un ${topProfile}. ${(PERFIL_JUSTIFICACIONES[topPerfiles[0]?.perfil] ?? '').split('.')[0]}. Este perfil debería ser la prioridad número uno al momento de conformar el directorio.`}
-            </p>
+              {/* Paragraph 3: M3 top profile */}
+              <p className="text-sm text-gray-700 leading-relaxed">
+                {`El primer perfil que recomendamos incorporar es un ${topProfile}. ${(PERFIL_JUSTIFICACIONES[topPerfiles[0]?.perfil] ?? '').split('.')[0]}. Este perfil debería ser la prioridad número uno al momento de conformar el directorio.`}
+              </p>
 
-            {/* Paragraph 4: M4 readiness */}
-            <p className="text-sm text-gray-700 leading-relaxed">
-              {diagPct >= 80
-                ? "La buena noticia es que tu empresa ya muestra disposición real al cambio. Las condiciones están dadas para iniciar el proceso de conformación del directorio en el corto plazo."
-                : diagPct >= 50
-                ? "Hay disposición al cambio, aunque con algunos puntos por resolver. Recomendamos trabajar en la apertura del CEO a la rendición de cuentas y en la separación formal de roles antes de arrancar."
-                : "La disposición al cambio todavía es baja. Antes de conformar un directorio, es fundamental trabajar en la cultura de gobierno: reuniones periódicas, rendición de cuentas y apertura a perspectivas externas."}
-            </p>
+              {/* Paragraph 4: M4 readiness */}
+              <p className="text-sm text-gray-700 leading-relaxed">
+                {diagPct >= 80
+                  ? "La buena noticia es que tu empresa ya muestra disposición real al cambio. Las condiciones están dadas para iniciar el proceso de conformación del directorio en el corto plazo."
+                  : diagPct >= 50
+                  ? "Hay disposición al cambio, aunque con algunos puntos por resolver. Recomendamos trabajar en la apertura del CEO a la rendición de cuentas y en la separación formal de roles antes de arrancar."
+                  : "La disposición al cambio todavía es baja. Antes de conformar un directorio, es fundamental trabajar en la cultura de gobierno: reuniones periódicas, rendición de cuentas y apertura a perspectivas externas."}
+              </p>
+            </div>
           </div>
         </div>
 
@@ -444,7 +454,7 @@ export default function ResultadoPage() {
         <button
           onClick={handleGeneratePDF}
           disabled={pdfLoading}
-          className="w-full py-4 bg-[#534AB7] hover:bg-[#3C3489] text-white rounded-xl text-sm font-semibold transition-colors flex items-center justify-center gap-2"
+          className="w-full py-4 bg-gradient-to-r from-[#534AB7] to-[#6359C7] hover:from-[#3C3489] hover:to-[#534AB7] text-white rounded-xl text-sm font-semibold shadow-sm hover:shadow-md flex items-center justify-center gap-2"
         >
           {pdfLoading ? (
             <>
@@ -467,12 +477,25 @@ export default function ResultadoPage() {
 
         {/* Navigation */}
         <div className="flex gap-3">
-          <button onClick={() => router.push('/dashboard')} className="flex-1 py-2.5 border border-gray-200 rounded-xl text-sm font-medium text-gray-600 hover:bg-gray-50">
+          <button onClick={() => router.push('/dashboard')} className="flex-1 py-2.5 border border-[#E5E7EB] rounded-xl text-sm font-medium text-gray-600 hover:bg-white hover:shadow-sm bg-white/50">
             Ver dashboard
           </button>
-          <button onClick={() => router.push('/')} className="flex-1 py-2.5 border border-gray-200 rounded-xl text-sm font-medium text-gray-600 hover:bg-gray-50">
+          <button onClick={() => router.push('/')} className="flex-1 py-2.5 border border-[#E5E7EB] rounded-xl text-sm font-medium text-gray-600 hover:bg-white hover:shadow-sm bg-white/50">
             Volver al inicio
           </button>
+        </div>
+
+        {/* Branding footer */}
+        <div className="text-center pt-6 pb-4 border-t border-gray-100 mt-4">
+          <div className="flex items-center justify-center gap-2 mb-1">
+            <div className="w-5 h-5 rounded-md bg-gradient-to-br from-[#534AB7] to-[#7C6FDB] flex items-center justify-center">
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <rect x="2" y="7" width="20" height="14" rx="2" /><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2" />
+              </svg>
+            </div>
+            <span className="text-xs font-semibold text-gray-400 tracking-wide">Directorio AR</span>
+          </div>
+          <p className="text-xs text-gray-300">Gobierno Corporativo</p>
         </div>
       </main>
     </div>

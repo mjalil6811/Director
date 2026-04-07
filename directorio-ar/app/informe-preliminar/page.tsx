@@ -31,11 +31,11 @@ function DonutChart({ segments, centerText, centerLabel, size = 150 }: {
           return (
             <circle key={i} cx={cx} cy={cy} r={r} fill="none" stroke={s.color} strokeWidth={strokeW}
               strokeDasharray={`${dash} ${circ - dash}`} strokeDashoffset={-currentOffset}
-              transform={`rotate(-90 ${cx} ${cy})`} />
+              transform={`rotate(-90 ${cx} ${cy})`} strokeLinecap="round" />
           );
         })}
-        <text x={cx} y={cy - 6} textAnchor="middle" fontSize={size * 0.14} fontWeight="700" fill="#111827">{centerText}</text>
-        <text x={cx} y={cy + 12} textAnchor="middle" fontSize={size * 0.065} fill="#9ca3af">{centerLabel}</text>
+        <text x={cx} y={cy - 6} textAnchor="middle" fontSize={size * 0.14} fontWeight="700" fill="#1A1D26">{centerText}</text>
+        <text x={cx} y={cy + 12} textAnchor="middle" fontSize={size * 0.065} fill="#6B7280">{centerLabel}</text>
       </svg>
       <div className="flex flex-wrap gap-x-4 gap-y-1.5 mt-2 justify-center">
         {segments.filter(s => s.value > 0).map((s, i) => (
@@ -112,21 +112,24 @@ export default function InformePreliminar() {
   const nivelColor = nivelKey === 'prematuro' ? '#6B7280' : nivelKey === 'temprano' ? '#D97706' : nivelKey === 'transicion' ? '#534AB7' : '#DC2626';
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-[#FAFBFC]">
+      {/* Gradient header bar */}
+      <div className="h-1.5 w-full bg-gradient-to-r from-[#534AB7] via-[#7C6FDB] to-[#534AB7]" />
+
       {/* Header */}
-      <header className="bg-white border-b border-gray-200 px-4 py-4">
+      <header className="bg-white/80 backdrop-blur-md border-b border-[#E5E7EB] px-4 py-4 sticky top-0 z-20">
         <div className="max-w-2xl mx-auto flex items-center gap-3">
-          <button onClick={() => router.push('/')} className="p-1 rounded-lg hover:bg-gray-100">
+          <button onClick={() => router.push('/')} className="flex items-center justify-center w-8 h-8 rounded-lg hover:bg-gray-100 text-gray-500 hover:text-gray-900">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <polyline points="15 18 9 12 15 6" />
             </svg>
           </button>
-          <div className="w-7 h-7 rounded-lg bg-[#534AB7] flex items-center justify-center">
+          <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-[#534AB7] to-[#7C6FDB] flex items-center justify-center shadow-sm">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
               <rect x="2" y="7" width="20" height="14" rx="2" /><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2" />
             </svg>
           </div>
-          <span className="text-sm font-bold text-gray-900">Informe preliminar</span>
+          <span className="text-sm font-bold text-gray-900 tracking-tight">Informe preliminar</span>
           <span className="text-xs text-gray-400 ml-auto">Módulos 1 y 2 completados</span>
         </div>
       </header>
@@ -135,20 +138,23 @@ export default function InformePreliminar() {
 
         {/* Title */}
         <div className="text-center mb-2">
-          <h1 className="text-xl font-bold text-gray-900 mb-1">¿Tu empresa necesita un directorio?</h1>
+          <h1 className="text-2xl font-bold text-gray-900 mb-1 tracking-tight">
+            ¿Tu empresa necesita un{' '}
+            <span className="bg-gradient-to-r from-[#534AB7] to-[#7C6FDB] bg-clip-text text-transparent">directorio</span>?
+          </h1>
           <p className="text-sm text-gray-400">Resultado consolidado de los módulos 1 y 2</p>
         </div>
 
         {/* Combined verdict */}
-        <div className="border-2 rounded-xl p-6 text-center" style={{ borderColor: diagColor, backgroundColor: diagBg }}>
-          <p className="text-xs font-semibold uppercase tracking-wider mb-2" style={{ color: diagColor }}>Diagnóstico preliminar</p>
-          <p className="text-2xl font-bold" style={{ color: diagColor }}>{diagnostico}</p>
+        <div className="border-2 rounded-2xl p-8 text-center shadow-sm" style={{ borderColor: diagColor, backgroundColor: diagBg }}>
+          <p className="text-xs font-semibold uppercase tracking-wider mb-3" style={{ color: diagColor }}>Diagnóstico preliminar</p>
+          <p className="text-3xl sm:text-4xl font-bold tracking-tight" style={{ color: diagColor }}>{diagnostico}</p>
         </div>
 
         {/* Two donut charts side by side */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           {/* M1 — Nivel de necesidad */}
-          <div className="border border-gray-200 rounded-xl bg-white p-5">
+          <div className="border border-[#E5E7EB] rounded-2xl bg-white p-5 shadow-sm hover:shadow-md transition-shadow">
             <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-4 text-center">Nivel de necesidad</p>
             <DonutChart
               segments={[
@@ -161,7 +167,7 @@ export default function InformePreliminar() {
           </div>
 
           {/* M2 — Concentración de decisiones */}
-          <div className="border border-gray-200 rounded-xl bg-white p-5">
+          <div className="border border-[#E5E7EB] rounded-2xl bg-white p-5 shadow-sm hover:shadow-md transition-shadow">
             <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-4 text-center">Concentración de decisiones</p>
             <DonutChart
               segments={[
@@ -177,7 +183,7 @@ export default function InformePreliminar() {
         </div>
 
         {/* M1 dimensions as bars */}
-        <div className="border border-gray-200 rounded-xl bg-white p-5">
+        <div className="border border-[#E5E7EB] rounded-2xl bg-white p-5 shadow-sm">
           <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-4">Detalle por dimensión</p>
           <div className="space-y-3">
             {dims.map(d => (
@@ -192,7 +198,7 @@ export default function InformePreliminar() {
         </div>
 
         {/* M2 decision distribution bars */}
-        <div className="border border-gray-200 rounded-xl bg-white p-5">
+        <div className="border border-[#E5E7EB] rounded-2xl bg-white p-5 shadow-sm">
           <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-4">Distribución de decisiones</p>
           <div className="space-y-3">
             <HBar label="Concentrada en el dueño" pct={Math.round((m2.conteos.concentrada / 10) * 100)} color="#f87171" />
@@ -204,11 +210,11 @@ export default function InformePreliminar() {
 
         {/* Top 3 tensions */}
         {m2.tensiones.length > 0 && (
-          <div className="border border-gray-200 rounded-xl bg-white p-5">
+          <div className="border border-[#E5E7EB] rounded-2xl bg-white p-5 shadow-sm">
             <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">Principales tensiones detectadas</p>
             <div className="space-y-3">
               {m2.tensiones.slice(0, 3).map(t => (
-                <div key={t.pregunta} className="flex items-start gap-3 p-3 rounded-lg bg-purple-50 border border-purple-100">
+                <div key={t.pregunta} className="flex items-start gap-3 p-3 rounded-xl bg-[#EEEDFE] border border-[#DDD9FE]">
                   <span className="w-5 h-5 rounded-full bg-[#534AB7] text-white text-xs font-bold flex items-center justify-center shrink-0 mt-0.5">
                     {t.pregunta}
                   </span>
@@ -220,13 +226,13 @@ export default function InformePreliminar() {
         )}
 
         {/* CTA */}
-        <div className="border border-gray-200 rounded-xl bg-white p-6 text-center">
+        <div className="border border-[#E5E7EB] rounded-2xl bg-white p-6 text-center shadow-sm">
           <p className="text-sm text-gray-500 mb-4">
             Ahora que sabés que tu empresa se beneficiaría de un directorio, el siguiente paso es definir <strong>qué perfiles necesitás</strong>.
           </p>
           <button
             onClick={() => router.push('/modulo/3')}
-            className="w-full py-3 px-4 bg-[#534AB7] hover:bg-[#3C3489] text-white font-semibold rounded-xl transition-colors text-sm"
+            className="w-full py-3.5 px-4 bg-gradient-to-r from-[#534AB7] to-[#6359C7] hover:from-[#3C3489] hover:to-[#534AB7] text-white font-semibold rounded-xl shadow-sm hover:shadow-md text-sm"
           >
             Continuar — Definir perfiles del directorio →
           </button>
@@ -234,10 +240,15 @@ export default function InformePreliminar() {
 
         <button
           onClick={() => router.push('/')}
-          className="w-full py-2 text-gray-400 text-xs hover:text-gray-600 transition-colors"
+          className="w-full py-2 text-gray-400 text-xs hover:text-gray-600"
         >
           Volver al inicio
         </button>
+
+        {/* Powered by footer */}
+        <div className="text-center pt-4 pb-2 border-t border-gray-100">
+          <p className="text-xs text-gray-300 font-medium tracking-wide">Directorio AR · Gobierno Corporativo</p>
+        </div>
       </main>
     </div>
   );
