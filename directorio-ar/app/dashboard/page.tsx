@@ -89,16 +89,20 @@ export default function DashboardPage() {
   const completedModules = [!!m1, !!m2, !!m3, !!(m4freq || m4diag)].filter(Boolean).length;
   const allComplete = completedModules === 4;
 
+  // Convert M1 percentage to clear recommendation
+  function getRecomendacion(pct: number): { label: string; badge: string } {
+    if (pct >= 75) return { label: 'Crear directorio con urgencia', badge: 'bg-red-100 text-red-700' };
+    if (pct >= 55) return { label: 'Altamente recomendado', badge: 'bg-orange-100 text-orange-700' };
+    if (pct >= 30) return { label: 'Recomendado', badge: 'bg-yellow-100 text-yellow-800' };
+    return { label: 'Poco recomendado en esta etapa', badge: 'bg-gray-100 text-gray-600' };
+  }
+
   const levelBadge = (nivel: string) => {
     if (!nivel) return 'bg-gray-100 text-gray-600';
-    if (nivel === 'Directorio prematuro') return 'bg-gray-100 text-gray-600';
-    if (nivel === 'Señales tempranas') return 'bg-yellow-100 text-yellow-800';
-    if (nivel === 'Momento de transición') return 'bg-purple-100 text-purple-700';
-    if (nivel === 'Necesidad urgente') return 'bg-red-100 text-red-700';
-    if (nivel.includes('sana') || nivel.includes('Alta')) return 'bg-green-100 text-green-700';
-    if (nivel.includes('construcción') || nivel.includes('Buena')) return 'bg-yellow-100 text-yellow-800';
+    if (nivel.includes('sana') || nivel.includes('Alta') || nivel.includes('listo')) return 'bg-green-100 text-green-700';
+    if (nivel.includes('construcción') || nivel.includes('Buena') || nivel.includes('Casi')) return 'bg-yellow-100 text-yellow-800';
     if (nivel.includes('serias') || nivel.includes('parcial')) return 'bg-orange-100 text-orange-700';
-    if (nivel.includes('crítica') || nivel.includes('Baja')) return 'bg-red-100 text-red-700';
+    if (nivel.includes('crítica') || nivel.includes('Baja') || nivel.includes('Todav')) return 'bg-red-100 text-red-700';
     return 'bg-purple-100 text-purple-700';
   };
 
@@ -196,14 +200,17 @@ export default function DashboardPage() {
               {m1 ? 'Revisar' : 'Completar'}
             </button>
           </div>
-          {m1 ? (
-            <>
-              <ProgressBar percentage={m1.porcentaje ?? 0} label={`${m1.porcentaje}%`} />
-              <div className={`inline-flex mt-2 items-center px-2.5 py-1 rounded-full text-xs font-semibold ${levelBadge(m1.nivel)}`}>
-                {m1.nivel}
-              </div>
-            </>
-          ) : (
+          {m1 ? (() => {
+            const rec = getRecomendacion(m1.porcentaje ?? 0);
+            return (
+              <>
+                <ProgressBar percentage={m1.porcentaje ?? 0} label={`${m1.porcentaje}%`} />
+                <div className={`inline-flex mt-2 items-center px-2.5 py-1 rounded-full text-xs font-semibold ${rec.badge}`}>
+                  {rec.label}
+                </div>
+              </>
+            );
+          })() : (
             <p className="text-xs text-gray-400">No completado</p>
           )}
         </div>
