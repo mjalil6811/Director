@@ -237,6 +237,47 @@ export default function DashboardPage() {
           )}
         </div>
 
+        {/* Resultado parcial — after M1 + M2 */}
+        {m1 && m2 && (() => {
+          const m1Pct = m1.porcentaje ?? 0;
+          const m2Concentration = m2.porcentaje ?? 0;
+          let diagnostico: string;
+          let diagnosticoColor: string;
+          if (m1Pct >= 55 && m2Concentration >= 50) {
+            diagnostico = "Altamente recomendado";
+            diagnosticoColor = "text-red-700";
+          } else if (m1Pct >= 30 || m2Concentration >= 30) {
+            diagnostico = "Recomendado con condiciones";
+            diagnosticoColor = "text-yellow-700";
+          } else {
+            diagnostico = "Evaluar más adelante";
+            diagnosticoColor = "text-gray-600";
+          }
+          return (
+            <div className="border-2 border-[#534AB7] rounded-xl bg-white p-5">
+              <p className="text-xs font-semibold text-[#534AB7] uppercase tracking-wider mb-4">
+                Resultado parcial — ¿Necesitás un directorio?
+              </p>
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <div className="text-center p-3 bg-purple-50 rounded-xl">
+                  <p className="text-xs text-gray-500 mb-1">Nivel de necesidad</p>
+                  <p className="text-2xl font-bold text-[#534AB7]">{m1Pct}%</p>
+                  <p className="text-xs font-semibold text-gray-600 mt-0.5">{m1.nivel}</p>
+                </div>
+                <div className="text-center p-3 bg-purple-50 rounded-xl">
+                  <p className="text-xs text-gray-500 mb-1">Mapa de tensiones</p>
+                  <p className="text-2xl font-bold text-[#534AB7]">{m2Concentration}%</p>
+                  <p className="text-xs font-semibold text-gray-600 mt-0.5">Concentración</p>
+                </div>
+                <div className="text-center p-3 bg-purple-50 rounded-xl">
+                  <p className="text-xs text-gray-500 mb-1">Diagnóstico preliminar</p>
+                  <p className={`text-sm font-bold mt-1 ${diagnosticoColor}`}>{diagnostico}</p>
+                </div>
+              </div>
+            </div>
+          );
+        })()}
+
         {/* M3 */}
         <div className="border border-gray-200 rounded-xl bg-white p-4">
           <div className="flex items-center justify-between mb-3">

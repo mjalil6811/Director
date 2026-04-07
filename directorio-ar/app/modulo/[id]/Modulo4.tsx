@@ -53,55 +53,48 @@ function AgendaBlock({ number, title, time, content, nota }: { number: number; t
   );
 }
 
-const TENSIONES = [
+const PRACTICA_ITEMS = [
   {
     titulo: "Micro-gestión encubierta",
-    frecuencia: "Muy frecuente",
-    descripcion: "El directorio opina sobre decisiones operativas que corresponden a la gerencia.",
-    contexto: "En Argentina el dueño-director usa el directorio como extensión de su rol ejecutivo.",
-    solucion: "Mapa de decisiones reservadas.",
+    loQuePasa: "El directorio opina sobre decisiones operativas que corresponden a la gerencia. En Argentina el dueño-director usa el directorio como extensión de su rol ejecutivo.",
+    loQueDeberiaPasar: "El directorio se enfoca en decisiones estratégicas y reservadas. La gerencia opera con autonomía dentro de los límites aprobados.",
+    comoLograrlo: "Definir un mapa de decisiones reservadas claro. Todo lo que no está en ese mapa es responsabilidad de la gerencia.",
   },
   {
     titulo: "Información filtrada",
-    frecuencia: "Frecuente",
-    descripcion: "La gerencia filtra qué información llega al directorio.",
-    contexto: "En Argentina la información financiera real solo circula entre los dueños.",
-    solucion: "Paquete de información estándar 5 días antes de cada reunión.",
+    loQuePasa: "La gerencia filtra qué información llega al directorio. En Argentina la información financiera real solo circula entre los dueños.",
+    loQueDeberiaPasar: "El directorio recibe un paquete de información completo y estandarizado antes de cada reunión.",
+    comoLograrlo: "Acordar un formato de paquete de información y enviarlo 5 días hábiles antes de cada reunión. Sin excepciones.",
   },
   {
     titulo: "El CEO que evita al directorio",
-    frecuencia: "Frecuente",
-    descripcion: "Ve al directorio como una carga.",
-    contexto: "En Argentina cuando el CEO es el fundador esto se siente como pérdida de control.",
-    solucion: "Trabajar la disposición del CEO antes de armar el directorio.",
+    loQuePasa: "El CEO ve al directorio como una carga o pérdida de control. En Argentina cuando el CEO es el fundador, esto se siente como amenaza.",
+    loQueDeberiaPasar: "El CEO valora al directorio como un espacio de respaldo y perspectiva que mejora sus decisiones.",
+    comoLograrlo: "Trabajar la disposición del CEO antes de armar el directorio. Empezar con un advisory board informal si es necesario.",
   },
   {
     titulo: "Presidente y CEO en la misma persona",
-    frecuencia: "Muy frecuente",
-    descripcion: "Elimina el principal mecanismo de control.",
-    contexto: "En Argentina esta figura está tan instalada que parece innecesario separarlos.",
-    solucion: "Separar roles o designar un lead director independiente.",
+    loQuePasa: "Elimina el principal mecanismo de control. En Argentina esta figura está tan instalada que parece innecesario separarlos.",
+    loQueDeberiaPasar: "Las funciones de presidencia del directorio y gerencia general están separadas, al menos funcionalmente.",
+    comoLograrlo: "Separar roles progresivamente o designar un lead director independiente que lidere las reuniones.",
   },
   {
     titulo: "Directorio que solo aprueba",
-    frecuencia: "Frecuente",
-    descripcion: "Nunca rechaza ni cuestiona en profundidad.",
-    contexto: "En Argentina el directorio decorativo es la norma.",
-    solucion: "Debate estructurado antes de cualquier votación.",
+    loQuePasa: "Nunca rechaza ni cuestiona en profundidad. En Argentina el directorio decorativo es la norma.",
+    loQueDeberiaPasar: "El directorio debate, cuestiona y a veces rechaza propuestas. Eso es sano.",
+    comoLograrlo: "Incluir un espacio de debate estructurado antes de cualquier votación. Fomentar que al menos un director haga de 'abogado del diablo'.",
   },
   {
     titulo: "Directores que contactan la gerencia media",
-    frecuencia: "Moderado",
-    descripcion: "Rompe la cadena de mando.",
-    contexto: "En Argentina la informalidad facilita este error.",
-    solucion: "Acuerdo explícito de comunicación solo a través del CEO.",
+    loQuePasa: "Rompe la cadena de mando y genera confusión. En Argentina la informalidad facilita este error.",
+    loQueDeberiaPasar: "Toda la comunicación entre directorio y empresa pasa a través del CEO.",
+    comoLograrlo: "Establecer un acuerdo explícito desde el día 1. La única excepción es la auditoría formal.",
   },
   {
     titulo: "Ausencia de evaluación mutua",
-    frecuencia: "Moderado",
-    descripcion: "Nadie mide cómo funciona la relación.",
-    contexto: "En Argentina la evaluación del CEO por el directorio es prácticamente inexistente.",
-    solucion: "Evaluación anual del CEO con criterios acordados de antemano.",
+    loQuePasa: "Nadie mide cómo funciona la relación directorio-gerencia. En Argentina la evaluación del CEO por el directorio es prácticamente inexistente.",
+    loQueDeberiaPasar: "Hay una evaluación anual del CEO y una autoevaluación del directorio.",
+    comoLograrlo: "Definir criterios de evaluación en enero. Evaluar en diciembre. Publicar conclusiones internamente.",
   },
 ];
 
@@ -114,12 +107,6 @@ const PROTOCOLO = [
   { number: 6, title: "Autoevaluación anual del directorio", detail: "El directorio se pregunta si está funcionando bien." },
 ];
 
-const FRECUENCIA_COLORS: Record<string, string> = {
-  "Muy frecuente": "bg-red-100 text-red-700",
-  "Frecuente": "bg-orange-100 text-orange-700",
-  "Moderado": "bg-yellow-100 text-yellow-800",
-};
-
 const DIAG_PREGUNTAS = [
   "¿El CEO o dueño estaría dispuesto a presentar resultados formalmente ante el directorio?",
   "¿Existe o podría existir una separación real entre quién preside el directorio y quién gerencia?",
@@ -127,42 +114,6 @@ const DIAG_PREGUNTAS = [
   "¿Hay disposición a que el directorio cuestione decisiones del CEO?",
   "¿Se aceptaría una evaluación anual del desempeño del CEO por parte del directorio?",
 ];
-
-function TensionCard({ tension }: { tension: typeof TENSIONES[0] }) {
-  const [open, setOpen] = useState(false);
-  return (
-    <div className="border border-gray-200 rounded-xl overflow-hidden">
-      <button
-        onClick={() => setOpen(!open)}
-        className="w-full flex items-start justify-between px-4 py-3.5 text-left bg-white hover:bg-gray-50 transition-colors gap-3"
-      >
-        <div className="flex-1">
-          <div className="flex items-center gap-2 flex-wrap">
-            <span className="text-sm font-semibold text-gray-900">{tension.titulo}</span>
-            <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${FRECUENCIA_COLORS[tension.frecuencia] ?? 'bg-gray-100 text-gray-600'}`}>
-              {tension.frecuencia}
-            </span>
-          </div>
-          <p className="text-xs text-gray-500 mt-0.5">{tension.descripcion}</p>
-        </div>
-        <svg className={`w-4 h-4 text-gray-400 shrink-0 mt-0.5 transition-transform ${open ? 'rotate-180' : ''}`}
-          viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-          <path d="M6 9l6 6 6-6" />
-        </svg>
-      </button>
-      {open && (
-        <div className="px-4 pb-4 bg-white border-t border-gray-100 space-y-2">
-          <div className="p-3 bg-blue-50 rounded-xl">
-            <p className="text-xs text-blue-700"><strong>Contexto AR:</strong> {tension.contexto}</p>
-          </div>
-          <div className="p-3 bg-green-50 rounded-xl">
-            <p className="text-xs text-green-700"><strong>Solución:</strong> {tension.solucion}</p>
-          </div>
-        </div>
-      )}
-    </div>
-  );
-}
 
 export default function Modulo4() {
   const router = useRouter();
@@ -202,10 +153,9 @@ export default function Modulo4() {
       const sum = answered.reduce<number>((s, v) => s + (v ?? 0), 0);
       const porcentaje = Math.round((sum / 5) * 100);
       let nivel: string;
-      if (porcentaje >= 80) nivel = "Alta disposición al gobierno corporativo";
-      else if (porcentaje >= 60) nivel = "Buena disposición, con áreas a trabajar";
-      else if (porcentaje >= 40) nivel = "Disposición parcial — requiere convencimiento";
-      else nivel = "Baja disposición — empezar por la sensibilización";
+      if (porcentaje >= 80) nivel = "Estas listo para dar el paso";
+      else if (porcentaje >= 50) nivel = "Casi listo — hay cosas por resolver";
+      else nivel = "Todavia no — trabaja primero en estos puntos";
 
       const diag: Modulo4Diagnostico = { score: sum, porcentaje, nivel };
       setDiagResultado(diag);
@@ -218,8 +168,8 @@ export default function Modulo4() {
   const tabs: { key: Tab; label: string }[] = [
     { key: 'frecuencia', label: 'Frecuencia' },
     { key: 'decisiones', label: 'Decisiones' },
-    { key: 'relacion', label: 'Tensiones' },
-    { key: 'autoevaluacion', label: 'Evaluación' },
+    { key: 'relacion', label: 'En la práctica' },
+    { key: 'autoevaluacion', label: '¿Estás listo?' },
   ];
 
   return (
@@ -241,6 +191,20 @@ export default function Modulo4() {
       {/* Tab: Frecuencia y agenda */}
       {tab === 'frecuencia' && (
         <div className="space-y-4">
+          {/* Recommendation box */}
+          <div className="border-2 border-[#534AB7] rounded-xl bg-purple-50 p-5">
+            <p className="text-xs font-semibold text-[#534AB7] uppercase tracking-wider mb-2">Recomendación para tu empresa</p>
+            <p className="text-lg font-bold text-gray-900 mb-2">
+              Para tu empresa recomendamos reuniones <span className="text-[#534AB7]">{frecuencia.toLowerCase().includes('mensual') ? 'mensuales' : frecuencia.toLowerCase().includes('bimestral') ? 'bimestrales' : frecuencia.toLowerCase().includes('trimestral') ? 'trimestrales' : frecuencia.toLowerCase()}</span>.
+            </p>
+            <p className="text-sm text-gray-600 leading-relaxed">
+              {frecuencia.includes('12') ? 'Esto significa 12 reuniones al año dedicadas exclusivamente a pensar el futuro del negocio.' :
+               frecuencia.includes('6') ? 'Esto significa 6 reuniones al año dedicadas exclusivamente a pensar el futuro del negocio.' :
+               frecuencia.includes('4') ? 'Esto significa 4 reuniones al año dedicadas exclusivamente a pensar el futuro del negocio.' :
+               'Completá el módulo 1 para obtener una recomendación personalizada.'}
+            </p>
+          </div>
+
           <div className="border border-gray-200 rounded-xl bg-white p-5">
             <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-2">Frecuencia recomendada</h3>
             <p className="text-xl font-bold text-gray-900 mb-3">{frecuencia}</p>
@@ -366,12 +330,36 @@ export default function Modulo4() {
         </div>
       )}
 
-      {/* Tab: Relación directorio-gerencia */}
+      {/* Tab: Cómo funciona en la práctica */}
       {tab === 'relacion' && (
         <div className="space-y-4">
-          <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Las 7 tensiones más comunes</p>
-          <div className="space-y-2">
-            {TENSIONES.map((t, i) => <TensionCard key={i} tension={t} />)}
+          <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Cómo funciona en la práctica</p>
+          <p className="text-sm text-gray-500 mb-2">Las 7 situaciones más comunes en la relación directorio-gerencia y cómo resolverlas.</p>
+          <div className="space-y-3">
+            {PRACTICA_ITEMS.map((item, i) => (
+              <details key={i} className="border border-gray-200 rounded-xl bg-white overflow-hidden">
+                <summary className="px-4 py-3.5 flex items-center justify-between cursor-pointer hover:bg-gray-50 select-none">
+                  <span className="text-sm font-semibold text-gray-900">{item.titulo}</span>
+                  <svg className="w-4 h-4 text-gray-400 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M6 9l6 6 6-6" />
+                  </svg>
+                </summary>
+                <div className="px-4 pb-4 border-t border-gray-100 space-y-3 pt-3">
+                  <div className="p-3 bg-red-50 rounded-xl">
+                    <p className="text-xs font-semibold text-red-700 mb-1">Lo que suele pasar</p>
+                    <p className="text-xs text-red-600 leading-relaxed">{item.loQuePasa}</p>
+                  </div>
+                  <div className="p-3 bg-green-50 rounded-xl">
+                    <p className="text-xs font-semibold text-green-700 mb-1">Lo que deberia pasar</p>
+                    <p className="text-xs text-green-600 leading-relaxed">{item.loQueDeberiaPasar}</p>
+                  </div>
+                  <div className="p-3 bg-purple-50 rounded-xl">
+                    <p className="text-xs font-semibold text-[#534AB7] mb-1">Como lograrlo</p>
+                    <p className="text-xs text-gray-700 leading-relaxed">{item.comoLograrlo}</p>
+                  </div>
+                </div>
+              </details>
+            ))}
           </div>
 
           <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mt-6">Protocolo de convivencia</p>
@@ -391,25 +379,47 @@ export default function Modulo4() {
         </div>
       )}
 
-      {/* Tab: Autoevaluación rápida */}
+      {/* Tab: ¿Estás listo para dar el paso? */}
       {tab === 'autoevaluacion' && (
         <div className="space-y-4">
-          {diagResultado && (
-            <div className="border border-gray-200 rounded-xl bg-white p-5">
-              <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-2">Disposición al gobierno corporativo</h3>
-              <div className={`inline-flex items-center px-3 py-1.5 rounded-full text-sm font-semibold mb-3
-                ${diagResultado.porcentaje >= 80 ? 'bg-green-100 text-green-700' :
-                  diagResultado.porcentaje >= 60 ? 'bg-yellow-100 text-yellow-800' :
-                  diagResultado.porcentaje >= 40 ? 'bg-orange-100 text-orange-700' :
-                  'bg-red-100 text-red-700'}`}>
-                {diagResultado.nivel}
+          {diagResultado && (() => {
+            const pct = diagResultado.porcentaje;
+            const noCount = diagRespuestas.filter(v => v === 0).length;
+            const parcialCount = diagRespuestas.filter(v => v === 0.5).length;
+            let readyLabel: string;
+            let readyColor: string;
+            let readyBg: string;
+            let readyDesc: string;
+            if (pct >= 80) {
+              readyLabel = "Estas listo";
+              readyColor = "text-green-700";
+              readyBg = "bg-green-100";
+              readyDesc = "Tu empresa tiene la disposicion necesaria para implementar un directorio formal. Las condiciones estan dadas para dar el paso.";
+            } else if (pct >= 50) {
+              readyLabel = `Casi listo — hay ${noCount + parcialCount} punto${noCount + parcialCount !== 1 ? 's' : ''} por resolver`;
+              readyColor = "text-yellow-700";
+              readyBg = "bg-yellow-100";
+              readyDesc = "Hay buena base pero algunos aspectos necesitan trabajo previo. Resolvellos antes de formalizar el directorio.";
+            } else {
+              readyLabel = "Todavia no — trabaja primero en estos puntos";
+              readyColor = "text-red-700";
+              readyBg = "bg-red-100";
+              readyDesc = "La disposicion al gobierno corporativo todavia es baja. Antes de armar un directorio, trabaja en la apertura al control externo.";
+            }
+            return (
+              <div className={`border-2 rounded-xl p-5 ${pct >= 80 ? 'border-green-300' : pct >= 50 ? 'border-yellow-300' : 'border-red-300'}`}>
+                <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">Resultado</p>
+                <div className={`inline-flex items-center px-3 py-1.5 rounded-full text-sm font-semibold mb-3 ${readyBg} ${readyColor}`}>
+                  {readyLabel}
+                </div>
+                <div className="w-full bg-gray-200 rounded-full h-2.5 mb-1">
+                  <div className="h-2.5 rounded-full bg-[#534AB7] transition-all duration-500" style={{ width: `${pct}%` }} />
+                </div>
+                <p className="text-xs text-gray-500 mt-2 mb-3">{pct}% — {diagAnswered} de 5 respondidas</p>
+                <p className="text-sm text-gray-700 leading-relaxed">{readyDesc}</p>
               </div>
-              <div className="w-full bg-gray-200 rounded-full h-2.5 mb-1">
-                <div className="h-2.5 rounded-full bg-[#534AB7] transition-all duration-500" style={{ width: `${diagResultado.porcentaje}%` }} />
-              </div>
-              <p className="text-xs text-gray-500 mt-2">{diagResultado.porcentaje}% — {diagAnswered} de 5 respondidas</p>
-            </div>
-          )}
+            );
+          })()}
 
           <div className="space-y-3">
             {DIAG_PREGUNTAS.map((pregunta, idx) => (

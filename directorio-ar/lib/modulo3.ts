@@ -149,25 +149,25 @@ type PreguntaM3 = { numero: number; dimension: string; texto: string; aclaracion
 
 export const PREGUNTAS_M3: PreguntaM3[] = [
   {
-    numero: 1, dimension: "Etapa",
-    texto: "¿En qué etapa se encuentra tu empresa hoy?",
-    aclaracion: "Esto define qué tipo de perspectiva necesita el directorio con más urgencia.",
+    numero: 1, dimension: "Estrategia",
+    texto: "¿La empresa tiene una estrategia a 3-5 años documentada y compartida?",
+    aclaracion: "La existencia de una estrategia formal indica madurez organizacional.",
     opciones: [
-      { texto: "Empresa joven, menos de 5 años",                   pesos: { operaciones: 2 } },
-      { texto: "PyME consolidada, crecimiento estable",           pesos: { estratega: 2, financiero: 1 } },
-      { texto: "Empresa en expansión activa o transformación",    pesos: { estratega: 3, comercial: 2 } },
-      { texto: "Empresa madura buscando profesionalizarse",       pesos: { estratega: 2, operaciones: 2 } },
+      { texto: "No existe nada formal ni documentado", pesos: { estratega: 3 } },
+      { texto: "Hay ideas compartidas pero nada escrito", pesos: { estratega: 2, operaciones: 1 } },
+      { texto: "Existe un documento pero no se actualiza ni se sigue", pesos: { estratega: 2 } },
+      { texto: "Hay un plan estratégico vigente con revisión periódica", pesos: { operaciones: 1 } },
     ],
   },
   {
     numero: 2, dimension: "Propiedad",
-    texto: "¿Cómo es la propiedad de la empresa?",
-    aclaracion: "La composición accionaria determina qué perfiles son más urgentes.",
+    texto: "¿La estructura de propiedad está formalizada en estatutos y acuerdos de socios?",
+    aclaracion: "Tener la propiedad escrita formalmente en estatutos es distinto a que 'todos saben quién es dueño de qué'.",
     opciones: [
-      { texto: "Un solo dueño fundador",                          pesos: { estratega: 2 } },
-      { texto: "Dos o tres socios fundadores",                    pesos: { estratega: 1, financiero: 1 } },
-      { texto: "Empresa familiar con segunda o tercera generación", pesos: { estratega: 1, financiero: 2 } },
-      { texto: "Socios mixtos: familia más inversores externos",  pesos: { financiero: 3, estratega: 1 } },
+      { texto: "No hay estatutos actualizados ni acuerdo de socios", pesos: { financiero: 2, operaciones: 1 } },
+      { texto: "Hay estatutos básicos pero desactualizados", pesos: { financiero: 2 } },
+      { texto: "Los estatutos están al día pero no hay acuerdo de socios", pesos: { financiero: 1, estratega: 1 } },
+      { texto: "Estatutos actualizados y acuerdo de socios vigente", pesos: { estratega: 1 } },
     ],
   },
   {
@@ -291,6 +291,28 @@ export const PREGUNTAS_M3: PreguntaM3[] = [
       { texto: "Muy alta — está listo/a para implementar gobierno formal",           pesos: { estratega: 3, financiero: 1, comercial: 1 } },
     ],
   },
+  {
+    numero: 14, dimension: "Mercado",
+    texto: "¿La empresa tiene unidades de negocio o actividades vinculadas que operan de forma independiente?",
+    aclaracion: "La diversificación de negocios multiplica la complejidad de las decisiones estratégicas.",
+    opciones: [
+      { texto: "Es un solo negocio sin actividades vinculadas", pesos: { operaciones: 1 } },
+      { texto: "Tiene alguna actividad secundaria menor", pesos: { estratega: 1, operaciones: 1 } },
+      { texto: "Tiene dos o tres unidades de negocio diferenciadas", pesos: { estratega: 2, financiero: 2 } },
+      { texto: "Es un grupo con múltiples empresas o unidades", pesos: { estratega: 3, financiero: 3 } },
+    ],
+  },
+  {
+    numero: 15, dimension: "Mercado",
+    texto: "¿Los ingresos de la empresa dependen de pocos clientes o están diversificados?",
+    aclaracion: "La concentración de ingresos en pocos clientes es un riesgo estratégico que un directorio puede ayudar a gestionar.",
+    opciones: [
+      { texto: "Más del 50% depende de 1 o 2 clientes", pesos: { comercial: 3, estratega: 1 } },
+      { texto: "Hay concentración pero con algo de diversificación", pesos: { comercial: 2 } },
+      { texto: "Los ingresos están razonablemente diversificados", pesos: { comercial: 1 } },
+      { texto: "Alta diversificación, ningún cliente supera el 10%", pesos: { estratega: 1 } },
+    ],
+  },
 ];
 
 // ─── Calculator ────────────────────────────────────────────────────────────────
@@ -302,9 +324,9 @@ export function calcularUrgencia(score: number): NivelUrgencia {
   return "Complementario";
 }
 
-export const TOTAL_PREGUNTAS_M3 = PREGUNTAS_M3.length; // 13
+export const TOTAL_PREGUNTAS_M3 = PREGUNTAS_M3.length; // 15
 
-// respuestas: number[] indexed 0–12 (option index chosen per question)
+// respuestas: number[] indexed 0–14 (option index chosen per question)
 export function calcularModulo3(respuestas: number[]): Modulo3Resultado {
   const scores: Record<PerfilKey, number> = { estratega: 0, financiero: 0, comercial: 0, operaciones: 0 };
   const dimensionesActivadas: Record<PerfilKey, string[]> = { estratega: [], financiero: [], comercial: [], operaciones: [] };

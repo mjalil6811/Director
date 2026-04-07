@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import ModuleLayout from '../../../components/ModuleLayout';
 import {
   PREGUNTAS_M1, TOTAL_PREGUNTAS, PUNTAJE_MAXIMO, NIVELES, calcularNivel,
-  calcularModulo1, calcularPorcentajeParcial, generarInformeParcial,
+  calcularModulo1, generarInformeParcial,
 } from '../../../lib/modulo1';
 import { storage } from '../../../lib/storage';
 import type { Modulo1Resultado } from '../../../types';
@@ -31,7 +31,6 @@ export default function Modulo1() {
   const [current, setCurrent] = useState(0);
   const [respuestas, setRespuestas] = useState<number[]>(new Array(TOTAL_PREGUNTAS).fill(-1));
   const [resultado, setResultado] = useState<Modulo1Resultado | null>(null);
-  const [justAnswered, setJustAnswered] = useState(false);
 
   useEffect(() => {
     const saved = storage.getModulo1Respuestas();
@@ -50,11 +49,9 @@ export default function Modulo1() {
     updated[current] = value;
     setRespuestas(updated);
     storage.setModulo1Respuestas(updated);
-    setJustAnswered(true);
   }
 
   function handleNext() {
-    setJustAnswered(false);
     if (current < TOTAL_PREGUNTAS - 1) {
       setCurrent(current + 1);
     } else {
@@ -66,7 +63,6 @@ export default function Modulo1() {
   }
 
   function handlePrev() {
-    setJustAnswered(false);
     if (current > 0) setCurrent(current - 1);
   }
 
@@ -76,21 +72,12 @@ export default function Modulo1() {
     setCurrent(0);
     setStep('quiz');
     setResultado(null);
-    setJustAnswered(false);
     storage.setModulo1Respuestas(empty);
   }
 
   const answeredCount = respuestas.filter(v => v >= 0).length;
   const selected = respuestas[current];
   const pregunta = PREGUNTAS_M1[current];
-
-  // Live indicator
-  const livePct = calcularPorcentajeParcial(respuestas);
-  const liveNivelKey = calcularNivel(livePct);
-  const liveNivel = NIVELES[liveNivelKey].label;
-  const liveStyle = getNivelStyle(livePct);
-  const liveInforme = generarInformeParcial(respuestas);
-  const showLive = answeredCount > 0;
 
   // ── Result screen ─────────────────────────────────────────────────────────
   if (step === 'result' && resultado) {
@@ -229,40 +216,6 @@ export default function Modulo1() {
           ))}
         </div>
       </div>
-
-      {/* Live indicator */}
-      {showLive && (
-        <div className={`border rounded-xl bg-white overflow-hidden mb-4 transition-all duration-300 ${justAnswered ? 'border-[#534AB7]/40 shadow-sm' : 'border-gray-200'}`}>
-          <div className="px-4 pt-4 pb-3 border-b border-gray-100">
-            <div className="flex items-center justify-between mb-2">
-              <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Indicador en tiempo real</p>
-              <span className={`text-xs font-semibold px-2.5 py-1 rounded-full ${liveStyle.badge}`}>
-                {liveNivel}
-              </span>
-            </div>
-            <div className="flex items-center gap-3">
-              <span className={`text-3xl font-bold ${liveStyle.text}`}>{livePct}%</span>
-              <div className="flex-1">
-                <div className="w-full h-2.5 bg-gray-100 rounded-full overflow-hidden">
-                  <div className={`h-full rounded-full transition-all duration-500 ${liveStyle.bar}`} style={{ width: `${livePct}%` }} />
-                </div>
-                <div className="flex justify-between text-xs text-gray-300 mt-0.5">
-                  <span>No urgente</span><span>Urgente</span>
-                </div>
-              </div>
-            </div>
-          </div>
-          {liveInforme && (
-            <div className="px-4 py-3">
-              <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-1.5">Análisis parcial</p>
-              <p className="text-sm text-gray-600 leading-relaxed">{liveInforme}</p>
-            </div>
-          )}
-          <div className="px-4 pb-3">
-            <p className="text-xs text-gray-300 italic">Basado en {answeredCount} de {TOTAL_PREGUNTAS} respuestas · se actualiza con cada pregunta</p>
-          </div>
-        </div>
-      )}
 
       {/* Navigation */}
       <div className="flex gap-3">
