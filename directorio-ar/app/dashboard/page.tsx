@@ -240,38 +240,80 @@ export default function DashboardPage() {
         {/* Resultado parcial — after M1 + M2 */}
         {m1 && m2 && (() => {
           const m1Pct = m1.porcentaje ?? 0;
-          const m2Concentration = m2.porcentaje ?? 0;
+          const m2Conc = m2.porcentaje ?? 0;
           let diagnostico: string;
-          let diagnosticoColor: string;
-          if (m1Pct >= 55 && m2Concentration >= 50) {
+          let diagBg: string;
+          let diagBorder: string;
+          let diagText: string;
+          if (m1Pct >= 55 && m2Conc >= 50) {
             diagnostico = "Altamente recomendado";
-            diagnosticoColor = "text-red-700";
-          } else if (m1Pct >= 30 || m2Concentration >= 30) {
+            diagBg = "bg-red-50"; diagBorder = "border-red-400"; diagText = "text-red-700";
+          } else if (m1Pct >= 30 || m2Conc >= 30) {
             diagnostico = "Recomendado con condiciones";
-            diagnosticoColor = "text-yellow-700";
+            diagBg = "bg-yellow-50"; diagBorder = "border-yellow-400"; diagText = "text-yellow-700";
           } else {
             diagnostico = "Evaluar más adelante";
-            diagnosticoColor = "text-gray-600";
+            diagBg = "bg-gray-50"; diagBorder = "border-gray-300"; diagText = "text-gray-600";
           }
+
+          // Scale: 4 levels
+          const levels = [
+            { label: "No recomendado", active: m1Pct < 30 && m2Conc < 30, color: "bg-gray-300" },
+            { label: "Con condiciones", active: (m1Pct >= 30 || m2Conc >= 30) && !(m1Pct >= 55 && m2Conc >= 50) && !(m1Pct >= 55 && m2Conc >= 50) && m1Pct < 75, color: "bg-yellow-400" },
+            { label: "Recomendado", active: m1Pct >= 55 && m2Conc >= 50 && m1Pct < 75, color: "bg-[#534AB7]" },
+            { label: "Altamente recomendado", active: m1Pct >= 75 || (m1Pct >= 55 && m2Conc >= 50), color: "bg-red-500" },
+          ];
+          // Find the active level index
+          let activeIdx = 0;
+          if (m1Pct >= 75 || (m1Pct >= 55 && m2Conc >= 50)) activeIdx = 3;
+          else if (m1Pct >= 55 || (m1Pct >= 30 && m2Conc >= 50)) activeIdx = 2;
+          else if (m1Pct >= 30 || m2Conc >= 30) activeIdx = 1;
+
           return (
-            <div className="border-2 border-[#534AB7] rounded-xl bg-white p-5">
-              <p className="text-xs font-semibold text-[#534AB7] uppercase tracking-wider mb-4">
+            <div className={`border-2 ${diagBorder} rounded-xl ${diagBg} p-5`}>
+              <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">
                 Resultado parcial — ¿Necesitás un directorio?
               </p>
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                <div className="text-center p-3 bg-purple-50 rounded-xl">
-                  <p className="text-xs text-gray-500 mb-1">Nivel de necesidad</p>
-                  <p className="text-2xl font-bold text-[#534AB7]">{m1Pct}%</p>
-                  <p className="text-xs font-semibold text-gray-600 mt-0.5">{m1.nivel}</p>
+
+              {/* Main verdict */}
+              <div className="text-center mb-5">
+                <p className={`text-xl font-bold ${diagText}`}>{diagnostico}</p>
+              </div>
+
+              {/* Visual scale */}
+              <div className="mb-5">
+                <div className="flex gap-1 mb-2">
+                  {[0, 1, 2, 3].map(i => (
+                    <div key={i} className={`flex-1 h-3 rounded-full transition-all ${i <= activeIdx ? ['bg-gray-300', 'bg-yellow-400', 'bg-[#534AB7]', 'bg-red-500'][i] : 'bg-gray-200'}`} />
+                  ))}
                 </div>
-                <div className="text-center p-3 bg-purple-50 rounded-xl">
-                  <p className="text-xs text-gray-500 mb-1">Mapa de tensiones</p>
-                  <p className="text-2xl font-bold text-[#534AB7]">{m2Concentration}%</p>
-                  <p className="text-xs font-semibold text-gray-600 mt-0.5">Concentración</p>
+                <div className="flex justify-between text-xs text-gray-400">
+                  <span>No recomendado</span>
+                  <span>Altamente recomendado</span>
                 </div>
-                <div className="text-center p-3 bg-purple-50 rounded-xl">
-                  <p className="text-xs text-gray-500 mb-1">Diagnóstico preliminar</p>
-                  <p className={`text-sm font-bold mt-1 ${diagnosticoColor}`}>{diagnostico}</p>
+              </div>
+
+              {/* Two indicators */}
+              <div className="grid grid-cols-2 gap-3">
+                <div className="bg-white rounded-xl p-3 border border-gray-100">
+                  <p className="text-xs text-gray-400 mb-1">Necesidad</p>
+                  <div className="flex items-end gap-1.5">
+                    <span className="text-lg font-bold text-gray-900">{m1Pct}%</span>
+                    <span className="text-xs text-gray-400 mb-0.5">{m1.nivel}</span>
+                  </div>
+                  <div className="w-full h-1.5 bg-gray-100 rounded-full mt-1.5 overflow-hidden">
+                    <div className="h-full bg-[#534AB7] rounded-full" style={{ width: `${m1Pct}%` }} />
+                  </div>
+                </div>
+                <div className="bg-white rounded-xl p-3 border border-gray-100">
+                  <p className="text-xs text-gray-400 mb-1">Concentración</p>
+                  <div className="flex items-end gap-1.5">
+                    <span className="text-lg font-bold text-gray-900">{m2Conc}%</span>
+                    <span className="text-xs text-gray-400 mb-0.5">de decisiones</span>
+                  </div>
+                  <div className="w-full h-1.5 bg-gray-100 rounded-full mt-1.5 overflow-hidden">
+                    <div className="h-full bg-red-400 rounded-full" style={{ width: `${m2Conc}%` }} />
+                  </div>
                 </div>
               </div>
             </div>
