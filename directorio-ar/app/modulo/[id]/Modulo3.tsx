@@ -23,43 +23,48 @@ const PERFIL_COLORS: Record<PerfilKey, string> = {
   operaciones: "#6BBF3B",
 };
 
-// ─── Pie chart SVG ─────────────────────────────────────────────────────────────
+// ─── Horizontal bar chart ──────────────────────────────────────────────────────
 
-function PieChart({ data }: { data: { key: PerfilKey; nombre: string; pct: number }[] }) {
-  const cx = 70;
-  const cy = 70;
-  const r = 55;
-  const circ = 2 * Math.PI * r;
-  let offset = 0;
-
+function CompositionChart({ data }: { data: { key: PerfilKey; nombre: string; pct: number }[] }) {
   return (
-    <div className="flex flex-col items-center">
-      <svg width="140" height="140" viewBox="0 0 140 140">
-        <circle cx={cx} cy={cy} r={r} fill="none" stroke="#f3f4f6" strokeWidth="22" />
-        {data.map(({ key, pct }) => {
-          const dash = (pct / 100) * circ;
-          const currentOffset = offset;
-          offset += dash;
+    <div className="space-y-4">
+      {/* Stacked horizontal bar */}
+      <div className="w-full h-8 rounded-lg overflow-hidden flex">
+        {data.map(({ key, nombre, pct }) => {
           if (pct === 0) return null;
           return (
-            <circle
+            <div
               key={key}
-              cx={cx} cy={cy} r={r}
-              fill="none"
-              stroke={PERFIL_COLORS[key]}
-              strokeWidth="22"
-              strokeDasharray={`${dash} ${circ - dash}`}
-              strokeDashoffset={-currentOffset}
-              transform={`rotate(-90 ${cx} ${cy})`}
-            />
+              className="h-full flex items-center justify-center overflow-hidden"
+              style={{ width: `${pct}%`, backgroundColor: PERFIL_COLORS[key] }}
+            >
+              {pct >= 15 && (
+                <span className="text-xs font-semibold text-white truncate px-1">
+                  {nombre.split(' ')[nombre.split(' ').length > 2 ? 2 : 0]} {pct}%
+                </span>
+              )}
+            </div>
           );
         })}
-      </svg>
-      <div className="flex flex-wrap gap-x-4 gap-y-1.5 mt-3 justify-center">
+      </div>
+
+      {/* Individual bars */}
+      <div className="space-y-3">
         {data.map(({ key, nombre, pct }) => (
-          <div key={key} className="flex items-center gap-1.5">
-            <div className="w-2.5 h-2.5 rounded-full shrink-0" style={{ backgroundColor: PERFIL_COLORS[key] }} />
-            <span className="text-xs text-gray-500">{nombre} <strong className="text-gray-700">{pct}%</strong></span>
+          <div key={key}>
+            <div className="flex items-center justify-between mb-1">
+              <div className="flex items-center gap-2">
+                <div className="w-2.5 h-2.5 rounded-full shrink-0" style={{ backgroundColor: PERFIL_COLORS[key] }} />
+                <span className="text-sm text-gray-700 font-medium">{nombre}</span>
+              </div>
+              <span className="text-sm font-bold" style={{ color: PERFIL_COLORS[key] }}>{pct}%</span>
+            </div>
+            <div className="w-full h-2 bg-gray-100 rounded-full overflow-hidden">
+              <div
+                className="h-full rounded-full transition-all duration-500"
+                style={{ width: `${pct}%`, backgroundColor: PERFIL_COLORS[key] }}
+              />
+            </div>
           </div>
         ))}
       </div>
@@ -238,14 +243,14 @@ export default function Modulo3() {
       <ModuleLayout moduleNumber={3} title="¿Qué perfiles necesitás?">
         <div className="space-y-4">
 
-          {/* Pie chart */}
+          {/* Composition chart */}
           <div className="border border-gray-200 rounded-xl bg-white overflow-hidden">
             <div className="px-5 pt-5 pb-3 border-b border-gray-100">
               <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-1">Composición recomendada del directorio</p>
               <p className="text-sm text-gray-500">Porcentaje de relevancia de cada perfil según tu empresa.</p>
             </div>
             <div className="px-5 py-6">
-              <PieChart data={pieData} />
+              <CompositionChart data={pieData} />
             </div>
           </div>
 
@@ -301,6 +306,14 @@ export default function Modulo3() {
             style={{ width: `${(answeredCount / TOTAL_PREGUNTAS_M3) * 100}%` }} />
         </div>
       </div>
+
+      {current === 0 && (
+        <div className="border border-purple-100 bg-purple-50 rounded-xl px-5 py-4 mb-4">
+          <p className="text-sm text-gray-700 leading-relaxed">
+            Ya sabemos que tu empresa necesita un directorio. Ahora vamos a definir qué perfiles de directores serían más valiosos según las características de tu negocio. Son 15 preguntas.
+          </p>
+        </div>
+      )}
 
       <div className="border border-gray-200 rounded-xl bg-white overflow-hidden mb-4">
         <div className="px-5 pt-5 pb-4 border-b border-gray-100">

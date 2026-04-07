@@ -3,7 +3,6 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { storage } from '../../lib/storage';
-import { SITUACIONES_M2 } from '../../lib/modulo2';
 import type { Modulo1Resultado, Modulo2Resultado, Modulo3Resultado, Modulo4Diagnostico } from '../../types';
 
 const PERFIL_LABELS: Record<string, string> = {
@@ -165,10 +164,7 @@ export default function ResultadoPage() {
   const levelColor = m1Pct >= 75 ? 'text-red-600' : m1Pct >= 55 ? 'text-[#534AB7]' : m1Pct >= 30 ? 'text-yellow-600' : 'text-gray-600';
   const levelBg = m1Pct >= 75 ? 'bg-red-100 text-red-700' : m1Pct >= 55 ? 'bg-purple-100 text-[#534AB7]' : m1Pct >= 30 ? 'bg-yellow-100 text-yellow-800' : 'bg-gray-100 text-gray-600';
 
-  // Section 2: Top 3 tensions from M2
-  const topTensiones = (m2?.tensiones ?? []).slice(0, 3);
-
-  // Section 3: Top 2 profiles from M3
+  // Section 2: Top 2 profiles from M3
   const topPerfiles = (m3?.topPerfiles ?? []).slice(0, 2);
 
   // Section 4: M4 data
@@ -225,64 +221,65 @@ export default function ResultadoPage() {
           <p className="text-sm text-gray-500 max-w-md mx-auto leading-relaxed">{m1Desc}</p>
         </div>
 
-        {/* Section 2 — Mapa de tensiones (M2) */}
-        <div className="border border-gray-200 rounded-xl bg-white overflow-hidden">
-          <div className="px-5 pt-5 pb-3 border-b border-gray-100">
-            <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Mapa de tensiones — Como se toman las decisiones hoy</p>
-          </div>
-          <div className="px-5 py-5">
-            <div className="flex flex-col sm:flex-row items-center gap-6">
-              <DonutChart conteos={m2Conteos} />
-              <div className="flex-1 space-y-2">
-                <div className="flex items-center justify-between">
-                  <span className="text-sm text-gray-600">Concentradas en el dueno</span>
-                  <span className="text-sm font-bold text-red-600">{m2Conteos.concentrada}</span>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-sm text-gray-600">Zona gris</span>
-                  <span className="text-sm font-bold text-gray-500">{m2Conteos.gris}</span>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-sm text-gray-600">Parcialmente delegadas</span>
-                  <span className="text-sm font-bold text-yellow-600">{m2Conteos.parcial}</span>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-sm text-gray-600">Bien delegadas</span>
-                  <span className="text-sm font-bold text-green-600">{m2Conteos.delegada}</span>
-                </div>
-                <div className="mt-2 pt-2 border-t border-gray-100">
-                  <p className="text-xs text-gray-400">Indice de concentracion: <strong className="text-gray-900">{m2Pct}%</strong></p>
-                </div>
-              </div>
-            </div>
+        {/* 4 Visual indicators grid */}
+        <div className="grid grid-cols-2 gap-3">
+          {/* Indicator 1: Nivel de necesidad (M1) */}
+          <div className="border border-gray-200 rounded-xl bg-white p-4 flex flex-col items-center">
+            <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2 text-center">Nivel de necesidad</p>
+            <svg width="80" height="50" viewBox="0 0 120 70">
+              <path d="M 10 60 A 50 50 0 0 1 110 60" fill="none" stroke="#f3f4f6" strokeWidth="10" strokeLinecap="round" />
+              <path d="M 10 60 A 50 50 0 0 1 110 60" fill="none" stroke={m1Pct >= 75 ? '#ef4444' : m1Pct >= 55 ? '#534AB7' : m1Pct >= 30 ? '#eab308' : '#9ca3af'} strokeWidth="10" strokeLinecap="round"
+                strokeDasharray={`${(m1Pct / 100) * 157} 157`} />
+              <text x="60" y="58" textAnchor="middle" fontSize="16" fontWeight="700" fill="#111827">{m1Pct}%</text>
+            </svg>
+            <p className="text-xs text-gray-500 mt-1 text-center">Módulo 1</p>
           </div>
 
-          {/* Top 3 tensions */}
-          {topTensiones.length > 0 && (
-            <div className="border-t border-gray-100 px-5 py-4">
-              <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">Principales tensiones detectadas</p>
-              <div className="space-y-3">
-                {topTensiones.map((t) => (
-                  <div key={t.pregunta} className="flex items-start gap-3">
-                    <span className={`w-5 h-5 rounded-full text-xs font-bold flex items-center justify-center shrink-0 mt-0.5
-                      ${t.tipo === 'concentrada' ? 'bg-red-100 text-red-600' : 'bg-gray-200 text-gray-600'}`}>
-                      {t.pregunta}
-                    </span>
-                    <div className="flex-1">
-                      <p className="text-xs text-gray-700 leading-snug mb-1">{SITUACIONES_M2[t.pregunta - 1]?.texto ?? ''}</p>
-                      <div className="bg-purple-50 border border-purple-100 rounded-lg px-3 py-2">
-                        <p className="text-xs text-[#534AB7] font-semibold mb-0.5">Con un directorio</p>
-                        <p className="text-xs text-gray-600 leading-relaxed">{t.beneficio}</p>
-                      </div>
-                    </div>
+          {/* Indicator 2: Concentración de decisiones (M2) */}
+          <div className="border border-gray-200 rounded-xl bg-white p-4 flex flex-col items-center">
+            <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2 text-center">Concentración</p>
+            <svg width="80" height="50" viewBox="0 0 120 70">
+              <path d="M 10 60 A 50 50 0 0 1 110 60" fill="none" stroke="#f3f4f6" strokeWidth="10" strokeLinecap="round" />
+              <path d="M 10 60 A 50 50 0 0 1 110 60" fill="none" stroke={m2Pct >= 60 ? '#ef4444' : m2Pct >= 40 ? '#eab308' : '#22c55e'} strokeWidth="10" strokeLinecap="round"
+                strokeDasharray={`${(m2Pct / 100) * 157} 157`} />
+              <text x="60" y="58" textAnchor="middle" fontSize="16" fontWeight="700" fill="#111827">{m2Pct}%</text>
+            </svg>
+            <p className="text-xs text-gray-500 mt-1 text-center">Módulo 2</p>
+          </div>
+
+          {/* Indicator 3: Perfil más crítico (M3) */}
+          <div className="border border-gray-200 rounded-xl bg-white p-4">
+            <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2 text-center">Perfil más crítico</p>
+            <p className="text-sm font-bold text-[#534AB7] text-center mb-2">{topProfile}</p>
+            {topPerfiles[0] && (() => {
+              const scores = m3?.scoresCompletos ?? {};
+              const totalScore = Object.values(scores).reduce((a, b) => a + b, 0) || 1;
+              const topPct = Math.round((scores[topPerfiles[0].perfil] ?? topPerfiles[0].score) / totalScore * 100);
+              return (
+                <div>
+                  <div className="w-full h-2 bg-gray-100 rounded-full overflow-hidden">
+                    <div className="h-full rounded-full bg-[#534AB7] transition-all duration-500" style={{ width: `${topPct}%` }} />
                   </div>
-                ))}
-              </div>
-            </div>
-          )}
+                  <p className="text-xs text-gray-500 text-center mt-1">{topPct}%</p>
+                </div>
+              );
+            })()}
+          </div>
+
+          {/* Indicator 4: Disposición al cambio (M4) */}
+          <div className="border border-gray-200 rounded-xl bg-white p-4 flex flex-col items-center">
+            <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2 text-center">Disposición</p>
+            <svg width="80" height="50" viewBox="0 0 120 70">
+              <path d="M 10 60 A 50 50 0 0 1 110 60" fill="none" stroke="#f3f4f6" strokeWidth="10" strokeLinecap="round" />
+              <path d="M 10 60 A 50 50 0 0 1 110 60" fill="none" stroke={diagPct >= 80 ? '#22c55e' : diagPct >= 50 ? '#eab308' : '#ef4444'} strokeWidth="10" strokeLinecap="round"
+                strokeDasharray={`${(diagPct / 100) * 157} 157`} />
+              <text x="60" y="58" textAnchor="middle" fontSize="16" fontWeight="700" fill="#111827">{diagPct}%</text>
+            </svg>
+            <p className="text-xs text-gray-500 mt-1 text-center">Módulo 4</p>
+          </div>
         </div>
 
-        {/* Section 3 — Top 2 perfiles (M3) */}
+        {/* Top 2 perfiles (M3) — right after indicators */}
         {topPerfiles.length > 0 && (
           <div className="border border-gray-200 rounded-xl bg-white overflow-hidden">
             <div className="px-5 pt-5 pb-3 border-b border-gray-100">
@@ -316,7 +313,40 @@ export default function ResultadoPage() {
           </div>
         )}
 
-        {/* Section 4 — Dinamica (M4) */}
+        {/* Mapa de decisiones (M2) — without tensions */}
+        <div className="border border-gray-200 rounded-xl bg-white overflow-hidden">
+          <div className="px-5 pt-5 pb-3 border-b border-gray-100">
+            <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Mapa de decisiones — Como se toman las decisiones hoy</p>
+          </div>
+          <div className="px-5 py-5">
+            <div className="flex flex-col sm:flex-row items-center gap-6">
+              <DonutChart conteos={m2Conteos} />
+              <div className="flex-1 space-y-2">
+                <div className="flex items-center justify-between">
+                  <span className="text-sm text-gray-600">Concentradas en el dueno</span>
+                  <span className="text-sm font-bold text-red-600">{m2Conteos.concentrada}</span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-sm text-gray-600">Zona gris</span>
+                  <span className="text-sm font-bold text-gray-500">{m2Conteos.gris}</span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-sm text-gray-600">Parcialmente delegadas</span>
+                  <span className="text-sm font-bold text-yellow-600">{m2Conteos.parcial}</span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-sm text-gray-600">Bien delegadas</span>
+                  <span className="text-sm font-bold text-green-600">{m2Conteos.delegada}</span>
+                </div>
+                <div className="mt-2 pt-2 border-t border-gray-100">
+                  <p className="text-xs text-gray-400">Indice de concentracion: <strong className="text-gray-900">{m2Pct}%</strong></p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Dinamica (M4) */}
         <div className="border border-gray-200 rounded-xl bg-white overflow-hidden">
           <div className="px-5 pt-5 pb-3 border-b border-gray-100">
             <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Dinamica y funcionamiento</p>
@@ -370,7 +400,47 @@ export default function ResultadoPage() {
           </div>
         </div>
 
-        {/* Section 5 — PDF download */}
+        {/* Diagnóstico y sugerencias */}
+        <div className="border-l-4 border-[#534AB7] bg-white rounded-r-xl p-5">
+          <p className="text-xs font-semibold text-[#534AB7] uppercase tracking-wider mb-3">Diagnóstico y sugerencias</p>
+          <div className="space-y-3">
+            {/* Paragraph 1: M1 assessment */}
+            <p className="text-sm text-gray-700 leading-relaxed">
+              {m1Pct >= 75
+                ? "Tu empresa presenta una necesidad clara y urgente de formalizar un directorio. La combinación de tamaño, complejidad societaria y nivel de gobierno actual hacen que operar sin este órgano represente un riesgo real para el negocio."
+                : m1Pct >= 55
+                ? "Tu empresa está en un momento de transición donde un directorio agregaría valor concreto. Las señales son claras: hay complejidad suficiente para justificar una estructura de gobierno más formal."
+                : m1Pct >= 30
+                ? "Tu empresa muestra señales tempranas de necesidad. Si bien no es urgente, hay factores que indican que en los próximos 12-18 meses sería estratégico comenzar a construir las bases de un directorio."
+                : "En esta etapa, la empresa aún no reúne las condiciones para que un directorio formal agregue valor. Recomendamos enfocarse primero en profesionalizar la gestión interna."}
+            </p>
+
+            {/* Paragraph 2: M2 concentration */}
+            <p className="text-sm text-gray-700 leading-relaxed">
+              {m2Pct >= 60
+                ? "El mapa de decisiones revela una concentración preocupante: la mayoría de las decisiones estratégicas recaen en una sola persona. Esto no solo es un riesgo operativo — es un riesgo patrimonial. Un directorio distribuiría esta carga de forma institucional."
+                : m2Pct >= 40
+                ? "Hay un nivel de concentración de decisiones que merece atención. Algunas decisiones clave ya están parcialmente delegadas, pero las más importantes siguen dependiendo del dueño. El directorio completaría esta transición."
+                : "Las decisiones ya muestran un buen nivel de delegación. El directorio consolidaría estas buenas prácticas y agregaría una capa de supervisión estratégica."}
+            </p>
+
+            {/* Paragraph 3: M3 top profile */}
+            <p className="text-sm text-gray-700 leading-relaxed">
+              {`El primer perfil que recomendamos incorporar es un ${topProfile}. ${(PERFIL_JUSTIFICACIONES[topPerfiles[0]?.perfil] ?? '').split('.')[0]}. Este perfil debería ser la prioridad número uno al momento de conformar el directorio.`}
+            </p>
+
+            {/* Paragraph 4: M4 readiness */}
+            <p className="text-sm text-gray-700 leading-relaxed">
+              {diagPct >= 80
+                ? "La buena noticia es que tu empresa ya muestra disposición real al cambio. Las condiciones están dadas para iniciar el proceso de conformación del directorio en el corto plazo."
+                : diagPct >= 50
+                ? "Hay disposición al cambio, aunque con algunos puntos por resolver. Recomendamos trabajar en la apertura del CEO a la rendición de cuentas y en la separación formal de roles antes de arrancar."
+                : "La disposición al cambio todavía es baja. Antes de conformar un directorio, es fundamental trabajar en la cultura de gobierno: reuniones periódicas, rendición de cuentas y apertura a perspectivas externas."}
+            </p>
+          </div>
+        </div>
+
+        {/* PDF download */}
         <button
           onClick={handleGeneratePDF}
           disabled={pdfLoading}

@@ -174,6 +174,12 @@ export default function Modulo4() {
 
   return (
     <ModuleLayout moduleNumber={4} title="Dinámica y funcionamiento">
+      <div className="border border-purple-100 bg-purple-50 rounded-xl px-5 py-4 mb-4">
+        <p className="text-sm text-gray-700 leading-relaxed">
+          Este módulo te muestra cómo funciona un directorio en la práctica: frecuencia de reuniones, qué decisiones le corresponden, y una autoevaluación para saber si estás listo para dar el paso.
+        </p>
+      </div>
+
       {/* Tab navigation */}
       <div className="flex gap-1 mb-4 bg-white border border-gray-200 rounded-xl p-1">
         {tabs.map(t => (
@@ -191,20 +197,6 @@ export default function Modulo4() {
       {/* Tab: Frecuencia y agenda */}
       {tab === 'frecuencia' && (
         <div className="space-y-4">
-          {/* Recommendation box */}
-          <div className="border-2 border-[#534AB7] rounded-xl bg-purple-50 p-5">
-            <p className="text-xs font-semibold text-[#534AB7] uppercase tracking-wider mb-2">Recomendación para tu empresa</p>
-            <p className="text-lg font-bold text-gray-900 mb-2">
-              Para tu empresa recomendamos reuniones <span className="text-[#534AB7]">{frecuencia.toLowerCase().includes('mensual') ? 'mensuales' : frecuencia.toLowerCase().includes('bimestral') ? 'bimestrales' : frecuencia.toLowerCase().includes('trimestral') ? 'trimestrales' : frecuencia.toLowerCase()}</span>.
-            </p>
-            <p className="text-sm text-gray-600 leading-relaxed">
-              {frecuencia.includes('12') ? 'Esto significa 12 reuniones al año dedicadas exclusivamente a pensar el futuro del negocio.' :
-               frecuencia.includes('6') ? 'Esto significa 6 reuniones al año dedicadas exclusivamente a pensar el futuro del negocio.' :
-               frecuencia.includes('4') ? 'Esto significa 4 reuniones al año dedicadas exclusivamente a pensar el futuro del negocio.' :
-               'Completá el módulo 1 para obtener una recomendación personalizada.'}
-            </p>
-          </div>
-
           <div className="border border-gray-200 rounded-xl bg-white p-5">
             <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-2">Frecuencia recomendada</h3>
             <p className="text-xl font-bold text-gray-900 mb-3">{frecuencia}</p>

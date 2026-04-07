@@ -60,6 +60,14 @@ export default function Modulo1() {
         </div>
       </div>
 
+      {current === 0 && (
+        <div className="border border-purple-100 bg-purple-50 rounded-xl px-5 py-4 mb-4">
+          <p className="text-sm text-gray-700 leading-relaxed">
+            En este módulo vamos a evaluar si tu empresa tiene las condiciones para beneficiarse de un directorio formal. Son 15 preguntas sobre tamaño, propiedad, gobierno y disponibilidad.
+          </p>
+        </div>
+      )}
+
       <div className="border border-gray-200 rounded-xl bg-white overflow-hidden mb-4">
         <div className="px-5 pt-5 pb-4 border-b border-gray-100">
           <div className="flex items-center gap-2 mb-3">
