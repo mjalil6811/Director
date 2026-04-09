@@ -3,445 +3,490 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { storage } from '../../lib/storage';
-import ProgressBar from '../../components/ProgressBar';
-import type { Modulo1Resultado, Modulo2Resultado, Modulo3Resultado, Modulo4Diagnostico } from '../../types';
+import type {
+  Modulo1Resultado,
+  Modulo2Resultado,
+  Modulo3Resultado,
+  Modulo4Diagnostico,
+  Modulo5Resultado,
+} from '../../types';
 
-const PERFIL_LABELS: Record<string, string> = {
-  estratega: "Estratega",
-  financiero: "Financiero",
-  familiar: "Familiar",
-  sector: "Experto sectorial",
-  legal: "Legal",
-  rrhh: "RRHH",
-  digital: "Digital",
-  inversor: "Inversor",
-  control: "Control",
-  crisis: "Crisis",
-};
+// ——— Score engine ————————————————————————————————————————————————————————————
 
-export default function DashboardPage() {
+interface DimensionScore {
+  id: string;
+  label: string;
+  descripcion: string;
+  score: number;       // 0–100
+  nivel: string;
+  icono: string;
+  fuente: string;
+}
+
+interface GovernanceScore {
+  total: number;       // 0–100
+  nivel: string;
+  etiqueta: string;
+  color: string;
+  colorBg: string;
+  dimensiones: DimensionScore[];
+  completadas: number; // cuántas dimensiones tienen data
+}
+
+function calcularGovernanceScore(
+  m1: Modulo1Resultado | null,
+  m2: Modulo2Resultado | null,
+  m3: Modulo3Resultado | null,
+  m4diag: Modulo4Diagnostico | null,
+  m5: Modulo5Resultado | null,
+): GovernanceScore {
+  const dims: DimensionScore[] = [];
+  let completadas = 0;
+
+  // D1 — Necesidad de directorio (M1)
+  // A mayor necesidad detectada y mayor complejidad, mayor madurez implícita
+  const d1score = m1 ? Math.min(100, m1.porcentaje ?? 0) : 0;
+  dims.push({
+    id: 'necesidad',
+    label: 'Complejidad organizacional',
+    descripcion: 'Nivel de complejidad y madurez que justifica un directorio formal.',
+    score: d1score,
+    nivel: d1score >= 75 ? 'Alta' : d1score >= 50 ? 'Media-alta' : d1score >= 30 ? 'Media' : 'Baja',
+    icono: '🏛',
+    fuente: 'Módulo 1',
+  });
+  if (m1) completadas++;
+
+  // D2 — Distribución de decisiones (M2)
+  // Más delegación = más madurez. Score invertido: menos concentración = mejor.
+  const d2raw = m2 ? (m2.porcentaje ?? 0) : 0;
+  const d2score = m2 ? Math.max(0, 100 - d2raw) : 0;
+  dims.push({
+    id: 'decisiones',
+    label: 'Distribución de decisiones',
+    descripcion: 'Grado en que las decisiones estratégicas están bien delegadas y no concentradas en una sola persona.',
+    score: d2score,
+    nivel: d2score >= 70 ? 'Saludable' : d2score >= 45 ? 'En desarrollo' : d2score >= 20 ? 'Concentrada' : 'Muy concentrada',
+    icono: '⚖',
+    fuente: 'Módulo 2',
+  });
+  if (m2) completadas++;
+
+  // D3 — Composición del directorio (M3)
+  // Basado en la urgencia del perfil más crítico (indicador inverso de brechas)
+  let d3score = 0;
+  if (m3) {
+    const topUrgencia = m3.topPerfiles[0]?.urgencia ?? '';
+    if (topUrgencia === 'Crítico') d3score = 20;
+    else if (topUrgencia === 'Urgente') d3score = 45;
+    else d3score = 70;
+  }
+  dims.push({
+    id: 'composicion',
+    label: 'Composición y perfiles',
+    descripcion: 'Adecuación de los perfiles existentes o planificados para las necesidades estratégicas de la empresa.',
+    score: d3score,
+    nivel: d3score >= 65 ? 'Adecuada' : d3score >= 40 ? 'Con brechas' : 'Crítica',
+    icono: '👥',
+    fuente: 'Módulo 3',
+  });
+  if (m3) completadas++;
+
+  // D4 — Disposición al cambio (M4)
+  const d4score = m4diag ? (m4diag.porcentaje ?? 0) : 0;
+  dims.push({
+    id: 'disposicion',
+    label: 'Disposición al gobierno',
+    descripcion: 'Voluntad real del CEO y la organización de operar bajo una estructura de gobierno corporativo.',
+    score: d4score,
+    nivel: d4score >= 80 ? 'Alta' : d4score >= 50 ? 'Moderada' : 'Baja',
+    icono: '🎯',
+    fuente: 'Módulo 4',
+  });
+  if (m4diag) completadas++;
+
+  // D5 — Dinámica directorio-gerencia (M5)
+  const d5score = m5 ? (m5.porcentaje ?? 0) : 0;
+  dims.push({
+    id: 'dinamica',
+    label: 'Dinámica directorio-gerencia',
+    descripcion: 'Calidad de la relación operativa entre el directorio y la gerencia: información, autonomía y evaluación mutua.',
+    score: d5score,
+    nivel: d5score >= 75 ? 'Sana' : d5score >= 50 ? 'En construcción' : d5score >= 25 ? 'Con tensiones' : 'Crítica',
+    icono: '🔄',
+    fuente: 'Módulo 5',
+  });
+  if (m5) completadas++;
+
+  // Score total ponderado
+  // Pesos: necesidad 15%, decisiones 25%, composición 20%, disposición 20%, dinámica 20%
+  const pesos = [0.15, 0.25, 0.20, 0.20, 0.20];
+  const totalPonderado = dims.reduce((acc, d, i) => acc + d.score * pesos[i], 0);
+  const ajuste = completadas > 0 ? totalPonderado / (pesos.slice(0, completadas).reduce((a, b) => a + b, 0)) : 0;
+  const total = Math.round(Math.min(100, ajuste));
+
+  let nivel: string;
+  let etiqueta: string;
+  let color: string;
+  let colorBg: string;
+
+  if (total >= 75) {
+    nivel = 'Avanzado';
+    etiqueta = 'Gobierno corporativo maduro';
+    color = '#0F6E56';
+    colorBg = '#E1F5EE';
+  } else if (total >= 55) {
+    nivel = 'Intermedio';
+    etiqueta = 'Gobierno en desarrollo';
+    color = '#534AB7';
+    colorBg = '#EEEDFE';
+  } else if (total >= 35) {
+    nivel = 'Inicial';
+    etiqueta = 'Bases de gobierno en construcción';
+    color = '#854F0B';
+    colorBg = '#FAEEDA';
+  } else {
+    nivel = 'Incipiente';
+    etiqueta = 'Gobierno corporativo por formalizar';
+    color = '#A32D2D';
+    colorBg = '#FCEBEB';
+  }
+
+  return { total, nivel, etiqueta, color, colorBg, dimensiones: dims, completadas };
+}
+
+// ——— Radar SVG ——————————————————————————————————————————————————————————————
+
+function RadarChart({ dimensiones }: { dimensiones: DimensionScore[] }) {
+  const cx = 140, cy = 140, r = 110;
+  const n = dimensiones.length;
+  const angles = dimensiones.map((_, i) => (Math.PI * 2 * i) / n - Math.PI / 2);
+
+  function point(angle: number, radius: number) {
+    return { x: cx + radius * Math.cos(angle), y: cy + radius * Math.sin(angle) };
+  }
+
+  const gridLevels = [0.25, 0.5, 0.75, 1];
+
+  const dataPoints = dimensiones.map((d, i) => point(angles[i], (d.score / 100) * r));
+  const dataPath = dataPoints.map((p, i) => `${i === 0 ? 'M' : 'L'} ${p.x} ${p.y}`).join(' ') + ' Z';
+
+  return (
+    <svg viewBox="0 0 280 280" width="100%" style={{ maxWidth: 280 }}>
+      {/* Grid circles */}
+      {gridLevels.map((level, gi) => {
+        const gridPoints = angles.map(a => point(a, level * r));
+        const path = gridPoints.map((p, i) => `${i === 0 ? 'M' : 'L'} ${p.x} ${p.y}`).join(' ') + ' Z';
+        return <path key={gi} d={path} fill="none" stroke="#E5E7EB" strokeWidth="0.5" />;
+      })}
+      {/* Axes */}
+      {angles.map((angle, i) => {
+        const end = point(angle, r);
+        return <line key={i} x1={cx} y1={cy} x2={end.x} y2={end.y} stroke="#E5E7EB" strokeWidth="0.5" />;
+      })}
+      {/* Data area */}
+      <path d={dataPath} fill="#534AB7" fillOpacity="0.15" stroke="#534AB7" strokeWidth="2" strokeLinejoin="round" />
+      {/* Data points */}
+      {dataPoints.map((p, i) => (
+        <circle key={i} cx={p.x} cy={p.y} r="4" fill="#534AB7" />
+      ))}
+      {/* Labels */}
+      {dimensiones.map((d, i) => {
+        const labelPt = point(angles[i], r + 22);
+        return (
+          <text
+            key={i}
+            x={labelPt.x}
+            y={labelPt.y}
+            textAnchor="middle"
+            dominantBaseline="middle"
+            fontSize="9"
+            fill="#6B7280"
+            fontWeight="500"
+          >
+            {d.label.split(' ').slice(0, 2).join(' ')}
+          </text>
+        );
+      })}
+    </svg>
+  );
+}
+
+// ——— Score bar ——————————————————————————————————————————————————————————————
+
+function ScoreBar({ score, color }: { score: number; color: string }) {
+  return (
+    <div className="w-full h-2 bg-gray-100 rounded-full overflow-hidden">
+      <div
+        className="h-full rounded-full transition-all duration-700"
+        style={{ width: `${score}%`, backgroundColor: color }}
+      />
+    </div>
+  );
+}
+
+// ——— Benchmark ——————————————————————————————————————————————————————————————
+
+const BENCHMARKS = [
+  { label: 'PyME familiar sin directorio', score: 18, color: '#9ca3af' },
+  { label: 'PyME con advisory board', score: 38, color: '#fbbf24' },
+  { label: 'Empresa mediana con directorio', score: 62, color: '#534AB7' },
+  { label: 'Empresa con gobierno maduro', score: 84, color: '#0F6E56' },
+];
+
+// ——— Page ———————————————————————————————————————————————————————————————————
+
+export default function GovernanceScorePage() {
   const router = useRouter();
-  const [nombre, setNombre] = useState('');
-  const [editNombre, setEditNombre] = useState(false);
-  const [nombreInput, setNombreInput] = useState('');
   const [m1, setM1] = useState<Modulo1Resultado | null>(null);
   const [m2, setM2] = useState<Modulo2Resultado | null>(null);
   const [m3, setM3] = useState<Modulo3Resultado | null>(null);
-  const [m4freq, setM4freq] = useState<string | null>(null);
   const [m4diag, setM4diag] = useState<Modulo4Diagnostico | null>(null);
-  const [pdfLoading, setPdfLoading] = useState(false);
+  const [m5, setM5] = useState<Modulo5Resultado | null>(null);
+  const [nombre, setNombre] = useState('');
   const [ready, setReady] = useState(false);
 
   useEffect(() => {
-    const n = storage.getEmpresaNombre() ?? '';
-    setNombre(n);
-    setNombreInput(n);
-
     const r1 = storage.getModulo1Resultado();
-    if (!r1) {
-      router.replace('/modulo/1');
-      return;
-    }
+    if (!r1) { router.replace('/'); return; }
     setM1(r1);
     setM2(storage.getModulo2Resultado());
     setM3(storage.getModulo3Resultado());
-    setM4freq(storage.getModulo4Frecuencia());
     setM4diag(storage.getModulo4Diagnostico());
+    setM5(storage.getModulo5Resultado());
+    setNombre(storage.getEmpresaNombre() ?? '');
     setReady(true);
   }, [router]);
 
-  function handleSaveNombre() {
-    const val = nombreInput.trim();
-    setNombre(val);
-    storage.setEmpresaNombre(val);
-    setEditNombre(false);
-  }
+  if (!ready) return (
+    <div className="min-h-screen flex items-center justify-center bg-[#FAFBFC]">
+      <div className="text-gray-400 text-sm">Calculando score...</div>
+    </div>
+  );
 
-  function handleReiniciar() {
-    if (confirm('¿Estás seguro que querés reiniciar el diagnóstico? Se borrarán todos los datos.')) {
-      storage.clearAll();
-      router.push('/');
-    }
-  }
+  const gs = calcularGovernanceScore(m1, m2, m3, m4diag, m5);
+  const fecha = new Date().toLocaleDateString('es-AR', { year: 'numeric', month: 'long', day: 'numeric' });
 
-  async function handleGeneratePDF() {
-    setPdfLoading(true);
-    try {
-      const { generatePDF } = await import('../../components/PDFReport');
-      const fecha = new Date().toLocaleDateString('es-AR', { year: 'numeric', month: 'long', day: 'numeric' });
-      const blob = await generatePDF({ empresa: nombre, m1, m2, m3, m4frecuencia: m4freq, m4diagnostico: m4diag, fecha });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `directorio-ar-diagnostico${nombre ? `-${nombre.replace(/\s+/g, '-').toLowerCase()}` : ''}.pdf`;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      URL.revokeObjectURL(url);
-    } catch (err) {
-      console.error('PDF error:', err);
-      alert('Error al generar el PDF. Por favor, intentá de nuevo.');
-    } finally {
-      setPdfLoading(false);
-    }
-  }
-
-  const completedModules = [!!m1, !!m2, !!m3, !!(m4freq || m4diag)].filter(Boolean).length;
-  const allComplete = completedModules === 4;
-
-  // Convert M1 percentage to clear recommendation
-  function getRecomendacion(pct: number): { label: string; badge: string } {
-    if (pct >= 75) return { label: 'Crear directorio con urgencia', badge: 'bg-red-100 text-red-700' };
-    if (pct >= 55) return { label: 'Altamente recomendado', badge: 'bg-orange-100 text-orange-700' };
-    if (pct >= 30) return { label: 'Recomendado', badge: 'bg-yellow-100 text-yellow-800' };
-    return { label: 'Poco recomendado en esta etapa', badge: 'bg-gray-100 text-gray-600' };
-  }
-
-  const levelBadge = (nivel: string) => {
-    if (!nivel) return 'bg-gray-100 text-gray-600';
-    if (nivel.includes('sana') || nivel.includes('Alta') || nivel.includes('listo')) return 'bg-green-100 text-green-700';
-    if (nivel.includes('construcción') || nivel.includes('Buena') || nivel.includes('Casi')) return 'bg-yellow-100 text-yellow-800';
-    if (nivel.includes('serias') || nivel.includes('parcial')) return 'bg-orange-100 text-orange-700';
-    if (nivel.includes('crítica') || nivel.includes('Baja') || nivel.includes('Todav')) return 'bg-red-100 text-red-700';
-    return 'bg-purple-100 text-purple-700';
-  };
-
-  if (!ready) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-gray-400 text-sm">Cargando...</div>
-      </div>
-    );
-  }
+  // Próximos pasos personalizados
+  const weakDims = gs.dimensiones
+    .filter(d => d.score < 50)
+    .sort((a, b) => a.score - b.score)
+    .slice(0, 3);
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col">
+    <div className="min-h-screen bg-[#FAFBFC] flex flex-col">
+      {/* Top bar */}
+      <div className="h-1 w-full bg-gradient-to-r from-[#534AB7] via-[#7C6FDB] to-[#534AB7]" />
+
       {/* Header */}
-      <header className="bg-white border-b border-gray-200 px-4 py-3 flex items-center gap-3">
-        <button onClick={() => router.push('/')} className="flex items-center gap-1 text-sm text-gray-500 hover:text-gray-900 transition-colors">
+      <header className="bg-white/90 backdrop-blur-md border-b border-[#E5E7EB] px-4 py-3 flex items-center gap-3 sticky top-0 z-20">
+        <button
+          onClick={() => router.back()}
+          className="flex items-center justify-center w-8 h-8 rounded-lg text-gray-500 hover:text-gray-900 hover:bg-gray-100"
+        >
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <path d="M19 12H5M5 12l7 7M5 12l7-7" />
           </svg>
         </button>
-        <div className="flex items-center gap-2 flex-1">
-          <div className="w-6 h-6 rounded-xl bg-[#534AB7] flex items-center justify-center">
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5">
-              <rect x="3" y="3" width="7" height="7" rx="1" />
-              <rect x="14" y="3" width="7" height="7" rx="1" />
-              <rect x="3" y="14" width="7" height="7" rx="1" />
-              <rect x="14" y="14" width="7" height="7" rx="1" />
-            </svg>
-          </div>
-          <span className="text-sm font-semibold text-gray-900">Dashboard</span>
+        <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-[#534AB7] to-[#7C6FDB] flex items-center justify-center shadow-sm">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+            <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
+          </svg>
         </div>
+        <span className="text-sm font-bold text-gray-900 tracking-tight">Governance Score</span>
+        {nombre && <span className="text-xs text-gray-400 ml-auto font-medium">{nombre}</span>}
       </header>
 
-      <main className="flex-1 px-4 py-6 max-w-2xl mx-auto w-full space-y-4">
-        {/* Company name */}
-        <div className="border border-gray-200 rounded-xl bg-white p-4">
-          {editNombre ? (
-            <div className="flex gap-2">
-              <input
-                type="text"
-                value={nombreInput}
-                onChange={e => setNombreInput(e.target.value)}
-                className="flex-1 px-3 py-2 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#534AB7]"
-                autoFocus
-                onKeyDown={e => { if (e.key === 'Enter') handleSaveNombre(); }}
-              />
-              <button onClick={handleSaveNombre} className="px-4 py-2 bg-[#534AB7] text-white rounded-xl text-sm font-medium">
-                Guardar
-              </button>
-            </div>
-          ) : (
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-xs text-gray-500 mb-0.5">Empresa</p>
-                <p className="text-base font-bold text-gray-900">{nombre || 'Sin nombre'}</p>
-              </div>
-              <button onClick={() => setEditNombre(true)} className="text-sm text-[#534AB7] hover:text-[#3C3489] font-medium">
-                Editar
-              </button>
-            </div>
+      <main className="flex-1 max-w-2xl mx-auto w-full px-4 py-8 space-y-6">
+
+        {/* Hero Score */}
+        <div
+          className="rounded-2xl p-8 text-center border"
+          style={{ backgroundColor: gs.colorBg, borderColor: gs.color + '40' }}
+        >
+          {nombre && (
+            <p className="text-xs font-semibold uppercase tracking-wider mb-3" style={{ color: gs.color }}>
+              {nombre}
+            </p>
           )}
-        </div>
-
-        {/* Progress */}
-        <div className="border border-gray-200 rounded-xl bg-white p-4">
-          <div className="flex items-center justify-between mb-2">
-            <span className="text-sm font-semibold text-gray-900">Progreso del diagnóstico</span>
-            <span className="text-sm font-bold text-[#534AB7]">{completedModules}/4</span>
-          </div>
-          <ProgressBar percentage={(completedModules / 4) * 100} />
-        </div>
-
-        {/* Ver resultado final */}
-        {allComplete && (
-          <button
-            onClick={() => router.push('/resultado')}
-            className="w-full py-4 bg-[#534AB7] hover:bg-[#3C3489] text-white rounded-xl text-sm font-semibold transition-colors flex items-center justify-center gap-2"
+          <p className="text-xs font-semibold uppercase tracking-wider mb-4 text-gray-500">
+            Índice de madurez de gobierno corporativo
+          </p>
+          <p className="text-8xl font-bold tracking-tight mb-2" style={{ color: gs.color }}>
+            {gs.total}
+          </p>
+          <p className="text-sm font-medium mb-3" style={{ color: gs.color }}>/ 100</p>
+          <div
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-semibold mb-3"
+            style={{ backgroundColor: gs.color + '18', color: gs.color }}
           >
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" /><polyline points="22 4 12 14.01 9 11.01" />
-            </svg>
-            Ver resultado final integrado
-          </button>
-        )}
-
-        {/* Module summaries */}
-        {/* M1 */}
-        <div className="border border-gray-200 rounded-xl bg-white p-4">
-          <div className="flex items-center justify-between mb-3">
-            <div className="flex items-center gap-2">
-              <span className="w-6 h-6 rounded-full bg-[#534AB7] text-white text-xs font-bold flex items-center justify-center">1</span>
-              <span className="text-sm font-semibold text-gray-900">¿Necesitás un directorio?</span>
-            </div>
-            <button onClick={() => router.push('/modulo/1')} className="text-xs text-[#534AB7] font-medium hover:underline">
-              {m1 ? 'Revisar' : 'Completar'}
-            </button>
+            <span>{gs.nivel}</span>
+            <span>·</span>
+            <span>{gs.etiqueta}</span>
           </div>
-          {m1 ? (() => {
-            const rec = getRecomendacion(m1.porcentaje ?? 0);
-            return (
-              <>
-                <ProgressBar percentage={m1.porcentaje ?? 0} label={`${m1.porcentaje}%`} />
-                <div className={`inline-flex mt-2 items-center px-2.5 py-1 rounded-full text-xs font-semibold ${rec.badge}`}>
-                  {rec.label}
-                </div>
-              </>
-            );
-          })() : (
-            <p className="text-xs text-gray-400">No completado</p>
-          )}
+          <p className="text-xs text-gray-400 mt-2">{fecha} · {gs.completadas}/5 módulos completados</p>
         </div>
 
-        {/* M2 */}
-        <div className="border border-gray-200 rounded-xl bg-white p-4">
-          <div className="flex items-center justify-between mb-3">
-            <div className="flex items-center gap-2">
-              <span className="w-6 h-6 rounded-full bg-[#534AB7] text-white text-xs font-bold flex items-center justify-center">2</span>
-              <span className="text-sm font-semibold text-gray-900">Mapa de decisiones</span>
-            </div>
-            <button onClick={() => router.push('/modulo/2')} className="text-xs text-[#534AB7] font-medium hover:underline">
-              {m2 ? 'Revisar' : 'Completar'}
-            </button>
+        {/* Radar chart */}
+        <div className="bg-white border border-[#E5E7EB] rounded-2xl p-6 shadow-sm">
+          <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-4 text-center">
+            Perfil de gobierno corporativo
+          </p>
+          <div className="flex justify-center">
+            <RadarChart dimensiones={gs.dimensiones} />
           </div>
-          {m2 ? (
-            <>
-              <div className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold mb-2
-                ${(m2.porcentaje ?? 0) >= 70 ? 'bg-red-100 text-red-700' :
-                  (m2.porcentaje ?? 0) >= 50 ? 'bg-orange-100 text-orange-700' :
-                  (m2.porcentaje ?? 0) >= 30 ? 'bg-yellow-100 text-yellow-800' :
-                  'bg-green-100 text-green-700'}`}>
-                {m2.perfil}
-              </div>
-              <p className="text-xs text-gray-500">
-                Índice de concentración: {m2.porcentaje}%
-              </p>
-            </>
-          ) : (
-            <p className="text-xs text-gray-400">No completado</p>
-          )}
         </div>
 
-        {/* Resultado parcial — after M1 + M2 */}
-        {m1 && m2 && (() => {
-          const m1Pct = m1.porcentaje ?? 0;
-          const m2Conc = m2.porcentaje ?? 0;
-          let diagnostico: string;
-          let diagBg: string;
-          let diagBorder: string;
-          let diagText: string;
-          if (m1Pct >= 55 && m2Conc >= 50) {
-            diagnostico = "Altamente recomendado";
-            diagBg = "bg-red-50"; diagBorder = "border-red-400"; diagText = "text-red-700";
-          } else if (m1Pct >= 30 || m2Conc >= 30) {
-            diagnostico = "Recomendado con condiciones";
-            diagBg = "bg-yellow-50"; diagBorder = "border-yellow-400"; diagText = "text-yellow-700";
-          } else {
-            diagnostico = "Evaluar más adelante";
-            diagBg = "bg-gray-50"; diagBorder = "border-gray-300"; diagText = "text-gray-600";
-          }
-
-          // Scale: 4 levels
-          const levels = [
-            { label: "No recomendado", active: m1Pct < 30 && m2Conc < 30, color: "bg-gray-300" },
-            { label: "Con condiciones", active: (m1Pct >= 30 || m2Conc >= 30) && !(m1Pct >= 55 && m2Conc >= 50) && !(m1Pct >= 55 && m2Conc >= 50) && m1Pct < 75, color: "bg-yellow-400" },
-            { label: "Recomendado", active: m1Pct >= 55 && m2Conc >= 50 && m1Pct < 75, color: "bg-[#534AB7]" },
-            { label: "Altamente recomendado", active: m1Pct >= 75 || (m1Pct >= 55 && m2Conc >= 50), color: "bg-red-500" },
-          ];
-          // Find the active level index
-          let activeIdx = 0;
-          if (m1Pct >= 75 || (m1Pct >= 55 && m2Conc >= 50)) activeIdx = 3;
-          else if (m1Pct >= 55 || (m1Pct >= 30 && m2Conc >= 50)) activeIdx = 2;
-          else if (m1Pct >= 30 || m2Conc >= 30) activeIdx = 1;
-
-          return (
-            <div className={`border-2 ${diagBorder} rounded-xl ${diagBg} p-5`}>
-              <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">
-                Resultado parcial — ¿Necesitás un directorio?
-              </p>
-
-              {/* Main verdict */}
-              <div className="text-center mb-5">
-                <p className={`text-xl font-bold ${diagText}`}>{diagnostico}</p>
-              </div>
-
-              {/* Visual scale */}
-              <div className="mb-5">
-                <div className="flex gap-1 mb-2">
-                  {[0, 1, 2, 3].map(i => (
-                    <div key={i} className={`flex-1 h-3 rounded-full transition-all ${i <= activeIdx ? ['bg-gray-300', 'bg-yellow-400', 'bg-[#534AB7]', 'bg-red-500'][i] : 'bg-gray-200'}`} />
-                  ))}
-                </div>
-                <div className="flex justify-between text-xs text-gray-400">
-                  <span>No recomendado</span>
-                  <span>Altamente recomendado</span>
-                </div>
-              </div>
-
-              {/* Two indicators */}
-              <div className="grid grid-cols-2 gap-3">
-                <div className="bg-white rounded-xl p-3 border border-gray-100">
-                  <p className="text-xs text-gray-400 mb-1">Necesidad</p>
-                  <div className="flex items-end gap-1.5">
-                    <span className="text-lg font-bold text-gray-900">{m1Pct}%</span>
-                    <span className="text-xs text-gray-400 mb-0.5">{m1.nivel}</span>
-                  </div>
-                  <div className="w-full h-1.5 bg-gray-100 rounded-full mt-1.5 overflow-hidden">
-                    <div className="h-full bg-[#534AB7] rounded-full" style={{ width: `${m1Pct}%` }} />
-                  </div>
-                </div>
-                <div className="bg-white rounded-xl p-3 border border-gray-100">
-                  <p className="text-xs text-gray-400 mb-1">Concentración</p>
-                  <div className="flex items-end gap-1.5">
-                    <span className="text-lg font-bold text-gray-900">{m2Conc}%</span>
-                    <span className="text-xs text-gray-400 mb-0.5">de decisiones</span>
-                  </div>
-                  <div className="w-full h-1.5 bg-gray-100 rounded-full mt-1.5 overflow-hidden">
-                    <div className="h-full bg-red-400 rounded-full" style={{ width: `${m2Conc}%` }} />
-                  </div>
-                </div>
-              </div>
-            </div>
-          );
-        })()}
-
-        {/* M3 */}
-        <div className="border border-gray-200 rounded-xl bg-white p-4">
-          <div className="flex items-center justify-between mb-3">
-            <div className="flex items-center gap-2">
-              <span className="w-6 h-6 rounded-full bg-[#534AB7] text-white text-xs font-bold flex items-center justify-center">3</span>
-              <span className="text-sm font-semibold text-gray-900">Perfiles del directorio</span>
-            </div>
-            <button onClick={() => router.push('/modulo/3')} className="text-xs text-[#534AB7] font-medium hover:underline">
-              {m3 ? 'Revisar' : 'Completar'}
-            </button>
+        {/* 5 dimensions */}
+        <div className="bg-white border border-[#E5E7EB] rounded-2xl overflow-hidden shadow-sm">
+          <div className="px-5 pt-5 pb-3 border-b border-gray-100">
+            <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Las 5 dimensiones</p>
           </div>
-          {m3 ? (
-            <div className="space-y-1">
-              {m3.topPerfiles.slice(0, 2).map(p => (
-                <div key={p.perfil} className="flex items-center justify-between">
-                  <span className="text-sm text-gray-700">{PERFIL_LABELS[p.perfil] ?? p.perfil}</span>
-                  <span className={`text-xs font-semibold px-2 py-0.5 rounded-full
-                    ${p.urgencia === 'Crítico' ? 'bg-red-100 text-red-700' :
-                      p.urgencia === 'Urgente' ? 'bg-orange-100 text-orange-700' :
-                      'bg-yellow-100 text-yellow-800'}`}>
-                    {p.urgencia}
-                  </span>
+          <div className="divide-y divide-gray-100">
+            {gs.dimensiones.map(d => {
+              const dimColor = d.score >= 70 ? '#0F6E56' : d.score >= 45 ? '#534AB7' : d.score >= 20 ? '#854F0B' : '#A32D2D';
+              return (
+                <div key={d.id} className="px-5 py-4">
+                  <div className="flex items-start justify-between gap-3 mb-2">
+                    <div className="flex items-center gap-2">
+                      <span className="text-base">{d.icono}</span>
+                      <div>
+                        <p className="text-sm font-semibold text-gray-900">{d.label}</p>
+                        <p className="text-xs text-gray-400">{d.fuente}</p>
+                      </div>
+                    </div>
+                    <div className="text-right shrink-0">
+                      <p className="text-lg font-bold" style={{ color: dimColor }}>{d.score}</p>
+                      <p className="text-xs" style={{ color: dimColor }}>{d.nivel}</p>
+                    </div>
+                  </div>
+                  <ScoreBar score={d.score} color={dimColor} />
+                  <p className="text-xs text-gray-500 mt-2 leading-relaxed">{d.descripcion}</p>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* Benchmark */}
+        <div className="bg-white border border-[#E5E7EB] rounded-2xl p-5 shadow-sm">
+          <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-4">
+            Benchmark — ¿Cómo estás vs el mercado?
+          </p>
+          <div className="space-y-4">
+            {BENCHMARKS.map((b) => (
+              <div key={b.label}>
+                <div className="flex justify-between text-xs mb-1">
+                  <span className="text-gray-600">{b.label}</span>
+                  <span className="font-bold" style={{ color: b.color }}>{b.score}</span>
+                </div>
+                <div className="w-full h-2 bg-gray-100 rounded-full overflow-hidden">
+                  <div className="h-full rounded-full" style={{ width: `${b.score}%`, backgroundColor: b.color }} />
+                </div>
+              </div>
+            ))}
+            {/* Tu score */}
+            <div className="pt-3 border-t border-gray-100">
+              <div className="flex justify-between text-xs mb-1">
+                <span className="font-semibold text-gray-900">{nombre || 'Tu empresa'}</span>
+                <span className="font-bold" style={{ color: gs.color }}>{gs.total}</span>
+              </div>
+              <div className="w-full h-3 bg-gray-100 rounded-full overflow-hidden">
+                <div className="h-full rounded-full" style={{ width: `${gs.total}%`, backgroundColor: gs.color }} />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Próximos pasos priorizados */}
+        {weakDims.length > 0 && (
+          <div className="bg-white border border-[#E5E7EB] rounded-2xl overflow-hidden shadow-sm">
+            <div className="px-5 pt-5 pb-3 border-b border-gray-100">
+              <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider">
+                Dónde mejorar primero
+              </p>
+            </div>
+            <div className="p-4 space-y-3">
+              {weakDims.map((d, i) => (
+                <div key={d.id} className="flex items-start gap-3 p-3 rounded-xl bg-[#FAFBFC] border border-[#E5E7EB]">
+                  <div
+                    className="w-7 h-7 rounded-full text-white text-xs font-bold flex items-center justify-center shrink-0 mt-0.5"
+                    style={{ backgroundColor: '#534AB7' }}
+                  >
+                    {i + 1}
+                  </div>
+                  <div>
+                    <p className="text-sm font-semibold text-gray-900">
+                      {d.icono} {d.label} — {d.score}/100
+                    </p>
+                    <p className="text-xs text-gray-500 mt-0.5 leading-relaxed">{d.descripcion}</p>
+                    <button
+                      onClick={() => {
+                        const modNum = d.fuente.replace('Módulo ', '');
+                        router.push(`/modulo/${modNum}`);
+                      }}
+                      className="mt-2 text-xs text-[#534AB7] font-semibold hover:underline"
+                    >
+                      Ir a {d.fuente} →
+                    </button>
+                  </div>
                 </div>
               ))}
             </div>
-          ) : (
-            <p className="text-xs text-gray-400">No completado</p>
-          )}
-        </div>
-
-        {/* M4 */}
-        <div className="border border-gray-200 rounded-xl bg-white p-4">
-          <div className="flex items-center justify-between mb-3">
-            <div className="flex items-center gap-2">
-              <span className="w-6 h-6 rounded-full bg-[#534AB7] text-white text-xs font-bold flex items-center justify-center">4</span>
-              <span className="text-sm font-semibold text-gray-900">Dinámica y funcionamiento</span>
-            </div>
-            <button onClick={() => router.push('/modulo/4')} className="text-xs text-[#534AB7] font-medium hover:underline">
-              {(m4freq || m4diag) ? 'Revisar' : 'Completar'}
-            </button>
           </div>
-          {m4freq ? (
-            <div className="space-y-2">
-              <div className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-purple-100 text-purple-700">
-                {m4freq}
-              </div>
-              {m4diag && (
-                <div>
-                  <p className="text-xs text-gray-500">Disposición: {m4diag.porcentaje}%</p>
-                  <div className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold mt-1 ${levelBadge(m4diag.nivel)}`}>
-                    {m4diag.nivel}
-                  </div>
-                </div>
-              )}
+        )}
+
+        {/* Diagnóstico narrativo */}
+        <div className="border rounded-2xl overflow-hidden shadow-sm" style={{ borderColor: gs.color + '40' }}>
+          <div className="px-5 pt-5 pb-4 border-l-4" style={{ borderLeftColor: gs.color, backgroundColor: gs.colorBg + '80' }}>
+            <p className="text-xs font-semibold uppercase tracking-wider mb-4" style={{ color: gs.color }}>
+              Diagnóstico de madurez
+            </p>
+            <div className="space-y-3">
+              <p className="text-sm text-gray-700 leading-relaxed">
+                {gs.total >= 75
+                  ? `${nombre || 'Tu empresa'} opera con un nivel de gobierno corporativo avanzado. Las estructuras de decisión, composición del directorio y dinámica con la gerencia muestran madurez real. El foco ahora debe estar en mantener y evolucionar las prácticas, no solo en instalarlas.`
+                  : gs.total >= 55
+                  ? `${nombre || 'Tu empresa'} tiene las bases del gobierno corporativo en construcción. Hay avances reales, pero quedan brechas que si no se resuelven limitan la escala y el acceso a capital. El momento de actuar es ahora, antes de que la complejidad supere la estructura.`
+                  : gs.total >= 35
+                  ? `${nombre || 'Tu empresa'} está en una etapa inicial de profesionalización del gobierno. Las condiciones están dadas para avanzar, pero requiere decisiones concretas: definir perfiles, distribuir decisiones y construir la disposición interna al cambio.`
+                  : `${nombre || 'Tu empresa'} tiene el gobierno corporativo por formalizar. No es una crítica — la mayoría de las empresas argentinas están en este punto. El primer paso es construir consciencia sobre qué decisiones son estratégicas y cuáles operativas, antes de instalar estructuras formales.`
+                }
+              </p>
+              <p className="text-sm text-gray-700 leading-relaxed">
+                {gs.completadas < 5
+                  ? `Este score está basado en ${gs.completadas} de 5 dimensiones evaluadas. Al completar todos los módulos, el diagnóstico será más preciso y las recomendaciones más específicas.`
+                  : 'El score integra las 5 dimensiones del gobierno corporativo, ponderadas según su impacto real en la efectividad del directorio y la toma de decisiones.'
+                }
+              </p>
             </div>
-          ) : (
-            <p className="text-xs text-gray-400">No completado</p>
-          )}
-        </div>
-
-        {/* Actions */}
-        <div className="space-y-3">
-          <button
-            onClick={handleGeneratePDF}
-            disabled={!allComplete || pdfLoading}
-            className={`w-full py-3 rounded-xl text-sm font-semibold transition-colors flex items-center justify-center gap-2
-              ${allComplete && !pdfLoading
-                ? 'bg-[#534AB7] hover:bg-[#3C3489] text-white'
-                : 'bg-gray-100 text-gray-400 cursor-not-allowed'}`}
-          >
-            {pdfLoading ? (
-              <>
-                <svg className="animate-spin w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83" />
-                </svg>
-                Generando PDF...
-              </>
-            ) : (
-              <>
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
-                  <polyline points="14 2 14 8 20 8" />
-                  <line x1="16" y1="13" x2="8" y2="13" />
-                  <line x1="16" y1="17" x2="8" y2="17" />
-                  <polyline points="10 9 9 9 8 9" />
-                </svg>
-                {allComplete ? 'Generar reporte PDF' : `Completá todos los módulos para generar el PDF (${completedModules}/4)`}
-              </>
-            )}
-          </button>
-
-          <button
-            onClick={handleReiniciar}
-            className="w-full py-2.5 border border-red-200 text-red-500 rounded-xl text-sm font-medium hover:bg-red-50 transition-colors"
-          >
-            Reiniciar diagnóstico
-          </button>
-        </div>
-
-        {/* Module navigation */}
-        <div className="border border-gray-200 rounded-xl bg-white p-4">
-          <h3 className="text-sm font-semibold text-gray-700 mb-3">Ir a módulo</h3>
-          <div className="grid grid-cols-4 gap-2">
-            {[1, 2, 3, 4].map(n => (
-              <button
-                key={n}
-                onClick={() => router.push(`/modulo/${n}`)}
-                className="flex flex-col items-center py-3 border border-gray-200 rounded-xl hover:border-[#534AB7] hover:bg-purple-50 transition-colors"
-              >
-                <span className="w-6 h-6 rounded-full bg-[#534AB7] text-white text-xs font-bold flex items-center justify-center">
-                  {n}
-                </span>
-              </button>
-            ))}
           </div>
+        </div>
+
+        {/* Nota sobre uso del score */}
+        <div className="bg-[#EEEDFE] border border-[#DDD9FE] rounded-2xl p-5">
+          <p className="text-xs font-semibold text-[#534AB7] uppercase tracking-wider mb-2">
+            ¿Para qué sirve este score?
+          </p>
+          <p className="text-sm text-gray-700 leading-relaxed">
+            El Governance Score es un indicador de madurez de gobierno corporativo diseñado para el contexto de empresas argentinas. Puede usarse como referencia ante inversores, fondos de PE, SGRs o socios estratégicos que evalúan la solidez institucional de una empresa antes de comprometer capital o alianzas.
+          </p>
+        </div>
+
+        {/* Navigation */}
+        <div className="flex gap-3 pb-4">
+          <button
+            onClick={() => router.push('/resultado')}
+            className="flex-1 py-3 border border-[#E5E7EB] rounded-xl text-sm font-medium text-gray-600 hover:bg-white bg-white/50"
+          >
+            Ver resultado completo
+          </button>
+          <button
+            onClick={() => router.push('/dashboard')}
+            className="flex-1 py-3 bg-[#534AB7] hover:bg-[#3C3489] text-white rounded-xl text-sm font-semibold"
+          >
+            Dashboard →
+          </button>
         </div>
       </main>
     </div>
