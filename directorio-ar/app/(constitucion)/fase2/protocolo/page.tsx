@@ -1,322 +1,268 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { CLAUSULAS, CATEGORIAS, calcularCompletitudProtocolo } from '../../../../lib/constitucion/modulo7-protocolo';
+import {
+  CATEGORIAS_ESCENARIO, getEscenarios, calcularResultado, generarTextoProtocolo,
+} from '../../../../lib/constitucion/modulo7-protocolo';
 import { storageFase2 } from '../../../../lib/storage/storage-fase2';
-import type { TipoProtocolo, ClausulaProtocolo, CategoriaProtocolo } from '../../../../types/fase2';
+import { storage } from '../../../../lib/storage/storage';
+import type { TipoProtocolo, CategoriaProtocolo } from '../../../../types/fase2';
+import type { RespuestaProtocolo, CategoriaEscenario } from '../../../../lib/constitucion/modulo7-protocolo';
 
-const TIPO_OPTIONS: { value: TipoProtocolo; titulo: string; descripcion: string; icono: string }[] = [
-  {
-    value: 'familia',
-    titulo: 'Protocolo familiar',
-    descripcion: 'Para empresas donde los socios son familia',
-    icono: '👨‍👩‍👧‍👦',
-  },
-  {
-    value: 'socios',
-    titulo: 'Acuerdo de socios',
-    descripcion: 'Para socios sin vínculo familiar',
-    icono: '🤝',
-  },
-  {
-    value: 'mixto',
-    titulo: 'Protocolo mixto',
-    descripcion: 'Combinación de ambos',
-    icono: '🔀',
-  },
-];
-
-const CATEGORIA_ICONOS: Record<string, string> = {
-  door: '🚪',
-  transfer: '🔄',
-  scale: '⚖️',
-  tree: '🌳',
-  money: '💰',
-  salary: '💼',
-  governance: '🏛️',
+const NIVEL_COLOR = {
+  flexible: 'bg-gray-100 text-gray-600',
+  moderado: 'bg-blue-50 text-blue-700',
+  estricto: 'bg-purple-50 text-purple-700',
 };
+const NIVEL_LABEL = { flexible: 'Flexible', moderado: 'Moderado', estricto: 'Robusto' };
 
-export default function ProtocoloPage() {
-  const router = useRouter();
-  const [tipo, setTipo] = useState<TipoProtocolo | null>(null);
-  const [clausulas, setClausulas] = useState<ClausulaProtocolo[]>([]);
-  const [guardado, setGuardado] = useState(false);
-
-  // Load existing data on mount
-  useEffect(() => {
-    const tipoGuardado = storageFase2.getProtocoloTipo();
-    const clausulasGuardadas = storageFase2.getProtocoloClausulas();
-
-    if (tipoGuardado) setTipo(tipoGuardado);
-    if (clausulasGuardadas && clausulasGuardadas.length > 0) {
-      setClausulas(clausulasGuardadas);
-    } else {
-      setClausulas(CLAUSULAS.map(c => ({ ...c })));
-    }
-  }, []);
-
-  const resultado = tipo ? calcularCompletitudProtocolo(tipo, clausulas) : null;
-
-  const toggleClausula = (id: string) => {
-    setGuardado(false);
-    setClausulas(prev =>
-      prev.map(c => (c.id === id ? { ...c, seleccionada: !c.seleccionada } : c))
-    );
-  };
-
-  const handleGuardar = () => {
-    if (!tipo || !resultado) return;
-    storageFase2.setProtocoloTipo(tipo);
-    storageFase2.setProtocoloClausulas(clausulas);
-    storageFase2.setProtocoloResultado(resultado);
-    setGuardado(true);
-    setTimeout(() => setGuardado(false), 2500);
-  };
-
-  const handleCambiarTipo = () => {
-    setTipo(null);
-  };
-
-  const handleSeleccionarTipo = (t: TipoProtocolo) => {
-    setTipo(t);
-    storageFase2.setProtocoloTipo(t);
-    if (clausulas.length === 0) {
-      setClausulas(CLAUSULAS.map(c => ({ ...c })));
-    }
-  };
-
-  const categoriasOrdenadas = Object.keys(CATEGORIAS) as CategoriaProtocolo[];
-
-  // ——— Step 1: Type selection ——————————————————————————————————————————————
-
-  if (!tipo) {
-    return (
-      <div className="min-h-screen bg-[#FAFBFC]">
-        {/* Gradient top bar */}
-        <div className="h-1.5 w-full bg-gradient-to-r from-[#534AB7] via-[#7B6FE0] to-[#534AB7]" />
-
-        <div className="max-w-2xl mx-auto px-4 py-8">
-          {/* Back */}
-          <button
-            onClick={() => router.back()}
-            className="flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-700 transition mb-8"
-          >
-            <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
-            </svg>
-            Volver
+function SeleccionTipo({ onSelect }: { onSelect: (t: TipoProtocolo) => void }) {
+  const tipos: { tipo: TipoProtocolo; titulo: string; desc: string; tag: string }[] = [
+    { tipo: 'familia', titulo: 'Empresa familiar', desc: 'Hay familiares como socios, directores o potenciales herederos. Incluye reglas de sucesión y familiares políticos.', tag: '10 escenarios' },
+    { tipo: 'socios', titulo: 'Socios no familiares', desc: 'Los socios son principalmente personas que se asociaron por negocio, sin vínculo familiar. Foco en transferencias y conflictos.', tag: '7 escenarios' },
+    { tipo: 'mixto', titulo: 'Familia y socios externos', desc: 'Combinación de socios familiares y externos. Se aplican todas las reglas posibles.', tag: '10 escenarios' },
+  ];
+  return (
+    <div>
+      <h2 className="text-base font-semibold text-gray-900 mb-1">¿Cómo es tu empresa?</h2>
+      <p className="text-sm text-gray-400 mb-6">Esto determina qué situaciones vas a resolver en el protocolo.</p>
+      <div className="space-y-3">
+        {tipos.map(t => (
+          <button key={t.tipo} onClick={() => onSelect(t.tipo)}
+            className="w-full text-left bg-white rounded-2xl border border-gray-200 p-5 hover:border-[#534AB7]/50 hover:bg-[#FAFBFC] transition-all group">
+            <div className="flex items-start justify-between">
+              <div>
+                <p className="font-semibold text-gray-900 text-sm group-hover:text-[#534AB7] transition-colors">{t.titulo}</p>
+                <p className="text-xs text-gray-400 mt-1 leading-relaxed max-w-xs">{t.desc}</p>
+              </div>
+              <span className="text-xs bg-gray-100 text-gray-500 px-2.5 py-1 rounded-full font-medium shrink-0 ml-3">{t.tag}</span>
+            </div>
           </button>
+        ))}
+      </div>
+    </div>
+  );
+}
 
-          {/* Header */}
-          <div className="mb-8">
-            <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">
-              Módulo 7 — Fase 2
-            </p>
-            <h1 className="text-2xl font-bold text-gray-900 mb-2">
-              Protocolo de Familia / Socios
-            </h1>
-            <p className="text-sm text-gray-500 leading-relaxed">
-              Seleccioná el tipo de protocolo que mejor se ajusta a la composición societaria de tu empresa.
-            </p>
-          </div>
+function Resultado({ resultado, empresaNombre, onReiniciar }: {
+  resultado: ReturnType<typeof calcularResultado>;
+  empresaNombre: string;
+  onReiniciar: () => void;
+}) {
+  const [copiado, setCopiado] = useState(false);
+  const nivelConfig = {
+    basico: { label: 'Protección básica', color: 'bg-amber-50 text-amber-700 border-amber-200', desc: 'Cubre los mínimos. Considerá completar los escenarios opcionales.' },
+    intermedio: { label: 'Protección intermedia', color: 'bg-blue-50 text-blue-700 border-blue-200', desc: 'Buen nivel de cobertura. El protocolo protege los principales riesgos.' },
+    robusto: { label: 'Protección robusta', color: 'bg-green-50 text-green-700 border-green-200', desc: 'Cobertura completa. El protocolo está listo para escenarios complejos.' },
+  };
+  const nc = nivelConfig[resultado.nivelProteccion];
 
-          {/* Cards */}
-          <div className="flex flex-col gap-4">
-            {TIPO_OPTIONS.map(opt => (
-              <button
-                key={opt.value}
-                onClick={() => handleSeleccionarTipo(opt.value)}
-                className="bg-white border border-[#E5E7EB] rounded-2xl shadow-sm p-6 text-left hover:border-[#534AB7] hover:shadow-md transition-all group"
-              >
-                <div className="flex items-start gap-4">
-                  <div className="text-3xl">{opt.icono}</div>
-                  <div>
-                    <h3 className="text-base font-semibold text-gray-900 group-hover:text-[#534AB7] transition">
-                      {opt.titulo}
-                    </h3>
-                    <p className="text-sm text-gray-500 mt-1">{opt.descripcion}</p>
-                  </div>
-                </div>
-              </button>
-            ))}
-          </div>
+  const copiar = () => {
+    navigator.clipboard.writeText(generarTextoProtocolo(resultado, empresaNombre));
+    setCopiado(true);
+    setTimeout(() => setCopiado(false), 2000);
+  };
+
+  return (
+    <div>
+      <div className={`rounded-2xl border p-4 mb-5 ${nc.color}`}>
+        <p className="font-semibold text-sm">{nc.label}</p>
+        <p className="text-xs mt-0.5 opacity-80">{nc.desc}</p>
+      </div>
+
+      <div className="bg-white rounded-2xl border border-gray-200 p-4 mb-4">
+        <div className="flex items-center justify-between mb-3">
+          <span className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Cobertura</span>
+          <span className="text-sm font-bold text-[#534AB7]">{resultado.coberturaPorcentaje}%</span>
+        </div>
+        <div className="h-2 bg-gray-100 rounded-full overflow-hidden mb-4">
+          <div className="h-full bg-gradient-to-r from-[#534AB7] to-[#7C6FDB] rounded-full transition-all" style={{ width: `${resultado.coberturaPorcentaje}%` }} />
+        </div>
+        <p className="text-xs font-semibold text-gray-600 mb-2">Cláusulas acordadas ({resultado.clausulasGeneradas.length})</p>
+        <div className="space-y-1.5">
+          {resultado.clausulasGeneradas.map((c, i) => (
+            <div key={i} className="flex items-start gap-2">
+              <div className="w-4 h-4 rounded-full bg-[#E1F5EE] flex items-center justify-center shrink-0 mt-0.5">
+                <svg width="8" height="8" viewBox="0 0 12 12" fill="none"><path d="M2 6l3 3 5-5" stroke="#0F6E56" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" /></svg>
+              </div>
+              <p className="text-xs text-gray-600">{c}</p>
+            </div>
+          ))}
         </div>
       </div>
-    );
-  }
 
-  // ——— Step 2: Clause selection ————————————————————————————————————————————
+      {resultado.areasIncompletas.length > 0 && (
+        <div className="bg-amber-50 border border-amber-200 rounded-xl p-3 mb-4">
+          <p className="text-xs font-semibold text-amber-700 mb-1">Áreas sin cobertura</p>
+          {resultado.areasIncompletas.map(a => (
+            <p key={a} className="text-xs text-amber-600">• {CATEGORIAS_ESCENARIO[a].label}</p>
+          ))}
+        </div>
+      )}
 
-  const seleccionadasCount = clausulas.filter(c => c.seleccionada).length;
+      <div className="flex gap-3">
+        <button onClick={copiar} className="flex-1 py-3 rounded-xl border border-[#534AB7] text-[#534AB7] font-semibold text-sm hover:bg-[#EEEDFE] transition-colors">
+          {copiado ? '✓ Copiado' : 'Copiar protocolo'}
+        </button>
+        <button onClick={onReiniciar} className="flex-1 py-3 rounded-xl bg-[#534AB7] hover:bg-[#3C3489] text-white font-semibold text-sm transition-colors">
+          Editar respuestas
+        </button>
+      </div>
+    </div>
+  );
+}
+
+export default function ModuloProtocolo() {
+  const router = useRouter();
+  const [tipo, setTipo] = useState<TipoProtocolo | null>(null);
+  const [respuestas, setRespuestas] = useState<RespuestaProtocolo[]>([]);
+  const [categoriaActiva, setCategoriaActiva] = useState<CategoriaEscenario | null>(null);
+  const [mostrarResultado, setMostrarResultado] = useState(false);
+  const empresaNombre = storage.getEmpresaNombre() ?? 'Mi Empresa';
+
+  const escenarios = tipo ? getEscenarios(tipo) : [];
+  const categorias = tipo ? [...new Set(escenarios.map(e => e.categoria))] as CategoriaEscenario[] : [];
+  const escenariosFiltrados = categoriaActiva ? escenarios.filter(e => e.categoria === categoriaActiva) : escenarios;
+  const respondidos = respuestas.length;
+  const obligatoriosTotal = escenarios.filter(e => e.obligatorio).length;
+  const obligatoriosRespondidos = escenarios.filter(e => e.obligatorio && respuestas.some(r => r.escenarioId === e.id)).length;
+  const puedeVerResultado = obligatoriosRespondidos >= obligatoriosTotal;
+
+  const responder = (escenarioId: string, opcionId: string) => {
+    setRespuestas(prev => {
+      const sin = prev.filter(r => r.escenarioId !== escenarioId);
+      return [...sin, { escenarioId, opcionId }];
+    });
+  };
+
+  const getRespuesta = (escenarioId: string) => respuestas.find(r => r.escenarioId === escenarioId);
+
+  const verResultado = () => {
+    if (!tipo) return;
+    const resultado = calcularResultado(tipo, respuestas);
+    storageFase2.setProtocoloResultado({
+      tipo,
+      clausulasSeleccionadas: [],
+      completitudPorcentaje: resultado.coberturaPorcentaje,
+      areasConBrechas: resultado.areasIncompletas as unknown as CategoriaProtocolo[],
+    });
+    setMostrarResultado(true);
+  };
 
   return (
     <div className="min-h-screen bg-[#FAFBFC]">
-      {/* Gradient top bar */}
-      <div className="h-1.5 w-full bg-gradient-to-r from-[#534AB7] via-[#7B6FE0] to-[#534AB7]" />
+      <div className="h-1 w-full bg-gray-100">
+        <div className="h-full bg-gradient-to-r from-[#534AB7] to-[#7C6FDB] transition-all" style={{ width: tipo ? `${(respondidos / Math.max(escenarios.length, 1)) * 100}%` : '5%' }} />
+      </div>
 
-      <div className="max-w-2xl mx-auto px-4 py-8">
-        {/* Back */}
-        <button
-          onClick={() => router.back()}
-          className="flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-700 transition mb-8"
-        >
-          <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-            <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
-          </svg>
-          Volver
+      <header className="bg-white/80 backdrop-blur-md border-b border-gray-200 px-4 py-3 flex items-center gap-3 sticky top-0 z-20">
+        <button onClick={() => { if (mostrarResultado) setMostrarResultado(false); else if (tipo) setTipo(null); else router.push('/'); }}
+          className="w-8 h-8 rounded-lg text-gray-500 hover:bg-gray-100 flex items-center justify-center">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 12H5M5 12l7 7M5 12l7-7" /></svg>
         </button>
-
-        {/* Header */}
-        <div className="mb-6">
-          <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">
-            Módulo 7 — Fase 2
-          </p>
-          <h1 className="text-2xl font-bold text-gray-900 mb-1">
-            Protocolo de Familia / Socios
-          </h1>
-          <p className="text-sm text-gray-500">
-            Tipo seleccionado:{' '}
-            <span className="font-medium text-[#534AB7]">
-              {TIPO_OPTIONS.find(o => o.value === tipo)?.titulo}
-            </span>
-          </p>
+        <div className="flex items-center gap-2.5 flex-1">
+          <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-[#534AB7] to-[#7C6FDB] text-white text-xs font-bold flex items-center justify-center">7</div>
+          <span className="text-sm font-semibold text-gray-900">
+            {mostrarResultado ? 'Tu protocolo' : tipo ? 'Protocolo de socios' : 'Protocolo'}
+          </span>
         </div>
+        {tipo && !mostrarResultado && (
+          <span className="text-xs text-gray-400">{respondidos}/{escenarios.length} situaciones</span>
+        )}
+      </header>
 
-        {/* Progress card */}
-        {resultado && (
-          <div className="bg-white border border-[#E5E7EB] rounded-2xl shadow-sm p-5 mb-6">
-            <div className="flex items-center justify-between mb-3">
-              <span className="text-sm font-semibold text-gray-700">Cobertura del protocolo</span>
-              <span className="text-sm font-bold text-[#534AB7]">{resultado.completitudPorcentaje}%</span>
-            </div>
-            {/* Progress bar */}
-            <div className="h-2 bg-gray-100 rounded-full overflow-hidden mb-4">
-              <div
-                className="h-full bg-[#534AB7] rounded-full transition-all duration-500"
-                style={{ width: `${resultado.completitudPorcentaje}%` }}
-              />
-            </div>
-            <div className="flex items-center justify-between text-xs text-gray-400">
-              <span>{seleccionadasCount} de {clausulas.length} cláusulas seleccionadas</span>
-              <span>{7 - resultado.areasConBrechas.length} de 7 áreas cubiertas</span>
-            </div>
+      <main className="max-w-xl mx-auto px-4 py-8">
+        {!tipo && <SeleccionTipo onSelect={t => { setTipo(t); setRespuestas([]); }} />}
 
-            {/* Gaps */}
-            {resultado.areasConBrechas.length > 0 && (
-              <div className="mt-4 pt-4 border-t border-gray-100">
-                <p className="text-xs font-semibold text-amber-600 mb-2">
-                  Áreas obligatorias sin cobertura:
-                </p>
-                <div className="flex flex-wrap gap-2">
-                  {resultado.areasConBrechas.map(cat => (
-                    <span
-                      key={cat}
-                      className="inline-flex items-center gap-1 px-2.5 py-1 bg-amber-50 text-amber-700 text-xs font-medium rounded-lg border border-amber-200"
-                    >
-                      <svg width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v2m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                      </svg>
-                      {CATEGORIAS[cat].label}
-                    </span>
-                  ))}
-                </div>
-              </div>
-            )}
-          </div>
+        {tipo && mostrarResultado && (
+          <Resultado
+            resultado={calcularResultado(tipo, respuestas)}
+            empresaNombre={empresaNombre}
+            onReiniciar={() => setMostrarResultado(false)}
+          />
         )}
 
-        {/* Clauses by category */}
-        <div className="flex flex-col gap-6 mb-32">
-          {categoriasOrdenadas.map(cat => {
-            const catInfo = CATEGORIAS[cat];
-            const clausulasCat = clausulas.filter(c => c.categoria === cat);
-            const seleccionadasCat = clausulasCat.filter(c => c.seleccionada).length;
-            const esBrechaObligatoria = resultado?.areasConBrechas.includes(cat);
+        {tipo && !mostrarResultado && (
+          <div>
+            <div className="flex gap-2 overflow-x-auto pb-2 mb-5">
+              <button onClick={() => setCategoriaActiva(null)}
+                className={`px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition-all shrink-0 ${!categoriaActiva ? 'bg-[#534AB7] text-white' : 'bg-white border border-gray-200 text-gray-600'}`}>
+                Todas
+              </button>
+              {categorias.map(cat => {
+                const respondidosEnCat = respuestas.filter(r => escenarios.find(e => e.id === r.escenarioId)?.categoria === cat).length;
+                const totalCat = escenarios.filter(e => e.categoria === cat).length;
+                return (
+                  <button key={cat} onClick={() => setCategoriaActiva(cat === categoriaActiva ? null : cat)}
+                    className={`px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition-all shrink-0 ${cat === categoriaActiva ? 'bg-[#534AB7] text-white' : 'bg-white border border-gray-200 text-gray-600'}`}>
+                    {CATEGORIAS_ESCENARIO[cat].label}
+                    {respondidosEnCat > 0 && <span className="ml-1 opacity-70">{respondidosEnCat}/{totalCat}</span>}
+                  </button>
+                );
+              })}
+            </div>
 
-            return (
-              <div key={cat}>
-                {/* Category header */}
-                <div className="flex items-start gap-3 mb-3">
-                  <span className="text-2xl">{CATEGORIA_ICONOS[catInfo.icono] || '📋'}</span>
-                  <div className="flex-1">
-                    <div className="flex items-center gap-2">
-                      <h2 className="text-sm font-bold text-gray-900">{catInfo.label}</h2>
-                      <span className="text-xs text-gray-400">
-                        {seleccionadasCat}/{clausulasCat.length}
-                      </span>
-                      {esBrechaObligatoria && (
-                        <span className="px-1.5 py-0.5 bg-red-50 text-red-600 text-[10px] font-semibold rounded border border-red-200">
-                          Sin cobertura
-                        </span>
-                      )}
-                    </div>
-                    <p className="text-xs text-gray-400 mt-0.5">{catInfo.descripcion}</p>
-                  </div>
-                </div>
-
-                {/* Clauses */}
-                <div className="flex flex-col gap-2">
-                  {clausulasCat.map(cl => (
-                    <label
-                      key={cl.id}
-                      className={`bg-white border rounded-2xl shadow-sm p-4 cursor-pointer transition-all hover:shadow-md ${
-                        cl.seleccionada
-                          ? 'border-[#534AB7] bg-[#F8F7FE]'
-                          : 'border-[#E5E7EB]'
-                      }`}
-                    >
-                      <div className="flex items-start gap-3">
-                        <input
-                          type="checkbox"
-                          checked={cl.seleccionada}
-                          onChange={() => toggleClausula(cl.id)}
-                          className="mt-1 w-4 h-4 accent-[#534AB7] rounded cursor-pointer flex-shrink-0"
-                        />
-                        <div className="flex-1 min-w-0">
-                          <span className="text-sm font-semibold text-gray-800 leading-snug">
-                            {cl.titulo}
-                          </span>
-                          <p className="text-xs text-gray-400 mt-1 leading-relaxed">
-                            {cl.descripcion}
-                          </p>
-                        </div>
+            <div className="space-y-4">
+              {escenariosFiltrados.map(esc => {
+                const respuesta = getRespuesta(esc.id);
+                return (
+                  <div key={esc.id} className={`bg-white rounded-2xl border transition-all ${respuesta ? 'border-[#534AB7]/20' : 'border-gray-200'}`}>
+                    <div className="p-4">
+                      <div className="flex items-start gap-2 mb-2">
+                        {esc.obligatorio
+                          ? <span className="text-xs bg-red-50 text-red-500 px-2 py-0.5 rounded-full font-medium shrink-0">Obligatorio</span>
+                          : <span className="text-xs bg-gray-100 text-gray-400 px-2 py-0.5 rounded-full font-medium shrink-0">Opcional</span>
+                        }
+                        <span className="text-xs text-gray-400">{CATEGORIAS_ESCENARIO[esc.categoria].label}</span>
                       </div>
-                    </label>
-                  ))}
-                </div>
-              </div>
-            );
-          })}
-        </div>
+                      <p className="text-sm font-semibold text-gray-900 mb-1">{esc.pregunta}</p>
+                      <p className="text-xs text-gray-400 leading-relaxed mb-4">{esc.contexto}</p>
 
-        {/* Bottom actions — fixed */}
-        <div className="fixed bottom-0 left-0 right-0 bg-white/90 backdrop-blur-md border-t border-gray-200 px-4 py-4 z-50">
-          <div className="max-w-2xl mx-auto flex items-center gap-3">
-            <button
-              onClick={handleCambiarTipo}
-              className="flex-1 py-3 text-sm font-semibold text-gray-600 bg-gray-100 hover:bg-gray-200 rounded-xl transition"
-            >
-              Cambiar tipo
-            </button>
-            <button
-              onClick={handleGuardar}
-              className="flex-[2] py-3 text-sm font-semibold text-white bg-[#534AB7] hover:bg-[#443CA0] rounded-xl transition shadow-sm relative overflow-hidden"
-            >
-              {guardado ? (
-                <span className="flex items-center justify-center gap-1.5">
-                  <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-                  </svg>
-                  Guardado
-                </span>
-              ) : (
-                'Guardar protocolo'
+                      <div className="space-y-2">
+                        {esc.opciones.map(op => {
+                          const elegida = respuesta?.opcionId === op.id;
+                          return (
+                            <button key={op.id} onClick={() => responder(esc.id, op.id)}
+                              className={`w-full text-left p-3 rounded-xl border transition-all ${elegida ? 'border-[#534AB7] bg-[#EEEDFE]/60' : 'border-gray-100 hover:border-gray-300 bg-gray-50/50'}`}>
+                              <div className="flex items-start gap-2.5">
+                                <div className={`w-4 h-4 rounded-full border-2 mt-0.5 shrink-0 flex items-center justify-center transition-all ${elegida ? 'border-[#534AB7] bg-[#534AB7]' : 'border-gray-300'}`}>
+                                  {elegida && <div className="w-1.5 h-1.5 rounded-full bg-white" />}
+                                </div>
+                                <div className="flex-1">
+                                  <div className="flex items-center gap-2 flex-wrap">
+                                    <p className={`text-xs font-medium ${elegida ? 'text-[#3C3489]' : 'text-gray-700'}`}>{op.texto}</p>
+                                    <span className={`text-[10px] px-1.5 py-0.5 rounded-full font-medium ${NIVEL_COLOR[op.nivel]}`}>{NIVEL_LABEL[op.nivel]}</span>
+                                  </div>
+                                  {op.advertencia && elegida && (
+                                    <p className="text-xs text-amber-600 mt-1">⚠ {op.advertencia}</p>
+                                  )}
+                                </div>
+                              </div>
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+
+            <div className="mt-8">
+              {!puedeVerResultado && (
+                <p className="text-xs text-center text-amber-600 mb-3">
+                  Respondé las {obligatoriosTotal - obligatoriosRespondidos} situaciones obligatorias para continuar.
+                </p>
               )}
-            </button>
+              <button onClick={verResultado} disabled={!puedeVerResultado}
+                className="w-full py-3 rounded-xl bg-[#534AB7] hover:bg-[#3C3489] text-white font-semibold text-sm disabled:opacity-40 disabled:cursor-not-allowed transition-colors">
+                Ver mi protocolo →
+              </button>
+            </div>
           </div>
-        </div>
-      </div>
+        )}
+      </main>
     </div>
   );
 }
