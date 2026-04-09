@@ -9,6 +9,7 @@ import {
 import { storageFase2 } from '../../../../lib/storage/storage-fase2';
 import { storage } from '../../../../lib/storage/storage';
 import type { Reunion, ItemReunion, TareaReunion } from '../../../../types/fase2';
+import VotacionPanel from '../../../../components/constitucion/VotacionPanel';
 
 const inp = "w-full px-3 py-2.5 rounded-xl border border-gray-200 bg-white text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-[#534AB7]/30 focus:border-[#534AB7] transition-all";
 
@@ -259,7 +260,7 @@ function DetalleReunion({ reunion, onActualizar, onVolver, onModoEnVivo, empresa
   reunion: Reunion; onActualizar: (u: Partial<Reunion>) => void;
   onVolver: () => void; onModoEnVivo: () => void; empresaNombre: string;
 }) {
-  const [tab, setTab] = useState<'orden' | 'asistentes' | 'acta'>('orden');
+  const [tab, setTab] = useState<'orden' | 'asistentes' | 'votaciones' | 'acta'>('orden');
   const [itemAbierto, setItemAbierto] = useState<string | null>(null);
   const [actaModal, setActaModal] = useState(false);
 
@@ -324,10 +325,10 @@ function DetalleReunion({ reunion, onActualizar, onVolver, onModoEnVivo, empresa
       </div>
 
       <div className="flex gap-1 bg-gray-100 rounded-xl p-1 mb-5">
-        {(['orden', 'asistentes', 'acta'] as const).map(t => (
+        {(['orden', 'asistentes', 'votaciones', 'acta'] as const).map(t => (
           <button key={t} onClick={() => setTab(t)}
             className={`flex-1 py-2 text-xs font-semibold rounded-lg transition-all ${tab === t ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}>
-            {t === 'orden' ? 'Orden del día' : t === 'asistentes' ? 'Asistentes' : 'Acta'}
+            {t === 'orden' ? 'Orden del día' : t === 'asistentes' ? 'Asistentes' : t === 'votaciones' ? 'Votaciones' : 'Acta'}
           </button>
         ))}
       </div>
@@ -416,6 +417,14 @@ function DetalleReunion({ reunion, onActualizar, onVolver, onModoEnVivo, empresa
             <span className="text-sm font-medium text-gray-700">Quórum alcanzado</span>
           </label>
         </div>
+      )}
+
+      {tab === 'votaciones' && (
+        <VotacionPanel
+          reunionId={reunion.id}
+          directores={reunion.asistentes.filter(a => a.presente).map(a => a.nombre)}
+          totalDirectores={reunion.asistentes.length}
+        />
       )}
 
       {tab === 'acta' && (

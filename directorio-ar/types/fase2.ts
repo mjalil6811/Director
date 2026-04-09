@@ -165,3 +165,44 @@ export interface BusquedaDirectoresResultado {
   perfilesCompletos: number;
   perfilesFaltantes: string[];
 }
+
+// —— Votación ———————————————————————————————————————————————————————————————
+
+export type TipoVoto = 'a_favor' | 'en_contra' | 'abstencion' | 'ausente';
+export type EstadoVotacion = 'pendiente' | 'abierta' | 'cerrada';
+export type TipoMayoria = 'simple' | 'calificada_2_3' | 'unanimidad';
+
+export interface VotoDirector {
+  directorNombre: string;
+  voto: TipoVoto;
+  comentario?: string;
+  fechaHora: string;
+}
+
+export interface Votacion {
+  id: string;
+  reunionId: string;
+  itemReunionId?: string;
+  titulo: string;
+  descripcion: string;
+  tipoMayoria: TipoMayoria;
+  estado: EstadoVotacion;
+  votos: VotoDirector[];
+  resultado?: ResultadoVotacion;
+  fechaApertura?: string;
+  fechaCierre?: string;
+  requiereQuorum: boolean;
+  quorumMinimo: number;
+}
+
+export interface ResultadoVotacion {
+  aprobada: boolean;
+  aFavor: number;
+  enContra: number;
+  abstenciones: number;
+  ausentes: number;
+  totalVotantes: number;
+  porcentajeAFavor: number;
+  quorumAlcanzado: boolean;
+  resumen: string;
+}
