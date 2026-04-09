@@ -5,9 +5,9 @@ import { useRouter } from 'next/navigation';
 import {
   MESES, periodoVacio, calcularDerivados, calcularKPIs,
   calcularVariacion, generarAlertas, generarInformePreReunion, generarId,
-} from '../../../lib/gestion/modulo10-dashboard';
-import { storageFase3 } from '../../../lib/storage/storage-fase3';
-import { storage } from '../../../lib/storage/storage';
+} from '../../../lib/modulo10-dashboard';
+import { storageFase3 } from '../../../lib/storage-fase3';
+import { storage } from '../../../lib/storage';
 import type { PeriodoFinanciero, PresupuestoAnual, AlertaFinanciera } from '../../../types/fase3';
 
 const inp = "w-full px-3 py-2.5 rounded-xl border border-gray-200 bg-white text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-[#534AB7]/30 focus:border-[#534AB7] transition-all";

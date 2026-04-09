@@ -1,36 +1,73 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Directorio AR
 
-## Getting Started
+Plataforma de gobierno corporativo para empresas argentinas. Guia desde el diagnostico inicial hasta la operacion del directorio, paso a paso.
 
-First, run the development server:
+## Stack
+
+- **Next.js 16** (App Router, Turbopack)
+- **TypeScript 5**
+- **Tailwind CSS 4**
+- **React 19**
+- **@react-pdf/renderer** para generacion de reportes PDF
+- **localStorage** para persistencia de datos (sin backend)
+
+## Correr localmente
 
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Abrir [http://localhost:3000](http://localhost:3000).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Estructura del proyecto
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```
+app/                          Paginas (App Router)
+  page.tsx                    Landing page
+  dashboard/                  Governance Score (Fase 1)
+  modulo/[id]/                Modulos M1-M5 (Fase 1)
+  resultado/                  Resultado final integrado
+  informe-preliminar/         Informe preliminar M1+M2
+  fase2/
+    acta-constitutiva/        M6: Acta constitutiva
+    protocolo/                M7: Protocolo familia/socios
+    reunion/                  M8: Reuniones + votaciones
+  fase3/
+    dashboard/                M10: Dashboard financiero
+    seguimiento/              M11: Seguimiento compromisos
+    evaluacion-ceo/           M12: Evaluacion del CEO
+components/                   Componentes reutilizables
+lib/                          Logica de negocio por modulo
+types/                        Tipos TypeScript
+  index.ts                    Tipos Fase 1 (M1-M5)
+  fase2.ts                    Tipos Fase 2 (M6-M9) + votacion
+  fase3.ts                    Tipos Fase 3 (M10-M12)
+```
 
-## Learn More
+## Modulos
 
-To learn more about Next.js, take a look at the following resources:
+| # | Modulo | Fase | Estado |
+|---|--------|------|--------|
+| M1 | Necesidad de directorio | Diagnostico | Completo |
+| M2 | Mapa de decisiones | Diagnostico | Completo |
+| M3 | Perfiles del directorio | Diagnostico | Completo |
+| M4 | Dinamica y funcionamiento | Diagnostico | Completo |
+| M5 | Directorio y gerencia | Diagnostico | Completo |
+| M6 | Acta constitutiva | Constitucion | Completo |
+| M7 | Protocolo familia/socios | Constitucion | Completo |
+| M8 | Reuniones del directorio | Constitucion | Completo |
+| M9 | Busqueda de directores | Constitucion | Solo logica (sin UI) |
+| M10 | Dashboard financiero | Gestion | Completo |
+| M11 | Seguimiento de compromisos | Gestion | Completo |
+| M12 | Evaluacion del CEO | Gestion | Completo |
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Datos y privacidad
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Todos los datos se guardan en `localStorage` del navegador. No hay servidor, base de datos, ni registro de usuario. Los datos no salen del dispositivo.
 
-## Deploy on Vercel
+> Migracion a backend (Supabase / PlanetScale) pendiente para cuando el producto pase a produccion con usuarios concurrentes.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Deploy
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+El proyecto esta deployado en Vercel con deploy automatico desde la rama `main`.
