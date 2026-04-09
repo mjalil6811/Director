@@ -48,8 +48,8 @@ const FASES = [
     colorBg: '#FAEEDA',
     colorBorder: '#F0D9A8',
     href: '/fase3',
-    modulos: ['Próximamente'],
-    estado: 'proximamente' as const,
+    modulos: ['Dashboard financiero', 'Seguimiento de compromisos', 'Evaluación del CEO'],
+    estado: 'activa' as const,
     icon: (
       <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
         <circle cx="12" cy="12" r="3" /><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" />
@@ -117,6 +117,8 @@ export default function HomePage() {
       }
     } else if (fase.numero === 2) {
       router.push('/fase2/acta-constitutiva');
+    } else if (fase.numero === 3) {
+      router.push('/fase3/dashboard');
     }
   }
 
@@ -326,6 +328,18 @@ export default function HomePage() {
                 className="px-4 py-2 border border-[#B5E8D5] text-[#0F6E56] text-sm font-medium rounded-xl hover:bg-[#E1F5EE] transition-colors"
               >
                 Reuniones
+              </button>
+              <button
+                onClick={() => router.push('/fase3/dashboard')}
+                className="px-4 py-2 border border-[#F0D9A8] text-[#854F0B] text-sm font-medium rounded-xl hover:bg-[#FAEEDA] transition-colors"
+              >
+                Dashboard financiero
+              </button>
+              <button
+                onClick={() => router.push('/fase3/seguimiento')}
+                className="px-4 py-2 border border-[#F0D9A8] text-[#854F0B] text-sm font-medium rounded-xl hover:bg-[#FAEEDA] transition-colors"
+              >
+                Seguimiento
               </button>
             </div>
           </div>
