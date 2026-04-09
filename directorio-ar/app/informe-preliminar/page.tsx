@@ -89,17 +89,35 @@ export default function InformePreliminar() {
 
   // Combined assessment
   let diagnostico: string;
+  let diagSubtitulo: string;
   let diagColor: string;
   let diagBg: string;
+  let diagNivel: 1 | 2 | 3 | 4;
+
   if (pct1 >= 55 && concentracion >= 50) {
-    diagnostico = 'Altamente recomendado';
-    diagColor = '#991B1B'; diagBg = '#FEE2E2';
+    diagNivel = 4;
+    diagnostico = 'Crítico — empezar esta semana';
+    diagSubtitulo = 'Tu empresa tiene alta complejidad y decisiones muy concentradas. Esta combinación es la principal causa de crisis en empresas familiares y pymes. El directorio no es opcional.';
+    diagColor = '#991B1B';
+    diagBg = '#FEE2E2';
+  } else if (pct1 >= 55 || concentracion >= 50) {
+    diagNivel = 3;
+    diagnostico = 'Urgente — no esperes más de 90 días';
+    diagSubtitulo = 'Tu empresa ya tiene la escala o los riesgos que justifican un directorio. Cada mes sin estructura de gobierno es un mes de exposición innecesaria.';
+    diagColor = '#92400E';
+    diagBg = '#FEF3C7';
   } else if (pct1 >= 30 || concentracion >= 30) {
-    diagnostico = 'Recomendado con condiciones';
-    diagColor = '#92400E'; diagBg = '#FEF3C7';
+    diagNivel = 2;
+    diagnostico = 'Recomendado este año';
+    diagSubtitulo = 'Hay señales claras de que tu empresa se está complejizando. Un directorio este año te ayuda a ordenar la toma de decisiones antes de que los problemas se acumulen.';
+    diagColor = '#1E40AF';
+    diagBg = '#DBEAFE';
   } else {
-    diagnostico = 'Evaluar más adelante';
-    diagColor = '#166534'; diagBg = '#DCFCE7';
+    diagNivel = 1;
+    diagnostico = 'Tu próximo paso de crecimiento lo va a requerir';
+    diagSubtitulo = 'Si tu empresa va a crecer, acceder a crédito SGR, incorporar socios o atraer inversores, necesitás gobierno corporativo. Estructurarte ahora, sin presión, es mucho más fácil que hacerlo cuando ya sea urgente.';
+    diagColor = '#065F46';
+    diagBg = '#D1FAE5';
   }
 
   // Dimension data from M1
@@ -146,9 +164,30 @@ export default function InformePreliminar() {
         </div>
 
         {/* Combined verdict */}
-        <div className="border-2 rounded-2xl p-8 text-center shadow-sm" style={{ borderColor: diagColor, backgroundColor: diagBg }}>
-          <p className="text-xs font-semibold uppercase tracking-wider mb-3" style={{ color: diagColor }}>Diagnóstico preliminar</p>
-          <p className="text-3xl sm:text-4xl font-bold tracking-tight" style={{ color: diagColor }}>{diagnostico}</p>
+        <div className="border-2 rounded-2xl p-6 text-center shadow-sm" style={{ borderColor: diagColor, backgroundColor: diagBg }}>
+          <div className="flex items-center justify-center gap-2 mb-3">
+            <div className="flex gap-1">
+              {[1, 2, 3, 4].map(n => (
+                <div
+                  key={n}
+                  className="h-1.5 rounded-full transition-all"
+                  style={{
+                    width: n <= diagNivel ? '20px' : '8px',
+                    backgroundColor: n <= diagNivel ? diagColor : diagColor + '30',
+                  }}
+                />
+              ))}
+            </div>
+            <p className="text-xs font-semibold uppercase tracking-wider" style={{ color: diagColor }}>
+              Nivel {diagNivel} de 4
+            </p>
+          </div>
+          <p className="text-2xl sm:text-3xl font-bold tracking-tight mb-3" style={{ color: diagColor }}>
+            {diagnostico}
+          </p>
+          <p className="text-sm leading-relaxed" style={{ color: diagColor + 'CC' }}>
+            {diagSubtitulo}
+          </p>
         </div>
 
         {/* Educational box */}
