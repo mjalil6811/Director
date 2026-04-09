@@ -27,7 +27,7 @@ const PERFIL_JUSTIFICACIONES: Record<string, string> = {
   operaciones: "Aporta experiencia en escalar procesos, estructurar la organizacion interna y hacer que la empresa funcione ordenadamente.",
 };
 
-// ─── Donut chart for M2 ─────────────────────────────────────────────────────
+// ——— Donut chart for M2 —————————————————————————————————————————————————————
 
 function DonutChart({ conteos }: { conteos: { concentrada: number; parcial: number; delegada: number; gris: number } }) {
   const total = 10;
@@ -138,7 +138,7 @@ export default function ResultadoPage() {
     );
   }
 
-  // ─── Derive insights ──────────────────────────────────────────────────────
+  // ——— Derive insights ————————————————————————————————————————————————————
 
   const m1Pct = m1?.porcentaje ?? 0;
   const m2Conteos = m2?.conteos ?? { concentrada: 0, parcial: 0, delegada: 0, gris: 0 };
@@ -161,7 +161,6 @@ export default function ResultadoPage() {
     m1Desc = "La necesidad aun no es critica, pero las buenas practicas se instalan antes de que sean urgentes.";
   }
 
-  const levelColor = m1Pct >= 75 ? 'text-red-600' : m1Pct >= 55 ? 'text-[#534AB7]' : m1Pct >= 30 ? 'text-yellow-600' : 'text-gray-600';
   const levelBg = m1Pct >= 75 ? 'bg-red-100 text-red-700' : m1Pct >= 55 ? 'bg-purple-100 text-[#534AB7]' : m1Pct >= 30 ? 'bg-yellow-100 text-yellow-800' : 'bg-gray-100 text-gray-600';
 
   // Section 2: Top 2 profiles from M3
@@ -295,7 +294,7 @@ export default function ResultadoPage() {
             </div>
             <div className="p-4 space-y-3">
               {topPerfiles.map((p, i) => {
-                const urgColor = p.urgencia === 'Critico' || p.urgencia === 'Cr\u00edtico'
+                const urgColor = p.urgencia === 'Critico' || p.urgencia === 'Crítico'
                   ? 'bg-red-100 text-red-700'
                   : p.urgencia === 'Urgente'
                   ? 'bg-orange-100 text-orange-700'
@@ -481,6 +480,17 @@ export default function ResultadoPage() {
               Descargar reporte PDF completo
             </>
           )}
+        </button>
+
+        {/* Governance Score CTA */}
+        <button
+          onClick={() => router.push('/governance-score')}
+          className="w-full py-4 border-2 border-[#1D9E75] text-[#0F6E56] rounded-xl text-sm font-semibold flex items-center justify-center gap-2 hover:bg-[#E1F5EE] transition-colors"
+        >
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
+          </svg>
+          Ver Governance Score — Índice de madurez
         </button>
 
         {/* Navigation */}
