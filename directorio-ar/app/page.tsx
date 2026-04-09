@@ -155,9 +155,24 @@ export default function HomePage() {
           </div>
           <div className="flex items-center gap-3">
             {completadosFase1 > 0 && (
-              <button onClick={() => router.push('/dashboard')} className="text-xs text-gray-500 hover:text-[#534AB7] font-medium hidden sm:block">
-                Mi diagnóstico
-              </button>
+              <>
+                <button onClick={() => router.push('/dashboard')} className="text-xs text-gray-500 hover:text-[#534AB7] font-medium hidden sm:block">
+                  Mi diagnóstico
+                </button>
+                <button
+                  onClick={() => {
+                    if (confirm('¿Reiniciar el diagnóstico? Se borran todos los datos de la Fase 1.')) {
+                      storage.clearAll();
+                      setCompletadosFase1(0);
+                      setNombre('');
+                      router.push('/modulo/1');
+                    }
+                  }}
+                  className="text-xs text-red-500 hover:text-red-700 font-medium hidden sm:block"
+                >
+                  Nuevo diagnóstico
+                </button>
+              </>
             )}
             <button
               onClick={handleStart}
