@@ -95,30 +95,56 @@ export default function InformePreliminar() {
   let diagNivel: 1 | 2 | 3 | 4;
 
   if (pct1 >= 55 && concentracion >= 50) {
+    // NIVEL 4 — Crítico: ambos factores en zona alta
     diagNivel = 4;
     diagnostico = 'Crítico — empezar esta semana';
     diagSubtitulo = 'Tu empresa tiene alta complejidad y decisiones muy concentradas. Esta combinación es la principal causa de crisis en empresas familiares y pymes. El directorio no es opcional.';
     diagColor = '#991B1B';
     diagBg = '#FEE2E2';
-  } else if (pct1 >= 55 || concentracion >= 50) {
+  } else if (pct1 >= 45 && concentracion >= 45) {
+    // NIVEL 3 — Urgente: ambos factores en zona media-alta
     diagNivel = 3;
     diagnostico = 'Urgente — no esperes más de 90 días';
-    diagSubtitulo = 'Tu empresa ya tiene la escala o los riesgos que justifican un directorio. Cada mes sin estructura de gobierno es un mes de exposición innecesaria.';
+    diagSubtitulo = 'Tu empresa muestra señales claras en complejidad y concentración de decisiones. Cada mes sin estructura de gobierno es un mes de exposición innecesaria.';
     diagColor = '#92400E';
     diagBg = '#FEF3C7';
   } else if (pct1 >= 30 || concentracion >= 30) {
+    // NIVEL 2 — Recomendado: al menos un factor activo
     diagNivel = 2;
     diagnostico = 'Recomendado este año';
-    diagSubtitulo = 'Hay señales claras de que tu empresa se está complejizando. Un directorio este año te ayuda a ordenar la toma de decisiones antes de que los problemas se acumulen.';
+    diagSubtitulo = 'Hay señales de que tu empresa se está complejizando. Un directorio este año te ayuda a ordenar la toma de decisiones antes de que los problemas se acumulen.';
     diagColor = '#1E40AF';
     diagBg = '#DBEAFE';
   } else {
+    // NIVEL 1 — Próximo paso de crecimiento
     diagNivel = 1;
     diagnostico = 'Tu próximo paso de crecimiento lo va a requerir';
     diagSubtitulo = 'Si tu empresa va a crecer, acceder a crédito SGR, incorporar socios o atraer inversores, necesitás gobierno corporativo. Estructurarte ahora, sin presión, es mucho más fácil que hacerlo cuando ya sea urgente.';
     diagColor = '#065F46';
     diagBg = '#D1FAE5';
   }
+
+  // Texto descriptivo de concentración para usar en el panel
+  const concentracionLabel =
+    concentracion >= 70 ? 'Muy concentradas' :
+    concentracion >= 50 ? 'Moderadamente concentradas' :
+    concentracion >= 30 ? 'Parcialmente distribuidas' :
+    'Bien distribuidas';
+
+  const concentracionColor =
+    concentracion >= 70 ? '#991B1B' :
+    concentracion >= 50 ? '#92400E' :
+    concentracion >= 30 ? '#1E40AF' :
+    '#065F46';
+
+  const concentracionBg =
+    concentracion >= 70 ? '#FEE2E2' :
+    concentracion >= 50 ? '#FEF3C7' :
+    concentracion >= 30 ? '#DBEAFE' :
+    '#D1FAE5';
+
+  // Decisiones que dependen de pocas personas (concentradas + zona gris)
+  const decisionesRiesgosas = (m2.conteos.concentrada ?? 0) + (m2.conteos.gris ?? 0);
 
   // Dimension data from M1
   const dims = (m1.scoresPorDimension ?? []).map(d => ({
@@ -248,16 +274,54 @@ export default function InformePreliminar() {
           {/* M2 — Concentración de decisiones */}
           <div className="border border-[#E5E7EB] rounded-2xl bg-white p-5 shadow-sm hover:shadow-md transition-shadow">
             <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-4 text-center">Concentración de decisiones</p>
-            <DonutChart
-              segments={[
-                { value: m2.conteos.concentrada, color: '#f87171', label: 'Concentrada' },
-                { value: m2.conteos.gris, color: '#9ca3af', label: 'Zona gris' },
-                { value: m2.conteos.parcial, color: '#fbbf24', label: 'Parcial' },
-                { value: m2.conteos.delegada, color: '#4ade80', label: 'Delegada' },
-              ]}
-              centerText={`${concentracion}%`}
-              centerLabel="concentración"
-            />
+
+            {/* Resultado principal */}
+            <div className="rounded-xl px-4 py-3 text-center mb-4" style={{ backgroundColor: concentracionBg }}>
+              <p className="text-lg font-bold" style={{ color: concentracionColor }}>{concentracionLabel}</p>
+              <p className="text-xs mt-0.5" style={{ color: concentracionColor + 'BB' }}>
+                {decisionesRiesgosas} de 10 decisiones clave sin responsable claro
+              </p>
+            </div>
+
+            {/* Espectro horizontal */}
+            <div className="mb-3">
+              <div className="flex h-2 rounded-full overflow-hidden mb-1.5">
+                <div className="flex-1" style={{ backgroundColor: '#4ade80' }} />
+                <div className="flex-1" style={{ backgroundColor: '#fbbf24' }} />
+                <div className="flex-1" style={{ backgroundColor: '#f87171' }} />
+                <div className="flex-1" style={{ backgroundColor: '#991B1B' }} />
+              </div>
+              <div className="relative h-3">
+                <div
+                  className="absolute -translate-x-1/2 top-0"
+                  style={{ left: `${Math.min(concentracion, 98)}%` }}
+                >
+                  <div className="w-3 h-3 rounded-full border-2 border-white shadow-md" style={{ backgroundColor: concentracionColor }} />
+                </div>
+              </div>
+              <div className="flex justify-between text-[10px] text-gray-400 mt-1">
+                <span>Distribuida</span>
+                <span>Parcial</span>
+                <span>Concentrada</span>
+                <span>Crítica</span>
+              </div>
+            </div>
+
+            {/* Desglose mini */}
+            <div className="grid grid-cols-2 gap-1.5 mt-3">
+              {[
+                { label: 'Bien delegadas', count: m2.conteos.delegada, color: '#4ade80' },
+                { label: 'Parcialmente', count: m2.conteos.parcial, color: '#fbbf24' },
+                { label: 'Concentradas', count: m2.conteos.concentrada, color: '#f87171' },
+                { label: 'Sin responsable', count: m2.conteos.gris, color: '#9ca3af' },
+              ].map(item => (
+                <div key={item.label} className="flex items-center gap-1.5 text-xs text-gray-500">
+                  <div className="w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: item.color }} />
+                  <span>{item.label}:</span>
+                  <span className="font-semibold text-gray-700">{item.count}</span>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
 
