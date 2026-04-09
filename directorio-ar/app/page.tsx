@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { storage } from '../lib/storage';
+import { storage } from '../lib/storage/storage';
 
 const MODULOS = [
   {
