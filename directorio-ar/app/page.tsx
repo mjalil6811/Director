@@ -143,7 +143,7 @@ export default function HomePage() {
         </div>
       </header>
 
-      <main className="flex-1 max-w-3xl mx-auto w-full px-4 py-10 space-y-8">
+      <main className="flex-1 max-w-5xl mx-auto w-full px-4 py-10 space-y-8">
 
         {/* Hero */}
         <div className="text-center">
@@ -184,109 +184,115 @@ export default function HomePage() {
           </div>
         </div>
 
-        {/* 4 Fases */}
+        {/* 4 Fases — horizontal */}
         <div className="space-y-4">
           <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider text-center">Las 4 fases</p>
 
-          <div className="grid gap-4 sm:grid-cols-2">
-            {FASES.map(fase => {
-              const isActive = fase.estado === 'activa';
-              const isFase1 = fase.numero === 1;
+          {/* Connecting line behind cards */}
+          <div className="relative">
+            {/* Horizontal connector line — visible on lg */}
+            <div className="hidden lg:block absolute top-7 left-[12.5%] right-[12.5%] h-0.5 bg-gradient-to-r from-[#534AB7] via-[#0F6E56] to-[#E5E7EB] rounded-full z-0" />
 
-              return (
-                <button
-                  key={fase.numero}
-                  onClick={() => handleFaseClick(fase)}
-                  disabled={!isActive}
-                  className={`
-                    text-left rounded-2xl border-2 p-5 transition-all group relative overflow-hidden
-                    ${isActive
-                      ? 'bg-white shadow-sm hover:shadow-lg cursor-pointer'
-                      : 'bg-gray-50 cursor-not-allowed opacity-70'
-                    }
-                  `}
-                  style={{
-                    borderColor: isActive ? fase.colorBorder : '#E5E7EB',
-                  }}
-                >
-                  {/* Fase number badge */}
-                  <div className="flex items-center justify-between mb-3">
-                    <div
-                      className="w-10 h-10 rounded-xl flex items-center justify-center transition-colors"
-                      style={{ backgroundColor: fase.colorBg, color: fase.color }}
-                    >
-                      {fase.icon}
-                    </div>
-                    <div className="flex items-center gap-2">
-                      {isFase1 && completadosFase1 > 0 && (
-                        <span className="text-xs font-bold px-2 py-0.5 rounded-full" style={{ backgroundColor: fase.colorBg, color: fase.color }}>
-                          {completadosFase1}/5
+            <div className="grid gap-3 grid-cols-2 lg:grid-cols-4">
+              {FASES.map(fase => {
+                const isActive = fase.estado === 'activa';
+                const isFase1 = fase.numero === 1;
+
+                return (
+                  <button
+                    key={fase.numero}
+                    onClick={() => handleFaseClick(fase)}
+                    disabled={!isActive}
+                    className={`
+                      text-left rounded-2xl border-2 p-4 transition-all group relative overflow-hidden flex flex-col z-10
+                      ${isActive
+                        ? 'bg-white shadow-sm hover:shadow-lg hover:-translate-y-1 cursor-pointer'
+                        : 'bg-gray-50/80 cursor-not-allowed'
+                      }
+                    `}
+                    style={{
+                      borderColor: isActive ? fase.colorBorder : '#E5E7EB',
+                    }}
+                  >
+                    {/* Top row: icon + badge */}
+                    <div className="flex items-center justify-between mb-3">
+                      <div
+                        className="w-9 h-9 rounded-lg flex items-center justify-center shrink-0"
+                        style={{ backgroundColor: isActive ? fase.colorBg : '#F3F4F6', color: isActive ? fase.color : '#9CA3AF' }}
+                      >
+                        {fase.icon}
+                      </div>
+                      <div className="flex items-center gap-1.5">
+                        {isFase1 && completadosFase1 > 0 && (
+                          <span className="text-xs font-bold px-1.5 py-0.5 rounded-full" style={{ backgroundColor: fase.colorBg, color: fase.color }}>
+                            {completadosFase1}/5
+                          </span>
+                        )}
+                        <span
+                          className="text-xs font-bold px-2 py-0.5 rounded-full"
+                          style={{
+                            backgroundColor: isActive ? fase.colorBg : '#F3F4F6',
+                            color: isActive ? fase.color : '#9CA3AF',
+                          }}
+                        >
+                          {fase.numero}
                         </span>
-                      )}
-                      <span
-                        className="text-xs font-bold px-2.5 py-1 rounded-full"
-                        style={{
-                          backgroundColor: isActive ? fase.colorBg : '#F3F4F6',
-                          color: isActive ? fase.color : '#9CA3AF',
-                        }}
+                      </div>
+                    </div>
+
+                    {/* Title */}
+                    <h3 className="text-base font-bold text-gray-900 tracking-tight mb-0.5 leading-tight">
+                      {fase.titulo}
+                    </h3>
+                    <p className="text-xs font-medium mb-2" style={{ color: isActive ? fase.color : '#9CA3AF' }}>
+                      {fase.subtitulo}
+                    </p>
+
+                    {/* Description */}
+                    <p className="text-xs text-gray-500 leading-relaxed mb-3 flex-1">
+                      {fase.descripcion}
+                    </p>
+
+                    {/* Module pills */}
+                    <div className="flex flex-wrap gap-1">
+                      {fase.modulos.map(mod => (
+                        <span
+                          key={mod}
+                          className="text-[10px] px-1.5 py-0.5 rounded-full leading-tight"
+                          style={{
+                            backgroundColor: isActive ? fase.colorBg : '#F3F4F6',
+                            color: isActive ? fase.color : '#9CA3AF',
+                          }}
+                        >
+                          {mod}
+                        </span>
+                      ))}
+                    </div>
+
+                    {/* Arrow on hover */}
+                    {isActive && (
+                      <div
+                        className="absolute bottom-3 right-3 w-7 h-7 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+                        style={{ backgroundColor: fase.color }}
                       >
-                        Fase {fase.numero}
-                      </span>
-                    </div>
-                  </div>
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                          <path d="M5 12h14M12 5l7 7-7 7" />
+                        </svg>
+                      </div>
+                    )}
 
-                  {/* Title & subtitle */}
-                  <h3 className="text-lg font-bold text-gray-900 tracking-tight mb-1">
-                    {fase.titulo}
-                  </h3>
-                  <p className="text-xs font-medium mb-2" style={{ color: isActive ? fase.color : '#9CA3AF' }}>
-                    {fase.subtitulo}
-                  </p>
-
-                  {/* Description */}
-                  <p className="text-xs text-gray-500 leading-relaxed mb-3">
-                    {fase.descripcion}
-                  </p>
-
-                  {/* Module pills */}
-                  <div className="flex flex-wrap gap-1.5">
-                    {fase.modulos.map(mod => (
-                      <span
-                        key={mod}
-                        className="text-xs px-2 py-0.5 rounded-full"
-                        style={{
-                          backgroundColor: isActive ? fase.colorBg : '#F3F4F6',
-                          color: isActive ? fase.color : '#9CA3AF',
-                        }}
-                      >
-                        {mod}
-                      </span>
-                    ))}
-                  </div>
-
-                  {/* Arrow for active */}
-                  {isActive && (
-                    <div
-                      className="absolute bottom-4 right-4 w-8 h-8 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
-                      style={{ backgroundColor: fase.color }}
-                    >
-                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                        <path d="M5 12h14M12 5l7 7-7 7" />
-                      </svg>
-                    </div>
-                  )}
-
-                  {/* Coming soon overlay */}
-                  {!isActive && (
-                    <div className="absolute inset-0 flex items-center justify-center bg-white/40">
-                      <span className="px-3 py-1.5 rounded-full bg-gray-100 text-gray-500 text-xs font-semibold border border-gray-200">
-                        Próximamente
-                      </span>
-                    </div>
-                  )}
-                </button>
-              );
-            })}
+                    {/* Coming soon */}
+                    {!isActive && (
+                      <div className="absolute inset-0 flex items-center justify-center bg-white/50 backdrop-blur-[1px]">
+                        <span className="px-3 py-1.5 rounded-full bg-gray-100 text-gray-500 text-xs font-semibold border border-gray-200 shadow-sm">
+                          Próximamente
+                        </span>
+                      </div>
+                    )}
+                  </button>
+                );
+              })}
+            </div>
           </div>
         </div>
 
