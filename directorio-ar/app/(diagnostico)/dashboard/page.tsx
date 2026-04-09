@@ -473,6 +473,36 @@ export default function GovernanceScorePage() {
           </p>
         </div>
 
+        {/* Fase 2: Constitución del directorio */}
+        <div className="bg-white border border-[#E5E7EB] rounded-2xl overflow-hidden shadow-sm">
+          <div className="px-5 pt-5 pb-3 border-b border-gray-100">
+            <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Fase 2 — Constitución del directorio</p>
+            <p className="text-xs text-gray-400 mt-1">Herramientas para pasar del diagnóstico a la acción.</p>
+          </div>
+          <div className="p-4 space-y-2">
+            {[
+              { href: '/fase2/acta-constitutiva', label: 'Acta constitutiva', desc: 'Redactá el acta de constitución del directorio', icon: '📄' },
+              { href: '/fase2/protocolo', label: 'Protocolo de familia / socios', desc: 'Armá el protocolo con las cláusulas que necesitás', icon: '🤝' },
+              { href: '/fase2/reunion', label: 'Reuniones del directorio', desc: 'Planificá y documentá las reuniones del board', icon: '📋' },
+            ].map(item => (
+              <button
+                key={item.href}
+                onClick={() => router.push(item.href)}
+                className="w-full flex items-center gap-3 p-3 rounded-xl border border-[#E5E7EB] hover:border-[#534AB7] hover:bg-[#FDFCFF] transition-colors text-left"
+              >
+                <span className="text-xl">{item.icon}</span>
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-semibold text-gray-900">{item.label}</p>
+                  <p className="text-xs text-gray-400 truncate">{item.desc}</p>
+                </div>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#9CA3AF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M9 18l6-6-6-6" />
+                </svg>
+              </button>
+            ))}
+          </div>
+        </div>
+
         {/* Navigation */}
         <div className="flex gap-3 pb-4">
           <button
@@ -482,10 +512,10 @@ export default function GovernanceScorePage() {
             Ver resultado completo
           </button>
           <button
-            onClick={() => router.push('/dashboard')}
+            onClick={() => router.push('/')}
             className="flex-1 py-3 bg-[#534AB7] hover:bg-[#3C3489] text-white rounded-xl text-sm font-semibold"
           >
-            Dashboard →
+            Volver al inicio
           </button>
         </div>
       </main>
