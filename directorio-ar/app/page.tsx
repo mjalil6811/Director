@@ -4,76 +4,106 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { storage } from '../lib/storage/storage';
 
-const FASES = [
+// ——— Data ———————————————————————————————————————————————————————————————————
+
+const STATS = [
+  { valor: '3', label: 'Fases del proceso' },
+  { valor: '12', label: 'Herramientas integradas' },
+  { valor: '100%', label: 'Gratuito y privado' },
+];
+
+const PROCESO = [
   {
-    numero: 1,
-    titulo: 'Diagnóstico',
-    subtitulo: 'Evaluá si tu empresa necesita un directorio',
-    descripcion: '5 módulos que analizan la necesidad, las decisiones, los perfiles ideales, la disposición al cambio y la dinámica con la gerencia.',
+    paso: 'Diagnosticá',
+    titulo: 'Evaluá si tu empresa necesita un directorio',
+    descripcion: 'Respondé 5 módulos que analizan la necesidad real, cómo se toman las decisiones, qué perfiles faltan, la disposición al cambio y la relación con la gerencia.',
     color: '#534AB7',
     colorBg: '#EEEDFE',
-    colorBorder: '#DDD9FE',
-    href: '/fase1',
-    modulos: ['Necesidad de directorio', 'Mapa de decisiones', 'Perfiles del directorio', 'Dinámica y funcionamiento', 'Directorio y gerencia'],
-    estado: 'activa' as const,
-    icon: (
-      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <line x1="18" y1="20" x2="18" y2="10" /><line x1="12" y1="20" x2="12" y2="4" /><line x1="6" y1="20" x2="6" y2="14" />
-      </svg>
-    ),
+    items: ['Governance Score 0-100', 'Radar de 5 dimensiones', 'Benchmark vs. mercado', 'Diagnóstico personalizado'],
   },
   {
-    numero: 2,
-    titulo: 'Constitución',
-    subtitulo: 'Armá tu directorio paso a paso',
-    descripcion: 'Herramientas para redactar el acta constitutiva, armar el protocolo de familia/socios y planificar las primeras reuniones.',
+    paso: 'Constituí',
+    titulo: 'Armá tu directorio con las herramientas correctas',
+    descripcion: 'Redactá el acta constitutiva, definí el protocolo de familia o socios resolviendo escenarios reales, y planificá las primeras reuniones con agenda profesional.',
     color: '#0F6E56',
     colorBg: '#E1F5EE',
-    colorBorder: '#B5E8D5',
-    href: '/fase2',
-    modulos: ['Acta constitutiva', 'Protocolo de familia/socios', 'Reuniones del directorio'],
-    estado: 'activa' as const,
-    icon: (
-      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" /><polyline points="14 2 14 8 20 8" /><line x1="12" y1="18" x2="12" y2="12" /><line x1="9" y1="15" x2="15" y2="15" />
-      </svg>
-    ),
+    items: ['Acta constitutiva guiada', 'Protocolo por escenarios', 'Reuniones con modo en vivo', 'Timer y acta automática'],
   },
   {
-    numero: 3,
-    titulo: 'Operación',
-    subtitulo: 'Hacé funcionar tu directorio',
-    descripcion: 'Gestión de reuniones, seguimiento de decisiones, evaluación del board y métricas de efectividad del directorio.',
+    paso: 'Operá',
+    titulo: 'Hacé funcionar tu directorio en el día a día',
+    descripcion: 'Dashboard financiero para preparar cada reunión, seguimiento de compromisos entre sesiones y evaluación anual del CEO con informe confidencial.',
     color: '#854F0B',
     colorBg: '#FAEEDA',
-    colorBorder: '#F0D9A8',
-    href: '/fase3',
-    modulos: ['Dashboard financiero', 'Seguimiento de compromisos', 'Evaluación del CEO'],
-    estado: 'activa' as const,
-    icon: (
-      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <circle cx="12" cy="12" r="3" /><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" />
+    items: ['Dashboard financiero + KPIs', 'Seguimiento de tareas', 'Evaluación del CEO', 'Informes para el board'],
+  },
+];
+
+const BENEFICIOS = [
+  {
+    titulo: 'Diseñado para Argentina',
+    descripcion: 'Tipos societarios (SRL, SA, SAS), CUIT, marco legal argentino, y la realidad de las PyMEs familiares.',
+    icono: (
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <circle cx="12" cy="12" r="10" /><line x1="2" y1="12" x2="22" y2="12" /><path d="M12 2a15 15 0 0 1 4 10 15 15 0 0 1-4 10 15 15 0 0 1-4-10 15 15 0 0 1 4-10z" />
       </svg>
     ),
   },
   {
-    numero: 4,
-    titulo: 'Fase 4',
-    subtitulo: 'En desarrollo',
-    descripcion: 'Estamos trabajando en esta fase. Pronto vas a poder acceder a nuevas herramientas para potenciar tu gobierno corporativo.',
-    color: '#6B7280',
-    colorBg: '#F3F4F6',
-    colorBorder: '#E5E7EB',
-    href: '/fase4',
-    modulos: ['Próximamente'],
-    estado: 'proximamente' as const,
-    icon: (
-      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <circle cx="12" cy="12" r="10" /><polyline points="12 6 12 12 16 14" />
+    titulo: 'Sin registro ni servidor',
+    descripcion: 'Todo se guarda en tu dispositivo. No necesitás crear una cuenta ni compartir datos con nadie.',
+    icono: (
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <rect x="3" y="11" width="18" height="11" rx="2" ry="2" /><path d="M7 11V7a5 5 0 0 1 10 0v4" />
+      </svg>
+    ),
+  },
+  {
+    titulo: 'De diagnóstico a acción',
+    descripcion: 'No te dice solo qué necesitás — te da las herramientas para hacerlo: actas, protocolos, reuniones, evaluaciones.',
+    icono: (
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
+      </svg>
+    ),
+  },
+  {
+    titulo: 'Basado en mejores prácticas',
+    descripcion: 'Metodología basada en IFC, OCDE, IAE e IDEA, adaptada para empresas medianas y familiares.',
+    icono: (
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z" /><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z" />
       </svg>
     ),
   },
 ];
+
+const FAQ = [
+  { q: '¿Para qué tipo de empresa es esto?', a: 'Para PyMEs, empresas familiares y empresas medianas argentinas que quieren profesionalizar su gobierno corporativo. No necesitás tener un directorio armado — la herramienta empieza por evaluar si lo necesitás.' },
+  { q: '¿Es gratis?', a: 'Sí, 100% gratuito. No hay planes pagos, ni límites de uso, ni funcionalidades bloqueadas.' },
+  { q: '¿Mis datos son privados?', a: 'Todo se guarda en el localStorage de tu navegador. No hay servidor, no hay base de datos, no hay registro. Tus datos no salen de tu dispositivo.' },
+  { q: '¿Necesito completar todo en una sesión?', a: 'No. Cada módulo guarda tu progreso automáticamente. Podés volver cuando quieras y retomar donde dejaste.' },
+  { q: '¿Qué es el Governance Score?', a: 'Es un índice de madurez de gobierno corporativo de 0 a 100 que integra 5 dimensiones: necesidad, decisiones, perfiles, disposición y dinámica. Sirve como referencia ante inversores, fondos y socios estratégicos.' },
+];
+
+// ——— Components ————————————————————————————————————————————————————————————
+
+function FAQItem({ q, a }: { q: string; a: string }) {
+  const [open, setOpen] = useState(false);
+  return (
+    <div className="border-b border-gray-100 last:border-0">
+      <button onClick={() => setOpen(o => !o)} className="w-full flex items-start justify-between py-4 text-left gap-4">
+        <span className="text-sm font-semibold text-gray-900">{q}</span>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#9CA3AF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={`shrink-0 mt-0.5 transition-transform ${open ? 'rotate-180' : ''}`}>
+          <path d="M6 9l6 6 6-6" />
+        </svg>
+      </button>
+      {open && <p className="text-sm text-gray-500 leading-relaxed pb-4 -mt-1">{a}</p>}
+    </div>
+  );
+}
+
+// ——— Page ———————————————————————————————————————————————————————————————————
 
 export default function HomePage() {
   const router = useRouter();
@@ -93,287 +123,290 @@ export default function HomePage() {
     setCompletadosFase1(count);
   }, []);
 
-  function handleNombreChange(e: React.ChangeEvent<HTMLInputElement>) {
-    setNombre(e.target.value);
-    storage.setEmpresaNombre(e.target.value);
-  }
-
-  function handleFaseClick(fase: typeof FASES[number]) {
-    if (fase.estado === 'proximamente') return;
+  function handleStart() {
     if (nombre.trim()) storage.setEmpresaNombre(nombre.trim());
-
-    if (fase.numero === 1) {
-      if (completadosFase1 === 5) {
-        router.push('/resultado');
-      } else {
-        const next = [
-          !!storage.getModulo1Resultado(),
-          !!storage.getModulo2Resultado(),
-          !!storage.getModulo3Resultado(),
-          !!(storage.getModulo4Diagnostico() || storage.getModulo4Frecuencia()),
-          !!storage.getModulo5Resultado(),
-        ].findIndex(c => !c) + 1;
-        router.push(`/modulo/${next || 1}`);
-      }
-    } else if (fase.numero === 2) {
-      router.push('/fase2/acta-constitutiva');
-    } else if (fase.numero === 3) {
-      router.push('/fase3/dashboard');
+    if (completadosFase1 === 5) {
+      router.push('/resultado');
+    } else {
+      const next = [
+        !!storage.getModulo1Resultado(),
+        !!storage.getModulo2Resultado(),
+        !!storage.getModulo3Resultado(),
+        !!(storage.getModulo4Diagnostico() || storage.getModulo4Frecuencia()),
+        !!storage.getModulo5Resultado(),
+      ].findIndex(c => !c) + 1;
+      router.push(`/modulo/${next || 1}`);
     }
   }
 
   return (
-    <div className="min-h-screen bg-[#FAFBFC] flex flex-col">
-      {/* Top gradient */}
-      <div className="h-1 w-full bg-gradient-to-r from-[#534AB7] via-[#0F6E56] to-[#854F0B]" />
+    <div className="min-h-screen bg-white flex flex-col">
 
-      {/* Header */}
-      <header className="bg-white/90 backdrop-blur-md border-b border-[#E5E7EB] px-4 py-4 sticky top-0 z-20">
-        <div className="max-w-3xl mx-auto flex items-center gap-3">
-          <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-[#534AB7] to-[#7C6FDB] flex items-center justify-center shadow-sm">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-              <rect x="2" y="7" width="20" height="14" rx="2" />
-              <path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2" />
-              <line x1="12" y1="12" x2="12" y2="17" />
-              <line x1="9" y1="14.5" x2="15" y2="14.5" />
-            </svg>
+      {/* ——— Nav ——— */}
+      <header className="bg-white/90 backdrop-blur-md border-b border-gray-100 px-4 py-3 sticky top-0 z-30">
+        <div className="max-w-5xl mx-auto flex items-center justify-between">
+          <div className="flex items-center gap-2.5">
+            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#534AB7] to-[#7C6FDB] flex items-center justify-center">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <rect x="2" y="7" width="20" height="14" rx="2" /><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2" />
+              </svg>
+            </div>
+            <span className="text-sm font-bold text-gray-900 tracking-tight">Directorio AR</span>
           </div>
-          <div>
-            <p className="text-sm font-bold text-gray-900 tracking-tight leading-none">Directorio AR</p>
-            <p className="text-xs text-gray-400 mt-0.5">Gobierno corporativo para empresas argentinas</p>
+          <div className="flex items-center gap-3">
+            {completadosFase1 > 0 && (
+              <button onClick={() => router.push('/dashboard')} className="text-xs text-gray-500 hover:text-[#534AB7] font-medium hidden sm:block">
+                Mi diagnóstico
+              </button>
+            )}
+            <button
+              onClick={handleStart}
+              className="px-4 py-2 bg-[#534AB7] hover:bg-[#3C3489] text-white text-xs font-semibold rounded-lg transition-colors"
+            >
+              {completadosFase1 > 0 ? 'Continuar' : 'Empezar gratis'}
+            </button>
           </div>
         </div>
       </header>
 
-      <main className="flex-1 max-w-5xl mx-auto w-full px-4 py-10 space-y-8">
-
-        {/* Hero */}
-        <div className="text-center">
-          <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#EEEDFE] border border-[#DDD9FE] mb-5">
+      {/* ——— Hero ——— */}
+      <section className="bg-gradient-to-b from-white via-[#FAFBFC] to-white px-4 pt-16 pb-12">
+        <div className="max-w-3xl mx-auto text-center">
+          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#EEEDFE] border border-[#DDD9FE] mb-6">
             <div className="w-1.5 h-1.5 rounded-full bg-[#534AB7]" />
-            <span className="text-xs font-medium text-[#534AB7]">Plataforma de gobierno corporativo</span>
+            <span className="text-xs font-medium text-[#534AB7]">Gratuito y 100% privado</span>
           </div>
-          <h1 className="text-3xl sm:text-4xl font-bold text-gray-900 tracking-tight leading-tight mb-4">
-            Profesionalizá el gobierno{' '}
-            <span className="bg-gradient-to-r from-[#534AB7] to-[#0F6E56] bg-clip-text text-transparent">
-              de tu empresa
-            </span>
+
+          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-gray-900 tracking-tight leading-[1.1] mb-6">
+            Profesionalizá el{' '}
+            <span className="bg-gradient-to-r from-[#534AB7] to-[#7C6FDB] bg-clip-text text-transparent">
+              gobierno corporativo
+            </span>{' '}
+            de tu empresa
           </h1>
-          <p className="text-gray-500 text-sm sm:text-base leading-relaxed max-w-xl mx-auto">
-            Desde el diagnóstico inicial hasta la operación del directorio.
-            4 fases para construir un gobierno corporativo sólido, paso a paso.
+
+          <p className="text-lg text-gray-500 leading-relaxed max-w-2xl mx-auto mb-8">
+            La plataforma que te guía desde el diagnóstico hasta la operación de tu directorio. Diseñada para empresas argentinas que quieren crecer con estructura.
           </p>
-        </div>
 
-        {/* Empresa input */}
-        <div className="bg-white border border-[#E5E7EB] rounded-2xl p-5 shadow-sm max-w-md mx-auto">
-          <label className="block text-sm font-medium text-gray-700 mb-1.5">
-            Nombre de la empresa <span className="text-gray-400 font-normal">(opcional)</span>
-          </label>
-          <div className="relative">
-            <div className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" /><polyline points="9 22 9 12 15 12 15 22" />
-              </svg>
+          {/* CTA group */}
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-3 mb-6">
+            <div className="relative w-full sm:w-auto">
+              <div className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" /><polyline points="9 22 9 12 15 12 15 22" />
+                </svg>
+              </div>
+              <input
+                type="text"
+                value={nombre}
+                onChange={e => { setNombre(e.target.value); storage.setEmpresaNombre(e.target.value); }}
+                placeholder="Nombre de tu empresa"
+                className="w-full sm:w-64 pl-10 pr-3 py-3 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#534AB7]/30 focus:border-[#534AB7] bg-white"
+              />
             </div>
-            <input
-              type="text"
-              value={nombre}
-              onChange={handleNombreChange}
-              placeholder="Ej: Empresa SRL"
-              className="w-full pl-10 pr-3 py-2.5 border border-[#E5E7EB] rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#534AB7]/30 focus:border-[#534AB7] bg-[#FAFBFC]"
-            />
+            <button
+              onClick={handleStart}
+              className="w-full sm:w-auto px-8 py-3 bg-gradient-to-r from-[#534AB7] to-[#6359C7] hover:from-[#3C3489] hover:to-[#534AB7] text-white font-semibold rounded-xl shadow-lg shadow-[#534AB7]/20 hover:shadow-xl hover:shadow-[#534AB7]/30 transition-all text-sm"
+            >
+              {completadosFase1 > 0 ? `Continuar diagnóstico (${completadosFase1}/5)` : 'Comenzar diagnóstico gratuito'}
+            </button>
           </div>
+
+          <p className="text-xs text-gray-400">Sin registro. Sin tarjeta. Tus datos quedan en tu dispositivo.</p>
         </div>
+      </section>
 
-        {/* 4 Fases — horizontal */}
-        <div className="space-y-4">
-          <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider text-center">Las 4 fases</p>
+      {/* ——— Stats ——— */}
+      <section className="border-y border-gray-100 bg-[#FAFBFC] px-4 py-8">
+        <div className="max-w-3xl mx-auto grid grid-cols-3 gap-6">
+          {STATS.map(s => (
+            <div key={s.label} className="text-center">
+              <p className="text-3xl font-bold text-gray-900">{s.valor}</p>
+              <p className="text-xs text-gray-500 mt-1">{s.label}</p>
+            </div>
+          ))}
+        </div>
+      </section>
 
-          {/* Connecting line behind cards */}
-          <div className="relative">
-            {/* Horizontal connector line — visible on lg */}
-            <div className="hidden lg:block absolute top-7 left-[12.5%] right-[12.5%] h-0.5 bg-gradient-to-r from-[#534AB7] via-[#0F6E56] to-[#E5E7EB] rounded-full z-0" />
+      {/* ——— Proceso: Diagnosticá / Constituí / Operá ——— */}
+      <section className="px-4 py-16">
+        <div className="max-w-5xl mx-auto">
+          <div className="text-center mb-12">
+            <p className="text-xs font-semibold text-[#534AB7] uppercase tracking-wider mb-2">Cómo funciona</p>
+            <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 tracking-tight">
+              Tres etapas para un gobierno corporativo sólido
+            </h2>
+          </div>
 
-            <div className="grid gap-3 grid-cols-2 lg:grid-cols-4">
-              {FASES.map(fase => {
-                const isActive = fase.estado === 'activa';
-                const isFase1 = fase.numero === 1;
-
-                return (
-                  <button
-                    key={fase.numero}
-                    onClick={() => handleFaseClick(fase)}
-                    disabled={!isActive}
-                    className={`
-                      text-left rounded-2xl border-2 p-4 transition-all group relative overflow-hidden flex flex-col z-10
-                      ${isActive
-                        ? 'bg-white shadow-sm hover:shadow-lg hover:-translate-y-1 cursor-pointer'
-                        : 'bg-gray-50/80 cursor-not-allowed'
-                      }
-                    `}
-                    style={{
-                      borderColor: isActive ? fase.colorBorder : '#E5E7EB',
-                    }}
+          <div className="space-y-8">
+            {PROCESO.map((etapa, idx) => (
+              <div key={etapa.paso} className="flex flex-col lg:flex-row items-start gap-6 lg:gap-10">
+                {/* Left: number + line */}
+                <div className="flex lg:flex-col items-center gap-3 lg:gap-0 shrink-0">
+                  <div
+                    className="w-12 h-12 rounded-2xl flex items-center justify-center text-lg font-bold text-white"
+                    style={{ backgroundColor: etapa.color }}
                   >
-                    {/* Top row: icon + badge */}
-                    <div className="flex items-center justify-between mb-3">
-                      <div
-                        className="w-9 h-9 rounded-lg flex items-center justify-center shrink-0"
-                        style={{ backgroundColor: isActive ? fase.colorBg : '#F3F4F6', color: isActive ? fase.color : '#9CA3AF' }}
-                      >
-                        {fase.icon}
+                    {idx + 1}
+                  </div>
+                  {idx < PROCESO.length - 1 && (
+                    <div className="hidden lg:block w-0.5 h-16 bg-gray-200 mx-auto mt-2" />
+                  )}
+                </div>
+
+                {/* Right: content */}
+                <div className="flex-1 rounded-2xl border border-gray-200 bg-white p-6 hover:shadow-lg transition-shadow">
+                  <p className="text-xs font-bold uppercase tracking-wider mb-1" style={{ color: etapa.color }}>{etapa.paso}</p>
+                  <h3 className="text-lg font-bold text-gray-900 tracking-tight mb-2">{etapa.titulo}</h3>
+                  <p className="text-sm text-gray-500 leading-relaxed mb-4">{etapa.descripcion}</p>
+                  <div className="grid grid-cols-2 gap-2">
+                    {etapa.items.map(item => (
+                      <div key={item} className="flex items-center gap-2">
+                        <div className="w-4 h-4 rounded-full flex items-center justify-center shrink-0" style={{ backgroundColor: etapa.colorBg }}>
+                          <svg width="8" height="8" viewBox="0 0 12 12" fill="none">
+                            <path d="M2 6l3 3 5-5" stroke={etapa.color} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+                          </svg>
+                        </div>
+                        <span className="text-xs text-gray-600">{item}</span>
                       </div>
-                      <div className="flex items-center gap-1.5">
-                        {isFase1 && completadosFase1 > 0 && (
-                          <span className="text-xs font-bold px-1.5 py-0.5 rounded-full" style={{ backgroundColor: fase.colorBg, color: fase.color }}>
-                            {completadosFase1}/5
-                          </span>
-                        )}
-                        <span
-                          className="text-xs font-bold px-2 py-0.5 rounded-full"
-                          style={{
-                            backgroundColor: isActive ? fase.colorBg : '#F3F4F6',
-                            color: isActive ? fase.color : '#9CA3AF',
-                          }}
-                        >
-                          {fase.numero}
-                        </span>
-                      </div>
-                    </div>
-
-                    {/* Title */}
-                    <h3 className="text-base font-bold text-gray-900 tracking-tight mb-0.5 leading-tight">
-                      {fase.titulo}
-                    </h3>
-                    <p className="text-xs font-medium mb-2" style={{ color: isActive ? fase.color : '#9CA3AF' }}>
-                      {fase.subtitulo}
-                    </p>
-
-                    {/* Description */}
-                    <p className="text-xs text-gray-500 leading-relaxed mb-3 flex-1">
-                      {fase.descripcion}
-                    </p>
-
-                    {/* Module pills */}
-                    <div className="flex flex-wrap gap-1">
-                      {fase.modulos.map(mod => (
-                        <span
-                          key={mod}
-                          className="text-[10px] px-1.5 py-0.5 rounded-full leading-tight"
-                          style={{
-                            backgroundColor: isActive ? fase.colorBg : '#F3F4F6',
-                            color: isActive ? fase.color : '#9CA3AF',
-                          }}
-                        >
-                          {mod}
-                        </span>
-                      ))}
-                    </div>
-
-                    {/* Arrow on hover */}
-                    {isActive && (
-                      <div
-                        className="absolute bottom-3 right-3 w-7 h-7 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
-                        style={{ backgroundColor: fase.color }}
-                      >
-                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                          <path d="M5 12h14M12 5l7 7-7 7" />
-                        </svg>
-                      </div>
-                    )}
-
-                    {/* Coming soon */}
-                    {!isActive && (
-                      <div className="absolute inset-0 flex items-center justify-center bg-white/50 backdrop-blur-[1px]">
-                        <span className="px-3 py-1.5 rounded-full bg-gray-100 text-gray-500 text-xs font-semibold border border-gray-200 shadow-sm">
-                          Próximamente
-                        </span>
-                      </div>
-                    )}
-                  </button>
-                );
-              })}
-            </div>
-          </div>
-        </div>
-
-        {/* Quick access if has data */}
-        {completadosFase1 > 0 && (
-          <div className="bg-white border border-[#E5E7EB] rounded-2xl p-5 shadow-sm">
-            <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">Acceso rápido</p>
-            <div className="flex gap-2 flex-wrap">
-              <button
-                onClick={() => router.push('/dashboard')}
-                className="px-4 py-2 bg-[#534AB7] hover:bg-[#3C3489] text-white text-sm font-semibold rounded-xl transition-colors"
-              >
-                Governance Score
-              </button>
-              {completadosFase1 >= 4 && (
-                <button
-                  onClick={() => router.push('/resultado')}
-                  className="px-4 py-2 border border-[#E5E7EB] text-gray-600 text-sm font-medium rounded-xl hover:bg-gray-50 transition-colors"
-                >
-                  Resultado final
-                </button>
-              )}
-              <button
-                onClick={() => router.push('/fase2/acta-constitutiva')}
-                className="px-4 py-2 border border-[#B5E8D5] text-[#0F6E56] text-sm font-medium rounded-xl hover:bg-[#E1F5EE] transition-colors"
-              >
-                Acta constitutiva
-              </button>
-              <button
-                onClick={() => router.push('/fase2/reunion')}
-                className="px-4 py-2 border border-[#B5E8D5] text-[#0F6E56] text-sm font-medium rounded-xl hover:bg-[#E1F5EE] transition-colors"
-              >
-                Reuniones
-              </button>
-              <button
-                onClick={() => router.push('/fase3/dashboard')}
-                className="px-4 py-2 border border-[#F0D9A8] text-[#854F0B] text-sm font-medium rounded-xl hover:bg-[#FAEEDA] transition-colors"
-              >
-                Dashboard financiero
-              </button>
-              <button
-                onClick={() => router.push('/fase3/seguimiento')}
-                className="px-4 py-2 border border-[#F0D9A8] text-[#854F0B] text-sm font-medium rounded-xl hover:bg-[#FAEEDA] transition-colors"
-              >
-                Seguimiento
-              </button>
-            </div>
-          </div>
-        )}
-
-        {/* Methodology */}
-        <div className="border border-[#E5E7EB] rounded-2xl bg-white p-5 shadow-sm">
-          <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">Metodología</p>
-          <p className="text-sm text-gray-600 leading-relaxed mb-3">
-            Directorio AR integra principios de gobierno corporativo moderno basados en los marcos de referencia más reconocidos internacionalmente, adaptados a la realidad de las empresas argentinas.
-          </p>
-          <div className="flex flex-wrap gap-2">
-            {['Gobierno corporativo', 'Board effectiveness', 'Mejores prácticas PyME', 'Contexto argentino'].map(tag => (
-              <span key={tag} className="text-xs bg-gray-100 text-gray-500 px-3 py-1.5 rounded-full">{tag}</span>
+                    ))}
+                  </div>
+                </div>
+              </div>
             ))}
           </div>
-          <p className="text-xs text-gray-300 mt-3">
-            Todo se guarda localmente en tu dispositivo. Sin registro, sin servidor.
-          </p>
         </div>
+      </section>
 
-        {/* Footer */}
-        <div className="text-center pt-4 pb-6 border-t border-gray-100">
-          <div className="flex items-center justify-center gap-2 mb-1">
-            <div className="w-5 h-5 rounded-md bg-gradient-to-br from-[#534AB7] to-[#7C6FDB] flex items-center justify-center">
-              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                <rect x="2" y="7" width="20" height="14" rx="2" /><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2" />
-              </svg>
-            </div>
-            <span className="text-xs font-semibold text-gray-400 tracking-wide">Directorio AR</span>
-          </div>
-          <p className="text-xs text-gray-300">Gobierno Corporativo</p>
+      {/* ——— Mid CTA ——— */}
+      <section className="px-4 py-12 bg-gradient-to-r from-[#534AB7] to-[#7C6FDB]">
+        <div className="max-w-3xl mx-auto text-center">
+          <h2 className="text-xl sm:text-2xl font-bold text-white tracking-tight mb-3">
+            Empezá el diagnóstico en 2 minutos
+          </h2>
+          <p className="text-sm text-white/70 mb-6">
+            15 preguntas para saber si tu empresa necesita un directorio. Resultado inmediato.
+          </p>
+          <button
+            onClick={handleStart}
+            className="px-8 py-3 bg-white text-[#534AB7] font-semibold rounded-xl hover:bg-gray-50 transition-colors text-sm shadow-lg"
+          >
+            {completadosFase1 > 0 ? 'Continuar donde dejé' : 'Comenzar ahora'}
+          </button>
         </div>
-      </main>
+      </section>
+
+      {/* ——— Beneficios ——— */}
+      <section className="px-4 py-16 bg-[#FAFBFC]">
+        <div className="max-w-5xl mx-auto">
+          <div className="text-center mb-10">
+            <p className="text-xs font-semibold text-[#534AB7] uppercase tracking-wider mb-2">Por qué Directorio AR</p>
+            <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 tracking-tight">
+              Hecho para la realidad de las empresas argentinas
+            </h2>
+          </div>
+          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            {BENEFICIOS.map(b => (
+              <div key={b.titulo} className="bg-white rounded-2xl border border-gray-200 p-5 hover:shadow-md transition-shadow">
+                <div className="w-10 h-10 rounded-xl bg-[#EEEDFE] flex items-center justify-center text-[#534AB7] mb-3">
+                  {b.icono}
+                </div>
+                <h3 className="text-sm font-bold text-gray-900 mb-1">{b.titulo}</h3>
+                <p className="text-xs text-gray-500 leading-relaxed">{b.descripcion}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ——— Quick access (returning users) ——— */}
+      {completadosFase1 > 0 && (
+        <section className="px-4 py-10 border-t border-gray-100">
+          <div className="max-w-3xl mx-auto">
+            <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-4 text-center">Tu progreso</p>
+            <div className="bg-white border border-gray-200 rounded-2xl p-5 shadow-sm">
+              <div className="flex items-center justify-between mb-3">
+                <span className="text-sm font-semibold text-gray-900">Fase 1 — Diagnóstico</span>
+                <span className="text-sm font-bold text-[#534AB7]">{completadosFase1}/5</span>
+              </div>
+              <div className="flex gap-1 mb-4">
+                {[1, 2, 3, 4, 5].map(i => (
+                  <div key={i} className={`flex-1 h-2 rounded-full ${i <= completadosFase1 ? 'bg-[#534AB7]' : 'bg-gray-100'}`} />
+                ))}
+              </div>
+              <div className="flex gap-2 flex-wrap">
+                <button onClick={handleStart} className="px-4 py-2 bg-[#534AB7] hover:bg-[#3C3489] text-white text-sm font-semibold rounded-xl">
+                  {completadosFase1 === 5 ? 'Ver resultado' : 'Continuar'}
+                </button>
+                <button onClick={() => router.push('/dashboard')} className="px-4 py-2 border border-gray-200 text-gray-600 text-sm font-medium rounded-xl hover:bg-gray-50">
+                  Governance Score
+                </button>
+                <button onClick={() => router.push('/fase2/acta-constitutiva')} className="px-4 py-2 border border-[#B5E8D5] text-[#0F6E56] text-sm font-medium rounded-xl hover:bg-[#E1F5EE]">
+                  Fase 2
+                </button>
+                <button onClick={() => router.push('/fase3/dashboard')} className="px-4 py-2 border border-[#F0D9A8] text-[#854F0B] text-sm font-medium rounded-xl hover:bg-[#FAEEDA]">
+                  Fase 3
+                </button>
+              </div>
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* ——— FAQ ——— */}
+      <section className="px-4 py-16">
+        <div className="max-w-2xl mx-auto">
+          <div className="text-center mb-8">
+            <h2 className="text-2xl font-bold text-gray-900 tracking-tight">Preguntas frecuentes</h2>
+          </div>
+          <div className="bg-white border border-gray-200 rounded-2xl p-5">
+            {FAQ.map(item => (
+              <FAQItem key={item.q} q={item.q} a={item.a} />
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ——— Final CTA ——— */}
+      <section className="px-4 py-16 bg-[#FAFBFC] border-t border-gray-100">
+        <div className="max-w-2xl mx-auto text-center">
+          <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 tracking-tight mb-3">
+            Tu empresa merece un gobierno corporativo profesional
+          </h2>
+          <p className="text-sm text-gray-500 mb-6 max-w-lg mx-auto">
+            No importa si ya tenés un directorio o si estás pensando en armar uno. Empezá por el diagnóstico y dejá que la herramienta te guíe.
+          </p>
+          <button
+            onClick={handleStart}
+            className="px-10 py-4 bg-gradient-to-r from-[#534AB7] to-[#6359C7] hover:from-[#3C3489] hover:to-[#534AB7] text-white font-semibold rounded-xl shadow-lg shadow-[#534AB7]/20 text-sm transition-all"
+          >
+            Comenzar diagnóstico gratuito
+          </button>
+          <p className="text-xs text-gray-400 mt-3">Sin registro. Sin tarjeta. 100% privado.</p>
+        </div>
+      </section>
+
+      {/* ——— Footer ——— */}
+      <footer className="bg-white border-t border-gray-100 px-4 py-8">
+        <div className="max-w-5xl mx-auto">
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div className="flex items-center gap-2">
+              <div className="w-6 h-6 rounded-md bg-gradient-to-br from-[#534AB7] to-[#7C6FDB] flex items-center justify-center">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <rect x="2" y="7" width="20" height="14" rx="2" /><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2" />
+                </svg>
+              </div>
+              <span className="text-sm font-bold text-gray-900">Directorio AR</span>
+            </div>
+            <div className="flex items-center gap-6 text-xs text-gray-400">
+              <span>Gobierno corporativo</span>
+              <span>Empresas argentinas</span>
+              <span>100% gratuito</span>
+            </div>
+          </div>
+        </div>
+      </footer>
     </div>
   );
 }
