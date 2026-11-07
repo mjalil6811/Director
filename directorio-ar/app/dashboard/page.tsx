@@ -22,6 +22,7 @@ interface DimensionScore {
   nivel: string;
   icono: string;
   fuente: string;
+  tieneDatos: boolean;
 }
 
 interface GovernanceScore {
@@ -52,6 +53,7 @@ function calcularGovernanceScore(
     label: 'Complejidad organizacional',
     descripcion: 'Nivel de complejidad y madurez que justifica un directorio formal.',
     score: d1score,
+    tieneDatos: !!m1,
     nivel: d1score >= 75 ? 'Alta' : d1score >= 50 ? 'Media-alta' : d1score >= 30 ? 'Media' : 'Baja',
     icono: '🏛',
     fuente: 'Módulo 1',
@@ -67,6 +69,7 @@ function calcularGovernanceScore(
     label: 'Distribución de decisiones',
     descripcion: 'Grado en que las decisiones estratégicas están bien delegadas y no concentradas en una sola persona.',
     score: d2score,
+    tieneDatos: !!m2,
     nivel: d2score >= 70 ? 'Saludable' : d2score >= 45 ? 'En desarrollo' : d2score >= 20 ? 'Concentrada' : 'Muy concentrada',
     icono: '⚖',
     fuente: 'Módulo 2',
@@ -87,6 +90,7 @@ function calcularGovernanceScore(
     label: 'Composición y perfiles',
     descripcion: 'Adecuación de los perfiles existentes o planificados para las necesidades estratégicas de la empresa.',
     score: d3score,
+    tieneDatos: !!m3,
     nivel: d3score >= 65 ? 'Adecuada' : d3score >= 40 ? 'Con brechas' : 'Crítica',
     icono: '👥',
     fuente: 'Módulo 3',
@@ -100,6 +104,7 @@ function calcularGovernanceScore(
     label: 'Disposición al gobierno',
     descripcion: 'Voluntad real del CEO y la organización de operar bajo una estructura de gobierno corporativo.',
     score: d4score,
+    tieneDatos: !!m4diag,
     nivel: d4score >= 80 ? 'Alta' : d4score >= 50 ? 'Moderada' : 'Baja',
     icono: '🎯',
     fuente: 'Módulo 4',
@@ -113,6 +118,7 @@ function calcularGovernanceScore(
     label: 'Dinámica directorio-gerencia',
     descripcion: 'Calidad de la relación operativa entre el directorio y la gerencia: información, autonomía y evaluación mutua.',
     score: d5score,
+    tieneDatos: !!m5,
     nivel: d5score >= 75 ? 'Sana' : d5score >= 50 ? 'En construcción' : d5score >= 25 ? 'Con tensiones' : 'Crítica',
     icono: '🔄',
     fuente: 'Módulo 5',
@@ -122,8 +128,9 @@ function calcularGovernanceScore(
   // Score total ponderado
   // Pesos: necesidad 15%, decisiones 25%, composición 20%, disposición 20%, dinámica 20%
   const pesos = [0.15, 0.25, 0.20, 0.20, 0.20];
-  const totalPonderado = dims.reduce((acc, d, i) => acc + d.score * pesos[i], 0);
-  const ajuste = completadas > 0 ? totalPonderado / (pesos.slice(0, completadas).reduce((a, b) => a + b, 0)) : 0;
+  const pesoCompletado = dims.reduce((acc, d, i) => acc + (d.tieneDatos ? pesos[i] : 0), 0);
+  const totalPonderado = dims.reduce((acc, d, i) => acc + (d.tieneDatos ? d.score * pesos[i] : 0), 0);
+  const ajuste = pesoCompletado > 0 ? totalPonderado / pesoCompletado : 0;
   const total = Math.round(Math.min(100, ajuste));
 
   let nivel: string;
@@ -221,9 +228,11 @@ export default function GovernanceScorePage() {
 
   // Próximos pasos personalizados
   const weakDims = gs.dimensiones
-    .filter(d => d.score < 50)
+    .filter(d => d.tieneDatos && d.score < 50)
     .sort((a, b) => a.score - b.score)
     .slice(0, 3);
+  const dimsConDatos = gs.dimensiones.filter(d => d.tieneDatos);
+  const pendientes = gs.dimensiones.filter(d => !d.tieneDatos);
 
   return (
     <div className="min-h-screen bg-[#FAFBFC] flex flex-col">
@@ -272,6 +281,14 @@ export default function GovernanceScorePage() {
             <span>{gs.etiqueta}</span>
           </div>
           <p className="text-xs text-gray-400 mt-2">{fecha} · {gs.completadas}/5 módulos completados</p>
+          {pendientes.length > 0 && (
+            <p className="text-xs text-gray-600 mt-3 bg-white/70 rounded-lg px-3 py-2 inline-block">
+              Score parcial: calculado con {gs.completadas} de 5 dimensiones.{' '}
+              <button onClick={() => router.push(`/modulo/${pendientes[0].fuente.replace('Módulo ', '')}`)} className="font-semibold text-[#534AB7] hover:underline">
+                Completar {pendientes[0].fuente} →
+              </button>
+            </p>
+          )}
         </div>
 
         {/* Radar chart */}
@@ -280,11 +297,18 @@ export default function GovernanceScorePage() {
             Perfil de gobierno corporativo
           </p>
           <p className="text-xs text-gray-400 text-center -mt-3 mb-2">Tu empresa en cada dimensión (0–100) vs. una empresa mediana con directorio</p>
-          <GovernanceRadar
-            data={gs.dimensiones.map(d => ({ label: ETIQUETA_CORTA[d.id] ?? d.label, score: d.score }))}
-            referencia={62}
-            referenciaLabel="Empresa mediana con directorio"
-          />
+          {dimsConDatos.length >= 3 ? (
+            <GovernanceRadar
+              data={dimsConDatos.map(d => ({ label: ETIQUETA_CORTA[d.id] ?? d.label, score: d.score }))}
+              referencia={62}
+              referenciaLabel="Empresa mediana con directorio"
+            />
+          ) : (
+            <div className="py-10 text-center">
+              <p className="text-sm text-gray-500">El perfil se dibuja con al menos 3 dimensiones evaluadas.</p>
+              <p className="text-xs text-gray-400 mt-1">Llevás {dimsConDatos.length} de 5. Te faltan: {pendientes.map(d => ETIQUETA_CORTA[d.id]).join(', ')}.</p>
+            </div>
+          )}
         </div>
 
         {/* 5 dimensions */}
@@ -294,6 +318,25 @@ export default function GovernanceScorePage() {
           </div>
           <div className="divide-y divide-gray-100">
             {gs.dimensiones.map(d => {
+              if (!d.tieneDatos) {
+                return (
+                  <div key={d.id} className="px-5 py-4 flex items-center justify-between gap-3">
+                    <div className="flex items-center gap-2 opacity-60">
+                      <span className="text-base">{d.icono}</span>
+                      <div>
+                        <p className="text-sm font-semibold text-gray-900">{d.label}</p>
+                        <p className="text-xs text-gray-400">{d.fuente} · sin datos todavía</p>
+                      </div>
+                    </div>
+                    <button
+                      onClick={() => router.push(`/modulo/${d.fuente.replace('Módulo ', '')}`)}
+                      className="text-xs font-semibold text-[#534AB7] border border-[#DDD9FE] bg-[#EEEDFE] px-3 py-1.5 rounded-lg hover:bg-[#DDD9FE] shrink-0"
+                    >
+                      Completar →
+                    </button>
+                  </div>
+                );
+              }
               const dimColor = d.score >= 70 ? '#0F6E56' : d.score >= 45 ? '#534AB7' : d.score >= 20 ? '#854F0B' : '#A32D2D';
               return (
                 <div key={d.id} className="px-5 py-4">

@@ -7,7 +7,8 @@ import { storage } from '../lib/storage';
 // ——— Data ———————————————————————————————————————————————————————————————————
 
 const STATS = [
-  { valor: '3', label: 'Fases del proceso' },
+  { valor: '~8 min', label: 'Dura el diagnóstico' },
+  { valor: '34', label: 'Preguntas en 5 módulos' },
   { valor: '12', label: 'Herramientas integradas' },
   { valor: '100%', label: 'Gratuito y privado' },
 ];
@@ -86,6 +87,37 @@ const FAQ = [
   { q: '¿Qué es el Governance Score?', a: 'Es un índice de madurez de gobierno corporativo de 0 a 100 que integra 5 dimensiones: necesidad, decisiones, perfiles, disposición y dinámica. Sirve como referencia ante inversores, fondos y socios estratégicos.' },
 ];
 
+// Módulos de la Fase 1, con tiempo estimado (≈15 s por pregunta)
+const MODULOS_F1 = [
+  { n: 1, titulo: '¿Necesitás un directorio?', min: 3 },
+  { n: 2, titulo: 'Mapa de decisiones', min: 2 },
+  { n: 3, titulo: 'Perfiles de directores', min: 2 },
+  { n: 4, titulo: 'Disposición al cambio', min: 1 },
+  { n: 5, titulo: 'Directorio y gerencia', min: 1 },
+];
+
+// Lo que el usuario va a hacer, visible sin scroll
+const RECORRIDO = [
+  {
+    fase: 1, verbo: 'Diagnosticá', color: '#534AB7', bg: '#EEEDFE', href: '/modulo/1',
+    que: 'Respondés 34 preguntas en 5 módulos cortos',
+    obtenes: 'Governance Score, nivel de urgencia y perfiles de directores que te faltan',
+    tiempo: '~8 min',
+  },
+  {
+    fase: 2, verbo: 'Constituí', color: '#0F6E56', bg: '#E1F5EE', href: '/fase2/acta-constitutiva',
+    que: 'Completás el acta, el protocolo de socios y la agenda de reuniones',
+    obtenes: 'Documentos listos para revisar con tu abogado',
+    tiempo: 'Cuando quieras',
+  },
+  {
+    fase: 3, verbo: 'Operá', color: '#854F0B', bg: '#FAEEDA', href: '/fase3/dashboard',
+    que: 'Cargás tus números y seguís los compromisos del directorio',
+    obtenes: 'Dashboard financiero, seguimiento de tareas y evaluación del CEO',
+    tiempo: 'Mes a mes',
+  },
+];
+
 // ——— Components ————————————————————————————————————————————————————————————
 
 function FAQItem({ q, a }: { q: string; a: string }) {
@@ -109,6 +141,7 @@ export default function HomePage() {
   const router = useRouter();
   const [nombre, setNombre] = useState('');
   const [completadosFase1, setCompletadosFase1] = useState(0);
+  const [siguiente, setSiguiente] = useState(1);
 
   useEffect(() => {
     const n = storage.getEmpresaNombre();
@@ -121,6 +154,15 @@ export default function HomePage() {
       !!storage.getModulo5Resultado(),
     ].filter(Boolean).length;
     setCompletadosFase1(count);
+    const flags = [
+      !!storage.getModulo1Resultado(),
+      !!storage.getModulo2Resultado(),
+      !!storage.getModulo3Resultado(),
+      !!(storage.getModulo4Diagnostico() || storage.getModulo4Frecuencia()),
+      !!storage.getModulo5Resultado(),
+    ];
+    const idx = flags.findIndex(c => !c);
+    setSiguiente(idx === -1 ? 6 : idx + 1);
   }, []);
 
   function handleStart() {
@@ -185,56 +227,120 @@ export default function HomePage() {
       </header>
 
       {/* ——— Hero ——— */}
-      <section className="bg-gradient-to-b from-white via-[#FAFBFC] to-white px-4 pt-16 pb-12">
-        <div className="max-w-3xl mx-auto text-center">
-          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#EEEDFE] border border-[#DDD9FE] mb-6">
-            <div className="w-1.5 h-1.5 rounded-full bg-[#534AB7]" />
-            <span className="text-xs font-medium text-[#534AB7]">Gratuito y 100% privado</span>
-          </div>
+      <section className="bg-gradient-to-b from-white via-[#FAFBFC] to-white px-4 pt-10 sm:pt-14 pb-12">
+        <div className="max-w-6xl mx-auto grid lg:grid-cols-[1.05fr_1fr] gap-10 lg:gap-14 items-center">
 
-          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-gray-900 tracking-tight leading-[1.1] mb-6">
-            Profesionalizá el{' '}
-            <span className="bg-gradient-to-r from-[#534AB7] to-[#7C6FDB] bg-clip-text text-transparent">
-              gobierno corporativo
-            </span>{' '}
-            de tu empresa
-          </h1>
-
-          <p className="text-lg text-gray-500 leading-relaxed max-w-2xl mx-auto mb-8">
-            La plataforma que te guía desde el diagnóstico hasta la operación de tu directorio. Diseñada para empresas argentinas que quieren crecer con estructura.
-          </p>
-
-          {/* CTA group */}
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-3 mb-6">
-            <div className="relative w-full sm:w-auto">
-              <div className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" /><polyline points="9 22 9 12 15 12 15 22" />
-                </svg>
-              </div>
-              <input
-                type="text"
-                value={nombre}
-                onChange={e => { setNombre(e.target.value); storage.setEmpresaNombre(e.target.value); }}
-                placeholder="Nombre de tu empresa"
-                className="w-full sm:w-64 pl-10 pr-3 py-3 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#534AB7]/30 focus:border-[#534AB7] bg-white"
-              />
+          {/* Columna izquierda: propuesta + CTA */}
+          <div className="text-center lg:text-left">
+            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#EEEDFE] border border-[#DDD9FE] mb-5">
+              <div className="w-1.5 h-1.5 rounded-full bg-[#534AB7]" />
+              <span className="text-xs font-medium text-[#534AB7]">Gratuito · Sin registro · 100% privado</span>
             </div>
-            <button
-              onClick={handleStart}
-              className="w-full sm:w-auto px-8 py-3 bg-gradient-to-r from-[#534AB7] to-[#6359C7] hover:from-[#3C3489] hover:to-[#534AB7] text-white font-semibold rounded-xl shadow-lg shadow-[#534AB7]/20 hover:shadow-xl hover:shadow-[#534AB7]/30 transition-all text-sm"
-            >
-              {completadosFase1 > 0 ? `Continuar diagnóstico (${completadosFase1}/5)` : 'Comenzar diagnóstico gratuito'}
-            </button>
+
+            <h1 className="text-4xl sm:text-5xl font-bold text-gray-900 tracking-tight leading-[1.08] mb-5">
+              Profesionalizá el{' '}
+              <span className="bg-gradient-to-r from-[#534AB7] to-[#7C6FDB] bg-clip-text text-transparent">
+                gobierno corporativo
+              </span>{' '}
+              de tu empresa
+            </h1>
+
+            <p className="text-base sm:text-lg text-gray-500 leading-relaxed max-w-xl mx-auto lg:mx-0 mb-7">
+              En 8 minutos sabés si tu empresa necesita un directorio, qué perfiles sumar y por dónde empezar. Después, te acompañamos a armarlo y operarlo.
+            </p>
+
+            {/* CTA group */}
+            <div className="flex flex-col sm:flex-row items-center lg:items-stretch justify-center lg:justify-start gap-3 mb-3">
+              <div className="relative w-full sm:w-auto">
+                <div className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" /><polyline points="9 22 9 12 15 12 15 22" />
+                  </svg>
+                </div>
+                <input
+                  type="text"
+                  value={nombre}
+                  onChange={e => { setNombre(e.target.value); storage.setEmpresaNombre(e.target.value); }}
+                  placeholder="Nombre de tu empresa"
+                  className="w-full sm:w-60 pl-10 pr-3 py-3 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#534AB7]/30 focus:border-[#534AB7] bg-white"
+                />
+              </div>
+              <button
+                onClick={handleStart}
+                className="w-full sm:w-auto px-7 py-3 bg-gradient-to-r from-[#534AB7] to-[#6359C7] hover:from-[#3C3489] hover:to-[#534AB7] text-white font-semibold rounded-xl shadow-lg shadow-[#534AB7]/20 hover:shadow-xl hover:shadow-[#534AB7]/30 transition-all text-sm"
+              >
+                {completadosFase1 === 5 ? 'Ver mi resultado' : completadosFase1 > 0 ? `Continuar diagnóstico (${completadosFase1}/5)` : 'Comenzar diagnóstico gratuito'}
+              </button>
+            </div>
+
+            {/* Qué pasa al hacer clic */}
+            <p className="text-sm text-gray-600 mb-1">
+              {completadosFase1 === 5
+                ? <>Ya completaste el diagnóstico. Vas a ver tu <strong className="font-semibold text-gray-900">resultado final</strong> y el siguiente paso: constituir el directorio.</>
+                : completadosFase1 > 0
+                ? <>Próximo paso: <strong className="font-semibold text-gray-900">Módulo {siguiente} · {MODULOS_F1[siguiente - 1]?.titulo}</strong> <span className="text-gray-400">(~{MODULOS_F1[siguiente - 1]?.min} min)</span></>
+                : <>Empezás por el <strong className="font-semibold text-gray-900">Módulo 1 · ¿Necesitás un directorio?</strong> <span className="text-gray-400">(10 preguntas, ~3 min)</span></>}
+            </p>
+            <p className="text-xs text-gray-400">Se guarda solo en tu dispositivo. Podés pausar y retomar cuando quieras.</p>
+
+            {completadosFase1 > 0 && completadosFase1 < 5 && (
+              <div className="mt-5 max-w-sm mx-auto lg:mx-0">
+                <div className="flex gap-1.5">
+                  {MODULOS_F1.map(m => (
+                    <div key={m.n} title={`Módulo ${m.n} · ${m.titulo}`} className={`flex-1 h-1.5 rounded-full ${m.n < siguiente ? 'bg-[#534AB7]' : m.n === siguiente ? 'bg-[#534AB7]/35' : 'bg-gray-200'}`} />
+                  ))}
+                </div>
+                <p className="text-[11px] text-gray-400 mt-1.5 text-left">{completadosFase1} de 5 módulos completados</p>
+              </div>
+            )}
           </div>
 
-          <p className="text-xs text-gray-400">Sin registro. Sin tarjeta. Tus datos quedan en tu dispositivo.</p>
+          {/* Columna derecha: qué vas a hacer */}
+          <div className="bg-white border border-gray-200 rounded-2xl shadow-xl shadow-gray-200/60 p-5 sm:p-6 text-left">
+            <div className="flex items-center justify-between mb-4">
+              <p className="text-sm font-bold text-gray-900">Qué vas a hacer</p>
+              <span className="text-[11px] text-gray-400">3 etapas</span>
+            </div>
+            <ol className="space-y-3">
+              {RECORRIDO.map(r => {
+                const done = r.fase === 1 && completadosFase1 === 5;
+                const enCurso = r.fase === 1 && completadosFase1 > 0 && completadosFase1 < 5;
+                return (
+                  <li key={r.fase}>
+                    <button
+                      onClick={() => (r.fase === 1 ? handleStart() : router.push(r.href))}
+                      className="w-full flex gap-3 p-3 rounded-xl border border-gray-100 hover:border-gray-300 hover:bg-gray-50/60 transition-colors text-left group"
+                    >
+                      <div className="w-9 h-9 rounded-xl flex items-center justify-center text-sm font-bold text-white shrink-0" style={{ backgroundColor: r.color }}>
+                        {done ? '✓' : r.fase}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2 mb-0.5 flex-wrap">
+                          <span className="text-sm font-bold" style={{ color: r.color }}>{r.verbo}</span>
+                          <span className="text-[11px] font-medium px-1.5 py-0.5 rounded-md" style={{ color: r.color, backgroundColor: r.bg }}>{r.tiempo}</span>
+                          {enCurso && <span className="text-[11px] font-semibold text-gray-500">· {completadosFase1}/5 hecho</span>}
+                          {r.fase === 1 && completadosFase1 === 0 && <span className="text-[11px] font-semibold text-gray-500">· Empezás acá</span>}
+                        </div>
+                        <p className="text-[13px] text-gray-700 leading-snug">{r.que}</p>
+                        <p className="text-xs text-gray-400 leading-snug mt-1">
+                          <span className="font-semibold text-gray-500">Obtenés:</span> {r.obtenes}
+                        </p>
+                      </div>
+                      <svg className="self-center shrink-0 text-gray-300 group-hover:text-gray-500 transition-colors" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+                        <path d="M9 18l6-6-6-6" />
+                      </svg>
+                    </button>
+                  </li>
+                );
+              })}
+            </ol>
+          </div>
         </div>
       </section>
 
       {/* ——— Stats ——— */}
       <section className="border-y border-gray-100 bg-[#FAFBFC] px-4 py-8">
-        <div className="max-w-3xl mx-auto grid grid-cols-3 gap-6">
+        <div className="max-w-4xl mx-auto grid grid-cols-2 sm:grid-cols-4 gap-6">
           {STATS.map(s => (
             <div key={s.label} className="text-center">
               <p className="text-3xl font-bold text-gray-900">{s.valor}</p>
@@ -298,10 +404,10 @@ export default function HomePage() {
       <section className="px-4 py-12 bg-gradient-to-r from-[#534AB7] to-[#7C6FDB]">
         <div className="max-w-3xl mx-auto text-center">
           <h2 className="text-xl sm:text-2xl font-bold text-white tracking-tight mb-3">
-            Empezá el diagnóstico en 2 minutos
+            Empezá el diagnóstico en 8 minutos
           </h2>
           <p className="text-sm text-white/70 mb-6">
-            10 preguntas para saber si tu empresa necesita un directorio. Resultado inmediato.
+            34 preguntas en 5 módulos cortos para saber si tu empresa necesita un directorio. Resultado inmediato.
           </p>
           <button
             onClick={handleStart}
