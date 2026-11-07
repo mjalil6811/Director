@@ -1,5 +1,6 @@
 'use client';
 
+import PageHeader from '../../../components/PageHeader';
 import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import {
@@ -11,7 +12,7 @@ import { storageFase3 } from '../../../lib/storage-fase3';
 import { StatusDonut, VIZ } from '../../../components/charts';
 import type { TareaGestion, EstadoTarea, PrioridadTarea } from '../../../types/fase3';
 
-const inp = "w-full px-3 py-2.5 rounded-xl border border-gray-200 bg-white text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-[#534AB7]/30 focus:border-[#534AB7] transition-all";
+const inp = "w-full px-3 py-2.5 rounded-xl border border-gray-200 bg-white text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-brand/30 focus:border-brand transition-all";
 
 function FormTarea({ tareaInicial, onGuardar, onCancelar }: {
   tareaInicial: TareaGestion | null;
@@ -93,9 +94,9 @@ function FormTarea({ tareaInicial, onGuardar, onCancelar }: {
         {t.etiquetas.length > 0 && (
           <div className="flex flex-wrap gap-1 mt-2">
             {t.etiquetas.map((e, i) => (
-              <span key={i} className="text-[11px] font-medium px-2 py-0.5 rounded-full bg-[#EEEDFE] text-[#534AB7] flex items-center gap-1">
+              <span key={i} className="text-[11px] font-medium px-2 py-0.5 rounded-full bg-brand-50 text-brand flex items-center gap-1">
                 {e}
-                <button onClick={() => quitarEtiqueta(i)} className="text-[#534AB7]/50 hover:text-[#534AB7]">&times;</button>
+                <button onClick={() => quitarEtiqueta(i)} className="text-brand/50 hover:text-brand">&times;</button>
               </span>
             ))}
           </div>
@@ -104,7 +105,7 @@ function FormTarea({ tareaInicial, onGuardar, onCancelar }: {
 
       <div className="flex gap-2">
         <button onClick={onCancelar} className="flex-1 py-2.5 rounded-xl border border-gray-200 text-sm font-semibold text-gray-600 hover:bg-gray-50 transition-all">Cancelar</button>
-        <button onClick={() => valido && onGuardar(t)} disabled={!valido} className="flex-1 py-2.5 rounded-xl bg-gradient-to-r from-[#534AB7] to-[#7C6FDB] text-white text-sm font-semibold hover:shadow-lg transition-all disabled:opacity-40">Guardar</button>
+        <button onClick={() => valido && onGuardar(t)} disabled={!valido} className="flex-1 py-2.5 rounded-xl bg-gradient-to-r from-brand to-brand-light text-white text-sm font-semibold hover:shadow-lg transition-all disabled:opacity-40">Guardar</button>
       </div>
     </div>
   );
@@ -237,19 +238,16 @@ export default function ModuloSeguimiento() {
     .filter(t => filtroPrioridad === 'todas' || t.prioridad === filtroPrioridad);
 
   return (
-    <div className="min-h-screen bg-[#FAFBFC]">
-      <header className="bg-white/80 backdrop-blur-md border-b border-gray-200 px-4 py-3 flex items-center gap-3 sticky top-14 z-20">
-        <button onClick={() => router.push('/')} className="w-8 h-8 rounded-lg text-gray-500 hover:bg-gray-100 flex items-center justify-center">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 12H5M5 12l7 7M5 12l7-7" /></svg>
-        </button>
-        <div className="flex items-center gap-2.5 flex-1">
-          <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-[#534AB7] to-[#7C6FDB] text-white text-xs font-bold flex items-center justify-center">11</div>
-          <span className="text-sm font-semibold text-gray-900">Seguimiento de tareas</span>
-        </div>
-        {vista === 'lista' && (
-          <button onClick={() => { setEditandoId(null); setVista('form'); }} className="text-xs font-semibold px-3 py-1.5 rounded-lg bg-[#534AB7] text-white hover:bg-[#3C3489] transition-all">+ Nueva</button>
+    <div className="min-h-screen bg-surface">
+      <PageHeader
+        titulo="Seguimiento de tareas"
+        backHref="/"
+        right={<>
+{vista === 'lista' && (
+          <button onClick={() => { setEditandoId(null); setVista('form'); }} className="text-xs font-semibold px-3 py-1.5 rounded-lg bg-brand text-white hover:bg-brand-dark transition-all">+ Nueva</button>
         )}
-      </header>
+        </>}
+      />
 
       <main className="max-w-xl mx-auto px-4 py-6 pb-10">
         {vista === 'form' ? (
@@ -301,7 +299,7 @@ export default function ModuloSeguimiento() {
             })()}
 
             {/* Importar */}
-            <button onClick={importarDesdeReuniones} className="w-full mb-4 py-2.5 rounded-xl border border-dashed border-gray-300 text-xs font-semibold text-gray-500 hover:border-[#534AB7] hover:text-[#534AB7] transition-all">
+            <button onClick={importarDesdeReuniones} className="w-full mb-4 py-2.5 rounded-xl border border-dashed border-gray-300 text-xs font-semibold text-gray-500 hover:border-brand hover:text-brand transition-all">
               {importado ? 'Tareas importadas correctamente' : 'Importar tareas desde reuniones'}
             </button>
 
@@ -325,12 +323,12 @@ export default function ModuloSeguimiento() {
             {/* Lista */}
             {tareasFiltradas.length === 0 ? (
               <div className="text-center py-16">
-                <div className="w-14 h-14 rounded-2xl bg-[#EEEDFE] mx-auto mb-4 flex items-center justify-center">
+                <div className="w-14 h-14 rounded-2xl bg-brand-50 mx-auto mb-4 flex items-center justify-center">
                   <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#534AB7" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 11l3 3L22 4" /><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11" /></svg>
                 </div>
                 <h3 className="text-base font-semibold text-gray-900 mb-1">Sin tareas</h3>
                 <p className="text-xs text-gray-400 mb-4">{tareas.length === 0 ? 'Crea tu primera tarea o importa desde reuniones.' : 'No hay tareas con los filtros seleccionados.'}</p>
-                <button onClick={() => setVista('form')} className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-[#534AB7] to-[#7C6FDB] text-white text-sm font-semibold hover:shadow-lg transition-all">
+                <button onClick={() => setVista('form')} className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-brand to-brand-light text-white text-sm font-semibold hover:shadow-lg transition-all">
                   Crear tarea
                 </button>
               </div>

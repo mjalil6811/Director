@@ -1,5 +1,6 @@
 'use client';
 
+import PageHeader from '../../../components/PageHeader';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import {
@@ -20,7 +21,7 @@ function Tooltip({ texto }: { texto: string }) {
         onMouseLeave={() => setVisible(false)}
         onFocus={() => setVisible(true)}
         onBlur={() => setVisible(false)}
-        className="w-4 h-4 rounded-full bg-gray-200 text-gray-500 text-[10px] font-bold inline-flex items-center justify-center hover:bg-[#534AB7] hover:text-white transition-colors"
+        className="w-4 h-4 rounded-full bg-gray-200 text-gray-500 text-[10px] font-bold inline-flex items-center justify-center hover:bg-brand hover:text-white transition-colors"
       >?</button>
       {visible && (
         <div className="absolute z-50 bottom-6 left-1/2 -translate-x-1/2 w-56 bg-gray-900 text-white text-xs rounded-xl p-3 leading-relaxed shadow-xl">
@@ -44,7 +45,7 @@ function Campo({ label, ayuda, required, children }: { label: string; ayuda?: st
   );
 }
 
-const inp = "w-full px-3 py-2.5 rounded-xl border border-gray-200 bg-white text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-[#534AB7]/30 focus:border-[#534AB7] transition-all";
+const inp = "w-full px-3 py-2.5 rounded-xl border border-gray-200 bg-white text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-brand/30 focus:border-brand transition-all";
 
 function SelectorOpciones({ opciones, valor, onChange }: {
   opciones: { texto: string; valor: string; ayuda: string }[];
@@ -58,14 +59,14 @@ function SelectorOpciones({ opciones, valor, onChange }: {
           key={op.valor}
           type="button"
           onClick={() => onChange(op.valor)}
-          className={`text-left p-3 rounded-xl border transition-all ${valor === op.valor ? 'border-[#534AB7] bg-[#EEEDFE]/60' : 'border-gray-200 bg-white hover:border-gray-300'}`}
+          className={`text-left p-3 rounded-xl border transition-all ${valor === op.valor ? 'border-brand bg-brand-50/60' : 'border-gray-200 bg-white hover:border-gray-300'}`}
         >
           <div className="flex items-start gap-3">
-            <div className={`w-4 h-4 rounded-full border-2 mt-0.5 shrink-0 flex items-center justify-center transition-all ${valor === op.valor ? 'border-[#534AB7] bg-[#534AB7]' : 'border-gray-300'}`}>
+            <div className={`w-4 h-4 rounded-full border-2 mt-0.5 shrink-0 flex items-center justify-center transition-all ${valor === op.valor ? 'border-brand bg-brand' : 'border-gray-300'}`}>
               {valor === op.valor && <div className="w-1.5 h-1.5 rounded-full bg-white" />}
             </div>
             <div>
-              <p className={`text-sm font-semibold ${valor === op.valor ? 'text-[#3C3489]' : 'text-gray-800'}`}>{op.texto}</p>
+              <p className={`text-sm font-semibold ${valor === op.valor ? 'text-brand-dark' : 'text-gray-800'}`}>{op.texto}</p>
               <p className="text-xs text-gray-400 mt-0.5 leading-relaxed">{op.ayuda}</p>
             </div>
           </div>
@@ -126,30 +127,24 @@ export default function ModuloActaConstitutiva() {
     setDirectores(p => p.map((d, idx) => idx === i ? { ...d, [k]: v } : d));
 
   return (
-    <div className="min-h-screen bg-[#FAFBFC]">
-      <div className="h-1 w-full bg-gray-100">
-        <div className="h-full bg-gradient-to-r from-[#534AB7] to-[#7C6FDB] transition-all duration-500" style={{ width: `${((paso + 1) / 3) * 100}%` }} />
-      </div>
+    <div className="min-h-screen bg-surface">
 
-      <header className="bg-white/80 backdrop-blur-md border-b border-gray-200 px-4 py-3 flex items-center gap-3 sticky top-14 z-20">
-        <button onClick={() => paso === 0 ? router.push('/') : retroceder()} className="w-8 h-8 rounded-lg text-gray-500 hover:bg-gray-100 flex items-center justify-center">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 12H5M5 12l7 7M5 12l7-7" /></svg>
-        </button>
-        <div className="flex items-center gap-2.5 flex-1">
-          <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-[#534AB7] to-[#7C6FDB] text-white text-xs font-bold flex items-center justify-center">6</div>
-          <span className="text-sm font-semibold text-gray-900">Acta constitutiva</span>
-        </div>
-        <div className="flex items-center gap-1.5">
+      <PageHeader
+        titulo="Acta constitutiva"
+        onBack={() => paso === 0 ? router.push('/') : retroceder()}
+        right={<>
+          <div className="flex items-center gap-1.5">
           {PASOS.map((p, i) => (
             <div key={i} className="flex items-center gap-1.5">
-              <div className={`flex items-center justify-center w-6 h-6 rounded-full text-[10px] font-bold transition-all ${i < paso ? 'bg-[#534AB7] text-white' : i === paso ? 'bg-[#534AB7] text-white ring-2 ring-[#534AB7]/30' : 'bg-gray-100 text-gray-400'}`}>
+              <div className={`flex items-center justify-center w-6 h-6 rounded-full text-[10px] font-bold transition-all ${i < paso ? 'bg-brand text-white' : i === paso ? 'bg-brand text-white ring-2 ring-brand/30' : 'bg-gray-100 text-gray-400'}`}>
                 {i < paso ? '✓' : i + 1}
               </div>
-              {i < PASOS.length - 1 && <div className={`w-6 h-0.5 ${i < paso ? 'bg-[#534AB7]' : 'bg-gray-200'}`} />}
+              {i < PASOS.length - 1 && <div className={`w-6 h-0.5 ${i < paso ? 'bg-brand' : 'bg-gray-200'}`} />}
             </div>
           ))}
         </div>
-      </header>
+        </>}
+      />
 
       <main className="max-w-xl mx-auto px-4 py-8">
         <div className="mb-6">
@@ -202,7 +197,7 @@ export default function ModuloActaConstitutiva() {
                   <div className="grid grid-cols-1 gap-1.5">
                     {CARGOS_DIRECTOR.map(({ cargo, ayuda }) => (
                       <button key={cargo} type="button" onClick={() => updateDirector(i, 'cargo', cargo)}
-                        className={`text-left px-3 py-2 rounded-xl border text-sm transition-all ${d.cargo === cargo ? 'border-[#534AB7] bg-[#EEEDFE]/60 text-[#3C3489] font-semibold' : 'border-gray-200 bg-white text-gray-700 hover:border-gray-300'}`}>
+                        className={`text-left px-3 py-2 rounded-xl border text-sm transition-all ${d.cargo === cargo ? 'border-brand bg-brand-50/60 text-brand-dark font-semibold' : 'border-gray-200 bg-white text-gray-700 hover:border-gray-300'}`}>
                         <span className="font-medium">{cargo}</span>
                         <span className="text-xs text-gray-400 ml-2">— {ayuda}</span>
                       </button>
@@ -219,7 +214,7 @@ export default function ModuloActaConstitutiva() {
                   </Campo>
                   <div className="flex items-end pb-1">
                     <label className="flex items-center gap-2 cursor-pointer">
-                      <input type="checkbox" checked={d.esIndependiente} onChange={e => updateDirector(i, 'esIndependiente', e.target.checked)} className="rounded border-gray-300 text-[#534AB7] w-4 h-4" />
+                      <input type="checkbox" checked={d.esIndependiente} onChange={e => updateDirector(i, 'esIndependiente', e.target.checked)} className="rounded border-gray-300 text-brand w-4 h-4" />
                       <span className="text-sm text-gray-600">Independiente</span>
                       <Tooltip texto="Un director independiente no tiene vínculos comerciales ni familiares con los socios. Es requerido por fondos de PE y SGR." />
                     </label>
@@ -227,7 +222,7 @@ export default function ModuloActaConstitutiva() {
                 </div>
               </div>
             ))}
-            <button onClick={agregarDirector} className="w-full py-3 rounded-2xl border-2 border-dashed border-gray-200 text-sm font-medium text-gray-500 hover:border-[#534AB7] hover:text-[#534AB7] transition-all">
+            <button onClick={agregarDirector} className="w-full py-3 rounded-2xl border-2 border-dashed border-gray-200 text-sm font-medium text-gray-500 hover:border-brand hover:text-brand transition-all">
               + Agregar otro director
             </button>
           </div>
@@ -275,17 +270,17 @@ export default function ModuloActaConstitutiva() {
         <div className="mt-8 flex gap-3">
           {paso < 2 ? (
             <button onClick={avanzar} disabled={!pasoActual.valida}
-              className="flex-1 py-3 rounded-xl bg-[#534AB7] hover:bg-[#3C3489] text-white font-semibold text-sm disabled:opacity-40 disabled:cursor-not-allowed transition-colors">
+              className="flex-1 py-3 rounded-xl bg-brand hover:bg-brand-dark text-white font-semibold text-sm disabled:opacity-40 disabled:cursor-not-allowed transition-colors">
               Continuar →
             </button>
           ) : (
             <>
               <button onClick={() => setPreview(true)} disabled={!v3.valida}
-                className="flex-1 py-3 rounded-xl border border-[#534AB7] text-[#534AB7] font-semibold text-sm disabled:opacity-40 hover:bg-[#EEEDFE] transition-colors">
+                className="flex-1 py-3 rounded-xl border border-brand text-brand font-semibold text-sm disabled:opacity-40 hover:bg-brand-50 transition-colors">
                 Ver acta
               </button>
               <button onClick={guardar} disabled={!v1.valida || !v2.valida || !v3.valida}
-                className="flex-1 py-3 rounded-xl bg-[#534AB7] hover:bg-[#3C3489] text-white font-semibold text-sm disabled:opacity-40 transition-colors">
+                className="flex-1 py-3 rounded-xl bg-brand hover:bg-brand-dark text-white font-semibold text-sm disabled:opacity-40 transition-colors">
                 {guardado ? '✓ Guardado' : 'Guardar'}
               </button>
             </>

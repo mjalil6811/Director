@@ -12,7 +12,7 @@ import type { Modulo3Resultado } from '../../../types';
 const URGENCIA_STYLE: Record<NivelUrgencia, { badge: string; bar: string; border: string }> = {
   "Crítico":        { badge: "bg-red-100 text-red-700",        bar: "bg-red-400",      border: "border-red-200" },
   "Urgente":        { badge: "bg-orange-100 text-orange-700",  bar: "bg-orange-400",   border: "border-orange-200" },
-  "Recomendado":    { badge: "bg-purple-100 text-[#534AB7]",   bar: "bg-[#534AB7]",    border: "border-purple-200" },
+  "Recomendado":    { badge: "bg-purple-100 text-brand",   bar: "bg-brand",    border: "border-purple-200" },
   "Complementario": { badge: "bg-gray-100 text-gray-500",      bar: "bg-gray-300",     border: "border-gray-200" },
 };
 
@@ -245,7 +245,7 @@ export default function Modulo3() {
     }));
 
     return (
-      <ModuleLayout moduleNumber={3} title="¿Qué perfiles necesitás?">
+      <ModuleLayout moduleNumber={3}>
         <div className="space-y-4">
 
           {/* Composition chart */}
@@ -283,11 +283,11 @@ export default function Modulo3() {
             <button onClick={handleRetry} className="flex-1 py-2.5 border border-gray-200 rounded-xl text-sm font-medium text-gray-600 hover:bg-gray-50">
               Rehacer
             </button>
-            <button onClick={() => router.push('/modulo/4')} className="flex-1 py-2.5 bg-[#534AB7] hover:bg-[#3C3489] text-white rounded-xl text-sm font-semibold">
+            <button onClick={() => router.push('/modulo/4')} className="flex-1 py-2.5 bg-brand hover:bg-brand-dark text-white rounded-xl text-sm font-semibold">
               Módulo 4 →
             </button>
           </div>
-          <button onClick={() => router.push('/dashboard')} className="w-full py-2.5 border border-[#534AB7] text-[#534AB7] rounded-xl text-sm font-medium hover:bg-purple-50">
+          <button onClick={() => router.push('/dashboard')} className="w-full py-2.5 border border-brand text-brand rounded-xl text-sm font-medium hover:bg-purple-50">
             Ver dashboard
           </button>
         </div>
@@ -300,14 +300,14 @@ export default function Modulo3() {
   const selected = respuestas[current];
 
   return (
-    <ModuleLayout moduleNumber={3} title="¿Qué perfiles necesitás?">
+    <ModuleLayout moduleNumber={3}>
       <div className="mb-5">
         <div className="flex justify-between text-xs text-gray-400 mb-1.5">
           <span>{answeredCount} de {TOTAL_PREGUNTAS_M3} respondidas</span>
           <span>{Math.round((answeredCount / TOTAL_PREGUNTAS_M3) * 100)}%</span>
         </div>
         <div className="w-full h-1.5 bg-gray-100 rounded-full overflow-hidden">
-          <div className="h-full bg-[#534AB7] rounded-full transition-all duration-300"
+          <div className="h-full bg-brand rounded-full transition-all duration-300"
             style={{ width: `${(answeredCount / TOTAL_PREGUNTAS_M3) * 100}%` }} />
         </div>
       </div>
@@ -323,7 +323,7 @@ export default function Modulo3() {
       <div className="border border-gray-200 rounded-xl bg-white overflow-hidden mb-4 shadow-sm">
         <div className="px-5 pt-5 pb-4 border-b border-gray-100">
           <div className="flex items-center gap-2 mb-3">
-            <span className="w-6 h-6 rounded-full bg-[#534AB7] text-white text-xs font-bold flex items-center justify-center shrink-0">
+            <span className="w-6 h-6 rounded-full bg-brand text-white text-xs font-bold flex items-center justify-center shrink-0">
               {current + 1}
             </span>
             <span className="text-xs text-gray-400">de {TOTAL_PREGUNTAS_M3} · {pregunta.dimension}</span>
@@ -340,7 +340,7 @@ export default function Modulo3() {
               onClick={() => handleSelect(idx)}
               className={`w-full text-left px-4 py-3 rounded-lg border text-sm transition-all hover:shadow-md transition-shadow
                 ${selected === idx
-                  ? 'border-[#534AB7] border-l-4 border-l-[#534AB7] bg-purple-50 text-[#534AB7] font-medium'
+                  ? 'border-brand border-l-4 border-l-brand bg-purple-50 text-brand font-medium'
                   : 'border-gray-200 text-gray-700 hover:border-gray-300 hover:bg-gray-50'
                 }`}
             >
@@ -360,7 +360,7 @@ export default function Modulo3() {
           onClick={handleNext}
           disabled={selected < 0}
           className={`flex-1 py-3 rounded-xl text-sm font-semibold transition-colors
-            ${selected >= 0 ? 'bg-[#534AB7] hover:bg-[#3C3489] text-white' : 'bg-gray-100 text-gray-400 cursor-not-allowed'}`}
+            ${selected >= 0 ? 'bg-brand hover:bg-brand-dark text-white' : 'bg-gray-100 text-gray-400 cursor-not-allowed'}`}
         >
           {current === TOTAL_PREGUNTAS_M3 - 1 ? 'Ver perfiles →' : 'Siguiente →'}
         </button>

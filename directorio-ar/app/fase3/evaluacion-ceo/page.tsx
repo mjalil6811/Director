@@ -1,5 +1,6 @@
 'use client';
 
+import PageHeader from '../../../components/PageHeader';
 import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import {
@@ -11,7 +12,7 @@ import { storageFase2 } from '../../../lib/storage-fase2';
 import { storage } from '../../../lib/storage';
 import type { EvaluacionCEO, EvaluacionDirector, RespuestaEvaluacion } from '../../../types/fase3';
 
-const inp = "w-full px-3 py-2.5 rounded-xl border border-gray-200 bg-white text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-[#534AB7]/30 focus:border-[#534AB7] transition-all";
+const inp = "w-full px-3 py-2.5 rounded-xl border border-gray-200 bg-white text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-brand/30 focus:border-brand transition-all";
 
 function EscalaSelector({ valor, onChange }: { valor: number; onChange: (v: number) => void }) {
   return (
@@ -88,7 +89,7 @@ function FormDirector({ evaluacion, directorIdx, onActualizar, onVolver }: {
       </div>
 
       <div className="h-1.5 bg-gray-100 rounded-full overflow-hidden mb-6">
-        <div className="h-full bg-gradient-to-r from-[#534AB7] to-[#7C6FDB] rounded-full transition-all duration-500" style={{ width: `${progreso}%` }} />
+        <div className="h-full bg-gradient-to-r from-brand to-brand-light rounded-full transition-all duration-500" style={{ width: `${progreso}%` }} />
       </div>
 
       {DIMENSIONES_EVALUACION.map(dim => (
@@ -117,7 +118,7 @@ function FormDirector({ evaluacion, directorIdx, onActualizar, onVolver }: {
                   <div className="flex gap-2">
                     {[true, false].map(v => (
                       <button key={String(v)} onClick={() => setRespuesta(preg.id, v)}
-                        className={`flex-1 py-2 rounded-xl text-sm font-semibold transition-all ${getRespuesta(preg.id) === v ? 'bg-[#534AB7] text-white' : 'bg-gray-100 text-gray-500 hover:bg-gray-200'}`}>
+                        className={`flex-1 py-2 rounded-xl text-sm font-semibold transition-all ${getRespuesta(preg.id) === v ? 'bg-brand text-white' : 'bg-gray-100 text-gray-500 hover:bg-gray-200'}`}>
                         {v ? 'Si' : 'No'}
                       </button>
                     ))}
@@ -134,7 +135,7 @@ function FormDirector({ evaluacion, directorIdx, onActualizar, onVolver }: {
         <textarea className={inp + ' resize-none'} rows={3} value={director.comentarioGeneral} onChange={e => setComentario(e.target.value)} placeholder="Observaciones generales sobre el desempeno del CEO..." />
       </div>
 
-      <button onClick={marcarCompletada} disabled={progreso < 80} className="w-full py-3 rounded-xl bg-gradient-to-r from-[#534AB7] to-[#7C6FDB] text-white text-sm font-semibold hover:shadow-lg transition-all disabled:opacity-40">
+      <button onClick={marcarCompletada} disabled={progreso < 80} className="w-full py-3 rounded-xl bg-gradient-to-r from-brand to-brand-light text-white text-sm font-semibold hover:shadow-lg transition-all disabled:opacity-40">
         {director.completada ? 'Actualizar evaluacion' : 'Finalizar evaluacion'}
       </button>
     </div>
@@ -219,7 +220,7 @@ function Resultados({ evaluacion }: { evaluacion: EvaluacionCEO }) {
 
       {/* Informe */}
       {!informe ? (
-        <button onClick={generarInforme} className="w-full py-3 rounded-xl bg-gradient-to-r from-[#534AB7] to-[#7C6FDB] text-white text-sm font-semibold hover:shadow-lg transition-all">
+        <button onClick={generarInforme} className="w-full py-3 rounded-xl bg-gradient-to-r from-brand to-brand-light text-white text-sm font-semibold hover:shadow-lg transition-all">
           Generar informe completo
         </button>
       ) : (
@@ -312,16 +313,8 @@ export default function ModuloEvaluacionCEO() {
   };
 
   return (
-    <div className="min-h-screen bg-[#FAFBFC]">
-      <header className="bg-white/80 backdrop-blur-md border-b border-gray-200 px-4 py-3 flex items-center gap-3 sticky top-14 z-20">
-        <button onClick={() => vista === 'evaluar' ? setVista('inicio') : router.push('/')} className="w-8 h-8 rounded-lg text-gray-500 hover:bg-gray-100 flex items-center justify-center">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 12H5M5 12l7 7M5 12l7-7" /></svg>
-        </button>
-        <div className="flex items-center gap-2.5 flex-1">
-          <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-[#534AB7] to-[#7C6FDB] text-white text-xs font-bold flex items-center justify-center">12</div>
-          <span className="text-sm font-semibold text-gray-900">Evaluacion del CEO</span>
-        </div>
-      </header>
+    <div className="min-h-screen bg-surface">
+      <PageHeader titulo="Evaluación del CEO" onBack={() => vista === 'evaluar' ? setVista('inicio') : router.push('/')} />
 
       <main className="max-w-xl mx-auto px-4 py-6 pb-10">
         {vista === 'evaluar' && evaluacion ? (
@@ -342,7 +335,7 @@ export default function ModuloEvaluacionCEO() {
           /* Setup form */
           <div>
             <div className="text-center mb-8">
-              <div className="w-14 h-14 rounded-2xl bg-[#EEEDFE] mx-auto mb-4 flex items-center justify-center">
+              <div className="w-14 h-14 rounded-2xl bg-brand-50 mx-auto mb-4 flex items-center justify-center">
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#534AB7" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /><path d="M23 21v-2a4 4 0 0 0-3-3.87" /><path d="M16 3.13a4 4 0 0 1 0 7.75" /></svg>
               </div>
               <h3 className="text-base font-semibold text-gray-900 mb-1">Evaluacion del CEO</h3>
@@ -357,7 +350,7 @@ export default function ModuloEvaluacionCEO() {
             <div className="mb-5">
               <div className="flex items-center justify-between mb-2">
                 <label className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Directores evaluadores *</label>
-                <button onClick={agregarDirector} className="text-xs font-semibold text-[#534AB7] hover:underline">+ Agregar</button>
+                <button onClick={agregarDirector} className="text-xs font-semibold text-brand hover:underline">+ Agregar</button>
               </div>
               <div className="space-y-2">
                 {directoresNombres.map((n, i) => (
@@ -372,7 +365,7 @@ export default function ModuloEvaluacionCEO() {
             </div>
 
             <button onClick={iniciarEvaluacion} disabled={!ceoNombre.trim() || directoresNombres.filter(n => n.trim()).length === 0}
-              className="w-full py-3 rounded-xl bg-gradient-to-r from-[#534AB7] to-[#7C6FDB] text-white text-sm font-semibold hover:shadow-lg transition-all disabled:opacity-40">
+              className="w-full py-3 rounded-xl bg-gradient-to-r from-brand to-brand-light text-white text-sm font-semibold hover:shadow-lg transition-all disabled:opacity-40">
               Iniciar proceso de evaluacion
             </button>
           </div>
@@ -387,7 +380,7 @@ export default function ModuloEvaluacionCEO() {
             <div className="space-y-2 mb-5">
               {evaluacion.evaluaciones.map((ev, i) => (
                 <button key={ev.id} onClick={() => { setDirectorIdx(i); setVista('evaluar'); }}
-                  className="w-full text-left bg-white rounded-xl border border-gray-100 p-4 shadow-sm hover:border-[#534AB7]/30 transition-all">
+                  className="w-full text-left bg-white rounded-xl border border-gray-100 p-4 shadow-sm hover:border-brand/30 transition-all">
                   <div className="flex items-center justify-between">
                     <div>
                       <p className="text-sm font-semibold text-gray-900">{ev.directorNombre}</p>
@@ -407,7 +400,7 @@ export default function ModuloEvaluacionCEO() {
                 Ver resultados parciales
               </button>
               <button onClick={finalizarProceso} disabled={evaluacion.evaluaciones.some(e => !e.completada)}
-                className="flex-1 py-2.5 rounded-xl bg-gradient-to-r from-[#534AB7] to-[#7C6FDB] text-white text-sm font-semibold hover:shadow-lg transition-all disabled:opacity-40">
+                className="flex-1 py-2.5 rounded-xl bg-gradient-to-r from-brand to-brand-light text-white text-sm font-semibold hover:shadow-lg transition-all disabled:opacity-40">
                 Finalizar proceso
               </button>
             </div>

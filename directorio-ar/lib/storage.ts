@@ -1,4 +1,5 @@
 import type { Modulo1Resultado, Modulo2Resultado, Modulo3Resultado, Modulo4Diagnostico, Modulo5Resultado } from "../types";
+import { getItem, setItem, removeItem } from './storage-core';
 
 const KEYS = {
   modulo1Respuestas: "directorio_ar:modulo1:respuestas",
@@ -13,39 +14,6 @@ const KEYS = {
   modulo5Resultado: "directorio_ar:modulo5:resultado",
   empresaNombre: "directorio_ar:empresa:nombre",
 } as const;
-
-function isBrowser(): boolean {
-  return typeof window !== "undefined";
-}
-
-function getItem<T>(key: string): T | null {
-  if (!isBrowser()) return null;
-  try {
-    const val = localStorage.getItem(key);
-    if (val === null) return null;
-    return JSON.parse(val) as T;
-  } catch {
-    return null;
-  }
-}
-
-function setItem<T>(key: string, value: T): void {
-  if (!isBrowser()) return;
-  try {
-    localStorage.setItem(key, JSON.stringify(value));
-  } catch {
-    // ignore
-  }
-}
-
-function removeItem(key: string): void {
-  if (!isBrowser()) return;
-  try {
-    localStorage.removeItem(key);
-  } catch {
-    // ignore
-  }
-}
 
 export const storage = {
   getModulo1Respuestas: () => getItem<number[]>(KEYS.modulo1Respuestas),

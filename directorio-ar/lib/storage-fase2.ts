@@ -7,6 +7,7 @@ import type {
   CandidatoDirector,
   ChecklistOnboarding,
 } from '../types/fase2';
+import { getItem, setItem, removeItem } from './storage-core';
 
 const KEYS = {
   actaConstitutiva: 'directorio_ar:fase2:acta_constitutiva',
@@ -17,39 +18,6 @@ const KEYS = {
   candidatos: 'directorio_ar:fase2:candidatos',
   checklistOnboarding: 'directorio_ar:fase2:checklist_onboarding',
 } as const;
-
-function isBrowser(): boolean {
-  return typeof window !== 'undefined';
-}
-
-function getItem<T>(key: string): T | null {
-  if (!isBrowser()) return null;
-  try {
-    const val = localStorage.getItem(key);
-    if (val === null) return null;
-    return JSON.parse(val) as T;
-  } catch {
-    return null;
-  }
-}
-
-function setItem<T>(key: string, value: T): void {
-  if (!isBrowser()) return;
-  try {
-    localStorage.setItem(key, JSON.stringify(value));
-  } catch {
-    // silent
-  }
-}
-
-function removeItem(key: string): void {
-  if (!isBrowser()) return;
-  try {
-    localStorage.removeItem(key);
-  } catch {
-    // silent
-  }
-}
 
 export const storageFase2 = {
   // M6 — Acta constitutiva

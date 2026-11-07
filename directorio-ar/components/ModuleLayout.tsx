@@ -1,24 +1,25 @@
 'use client';
 
 import Link from 'next/link';
+import { MODULOS_F1, TOTAL_MODULOS_F1 } from '../lib/navegacion';
 
 interface ModuleLayoutProps {
   moduleNumber: number;
-  totalModules?: number;
-  title: string;
+  /** Por defecto se toma de MODULOS_F1. */
+  title?: string;
   subtitle?: string;
   children: React.ReactNode;
 }
 
-const MODULOS = ['Necesidad', 'Decisiones', 'Perfiles', 'Dinámica', 'Gerencia'];
-
-export default function ModuleLayout({ moduleNumber, totalModules = 5, title, subtitle, children }: ModuleLayoutProps) {
+export default function ModuleLayout({ moduleNumber, title, subtitle, children }: ModuleLayoutProps) {
+  const totalModules = TOTAL_MODULOS_F1;
+  const titulo = title ?? MODULOS_F1[moduleNumber - 1]?.titulo ?? '';
   const prevHref = moduleNumber > 1 ? `/modulo/${moduleNumber - 1}` : '/';
 
   return (
-    <div className="min-h-[calc(100vh-3.5rem)] flex flex-col bg-[#FAFBFC]">
+    <div className="min-h-[calc(100vh-3.5rem)] flex flex-col bg-surface">
       {/* Barra del módulo */}
-      <div className="bg-white/90 backdrop-blur-md border-b border-[#E5E7EB] sticky top-14 z-20">
+      <div className="bg-white/90 backdrop-blur-md border-b border-gray-200 sticky top-14 z-20">
         <div className="max-w-2xl mx-auto px-4 py-3 flex items-center gap-3">
           <Link
             href={prevHref}
@@ -30,10 +31,10 @@ export default function ModuleLayout({ moduleNumber, totalModules = 5, title, su
             </svg>
           </Link>
           <div className="min-w-0 flex-1">
-            <p className="text-[11px] font-semibold text-[#534AB7] uppercase tracking-wider leading-none mb-1">
+            <p className="text-[11px] font-semibold text-brand uppercase tracking-wider leading-none mb-1">
               Módulo {moduleNumber} de {totalModules}
             </p>
-            <h1 className="text-sm font-semibold text-gray-900 tracking-tight truncate">{title}</h1>
+            <h1 className="text-sm font-semibold text-gray-900 tracking-tight truncate">{titulo}</h1>
           </div>
         </div>
         {/* Stepper de módulos */}
@@ -46,11 +47,11 @@ export default function ModuleLayout({ moduleNumber, totalModules = 5, title, su
               <Link
                 key={n}
                 href={`/modulo/${n}`}
-                title={`Módulo ${n} · ${MODULOS[i] ?? ''}`}
+                title={`Módulo ${n} · ${MODULOS_F1[i]?.corto ?? ''}`}
                 className="flex-1 group"
               >
-                <div className={`h-1.5 rounded-full transition-colors ${done || here ? 'bg-[#534AB7]' : 'bg-gray-200 group-hover:bg-gray-300'} ${here ? 'opacity-100' : done ? 'opacity-60' : ''}`} />
-                <span className={`hidden sm:block mt-1 text-[10px] ${here ? 'text-[#534AB7] font-semibold' : 'text-gray-400'}`}>{MODULOS[i]}</span>
+                <div className={`h-1.5 rounded-full transition-colors ${done || here ? 'bg-brand' : 'bg-gray-200 group-hover:bg-gray-300'} ${here ? 'opacity-100' : done ? 'opacity-60' : ''}`} />
+                <span className={`hidden sm:block mt-1 text-[10px] ${here ? 'text-brand font-semibold' : 'text-gray-400'}`}>{MODULOS_F1[i]?.corto}</span>
               </Link>
             );
           })}

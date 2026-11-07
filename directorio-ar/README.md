@@ -37,13 +37,31 @@ app/                          Paginas (App Router)
     dashboard/                M10: Dashboard financiero
     seguimiento/              M11: Seguimiento compromisos
     evaluacion-ceo/           M12: Evaluacion del CEO
-components/                   Componentes reutilizables
-lib/                          Logica de negocio por modulo
+components/
+  AppHeader.tsx               Barra global: logo/Inicio, fases y menu de herramientas
+  PageHeader.tsx              Barra de titulo de cada herramienta (muestra la fase)
+  ModuleLayout.tsx            Layout de los modulos M1-M5 con stepper
+  charts.tsx                  Graficos (Recharts): gauge, radar, barras, tendencias, dona
+  PDFReport.tsx, VotacionPanel.tsx, ProgressBar.tsx
+lib/
+  navegacion.ts               FUENTE UNICA de fases, modulos y rutas (titulos, colores, links)
+  progreso.ts                 Progreso de la Fase 1 (completados, siguiente, desbloqueo)
+  storage-core.ts             Acceso seguro a localStorage + generarId (compartido)
+  storage.ts                  Store Fase 1 · storage-fase2.ts · storage-fase3.ts
+  moduloN*.ts                 Preguntas y logica de puntaje de cada modulo
 types/                        Tipos TypeScript
   index.ts                    Tipos Fase 1 (M1-M5)
   fase2.ts                    Tipos Fase 2 (M6-M9) + votacion
   fase3.ts                    Tipos Fase 3 (M10-M12)
 ```
+
+## Convenciones
+
+- **Navegacion:** para agregar o renombrar una herramienta, editar solo `lib/navegacion.ts`. El header, el menu, la home y los modulos se actualizan solos.
+- **Colores:** usar los tokens de `app/globals.css` (`bg-brand`, `text-brand-dark`, `bg-brand-50`, `border-brand-100`, `bg-surface`). No escribir `#534AB7` a mano.
+- **Encabezados:** cada pagina usa `<PageHeader titulo=... backHref|onBack=... right=... />`.
+- **Persistencia:** nunca usar `localStorage` directo; usar los stores (`storage*`) que se apoyan en `storage-core.ts`.
+- **Graficos:** usar los componentes de `components/charts.tsx` (un color por entidad, leyenda y tooltip incluidos).
 
 ## Modulos
 

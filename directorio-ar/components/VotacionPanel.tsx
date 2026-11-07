@@ -17,7 +17,7 @@ interface VotacionPanelProps {
   totalDirectores: number;
 }
 
-const inp = "w-full px-3 py-2.5 rounded-xl border border-gray-200 bg-white text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-[#534AB7]/30 focus:border-[#534AB7] transition-all";
+const inp = "w-full px-3 py-2.5 rounded-xl border border-gray-200 bg-white text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-brand/30 focus:border-brand transition-all";
 
 // ——— Formulario nueva votación ——————————————————————————————————————————————
 
@@ -53,13 +53,13 @@ function FormVotacion({ reunionId, onCrear, onCancelar }: {
         <div className="space-y-2">
           {(Object.keys(MAYORIA_META) as TipoMayoria[]).map(tipo => (
             <button key={tipo} type="button" onClick={() => setTipoMayoria(tipo)}
-              className={`w-full text-left p-3 rounded-xl border transition-all ${tipoMayoria === tipo ? 'border-[#534AB7] bg-[#EEEDFE]/60' : 'border-gray-200 hover:border-gray-300'}`}>
+              className={`w-full text-left p-3 rounded-xl border transition-all ${tipoMayoria === tipo ? 'border-brand bg-brand-50/60' : 'border-gray-200 hover:border-gray-300'}`}>
               <div className="flex items-start gap-3">
-                <div className={`w-4 h-4 rounded-full border-2 mt-0.5 shrink-0 flex items-center justify-center transition-all ${tipoMayoria === tipo ? 'border-[#534AB7] bg-[#534AB7]' : 'border-gray-300'}`}>
+                <div className={`w-4 h-4 rounded-full border-2 mt-0.5 shrink-0 flex items-center justify-center transition-all ${tipoMayoria === tipo ? 'border-brand bg-brand' : 'border-gray-300'}`}>
                   {tipoMayoria === tipo && <div className="w-1.5 h-1.5 rounded-full bg-white" />}
                 </div>
                 <div>
-                  <p className={`text-sm font-semibold ${tipoMayoria === tipo ? 'text-[#3C3489]' : 'text-gray-700'}`}>{MAYORIA_META[tipo].label}</p>
+                  <p className={`text-sm font-semibold ${tipoMayoria === tipo ? 'text-brand-dark' : 'text-gray-700'}`}>{MAYORIA_META[tipo].label}</p>
                   <p className="text-xs text-gray-400 mt-0.5">{MAYORIA_META[tipo].descripcion}</p>
                 </div>
               </div>
@@ -82,7 +82,7 @@ function FormVotacion({ reunionId, onCrear, onCancelar }: {
         <button onClick={onCancelar} className="flex-1 py-2.5 rounded-xl border border-gray-200 text-sm font-medium text-gray-600 hover:bg-gray-50">Cancelar</button>
         <button onClick={() => onCrear(crearVotacion(reunionId, titulo.trim(), descripcion.trim(), tipoMayoria, undefined, quorum))}
           disabled={!valida}
-          className="flex-1 py-2.5 rounded-xl bg-[#534AB7] hover:bg-[#3C3489] text-white text-sm font-semibold disabled:opacity-40">
+          className="flex-1 py-2.5 rounded-xl bg-brand hover:bg-brand-dark text-white text-sm font-semibold disabled:opacity-40">
           Crear votación
         </button>
       </div>
@@ -117,7 +117,7 @@ function VotacionActiva({ votacion, directores, totalDirectores, onActualizar }:
   const abstenciones = votacion.votos.filter(v => v.voto === 'abstencion').length;
 
   return (
-    <div className="bg-white rounded-2xl border-2 border-[#534AB7]/30 p-5 mb-3">
+    <div className="bg-white rounded-2xl border-2 border-brand/30 p-5 mb-3">
       <div className="flex items-start justify-between mb-3">
         <div className="flex-1">
           <div className="flex items-center gap-2 mb-1">
@@ -144,7 +144,7 @@ function VotacionActiva({ votacion, directores, totalDirectores, onActualizar }:
 
       <div className="flex items-center gap-2 mb-4">
         <div className="flex-1 h-1.5 bg-gray-100 rounded-full overflow-hidden">
-          <div className="h-full bg-[#534AB7] rounded-full transition-all" style={{ width: `${pct}%` }} />
+          <div className="h-full bg-brand rounded-full transition-all" style={{ width: `${pct}%` }} />
         </div>
         <span className="text-xs text-gray-400 shrink-0">{votosRegistrados}/{totalDirectores} votos</span>
       </div>
@@ -157,7 +157,7 @@ function VotacionActiva({ votacion, directores, totalDirectores, onActualizar }:
           return (
             <div key={nombre}>
               <button onClick={() => setDirectorActivo(estaVotando ? null : nombre)}
-                className={`w-full flex items-center justify-between p-3 rounded-xl border transition-all ${estaVotando ? 'border-[#534AB7] bg-[#EEEDFE]/40' : 'border-gray-100 bg-gray-50 hover:border-gray-200'}`}>
+                className={`w-full flex items-center justify-between p-3 rounded-xl border transition-all ${estaVotando ? 'border-brand bg-brand-50/40' : 'border-gray-100 bg-gray-50 hover:border-gray-200'}`}>
                 <div className="flex items-center gap-2.5">
                   <div className="w-7 h-7 rounded-full bg-white border border-gray-200 flex items-center justify-center text-xs font-bold text-gray-500">
                     {nombre.charAt(0).toUpperCase()}
@@ -175,7 +175,7 @@ function VotacionActiva({ votacion, directores, totalDirectores, onActualizar }:
               </button>
 
               {estaVotando && (
-                <div className="mt-1 p-3 bg-[#EEEDFE]/30 rounded-xl border border-[#534AB7]/20">
+                <div className="mt-1 p-3 bg-brand-50/30 rounded-xl border border-brand/20">
                   <p className="text-xs text-gray-500 mb-2">Voto de {nombre}:</p>
                   <div className="grid grid-cols-2 gap-2 mb-2">
                     {(['a_favor', 'en_contra', 'abstencion', 'ausente'] as TipoVoto[]).map(tipo => (
@@ -328,7 +328,7 @@ export default function VotacionPanel({ reunionId, directores, totalDirectores }
           <p className="text-xs text-gray-400 mt-0.5">{votaciones.length} en esta reunión</p>
         </div>
         <button onClick={() => setMostrarForm(true)}
-          className="px-3 py-1.5 rounded-lg bg-[#534AB7] hover:bg-[#3C3489] text-white text-xs font-semibold transition-colors">
+          className="px-3 py-1.5 rounded-lg bg-brand hover:bg-brand-dark text-white text-xs font-semibold transition-colors">
           + Nueva votación
         </button>
       </div>
@@ -363,7 +363,7 @@ export default function VotacionPanel({ reunionId, directores, totalDirectores }
               <p className="text-xs text-gray-400 mt-0.5">{MAYORIA_META[v.tipoMayoria].label}</p>
             </div>
             <button onClick={() => abrir(v)}
-              className="px-3 py-2 rounded-xl bg-[#534AB7] hover:bg-[#3C3489] text-white text-xs font-semibold transition-colors">
+              className="px-3 py-2 rounded-xl bg-brand hover:bg-brand-dark text-white text-xs font-semibold transition-colors">
               Abrir votación
             </button>
           </div>

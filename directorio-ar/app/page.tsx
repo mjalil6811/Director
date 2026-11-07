@@ -3,6 +3,8 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { storage } from '../lib/storage';
+import { progresoF1 } from '../lib/progreso';
+import { FASES, MODULOS_F1 } from '../lib/navegacion';
 
 // ——— Data ———————————————————————————————————————————————————————————————————
 
@@ -87,31 +89,22 @@ const FAQ = [
   { q: '¿Qué es el Governance Score?', a: 'Es un índice de madurez de gobierno corporativo de 0 a 100 que integra 5 dimensiones: necesidad, decisiones, perfiles, disposición y dinámica. Sirve como referencia ante inversores, fondos y socios estratégicos.' },
 ];
 
-// Módulos de la Fase 1, con tiempo estimado (≈15 s por pregunta)
-const MODULOS_F1 = [
-  { n: 1, titulo: '¿Necesitás un directorio?', min: 3 },
-  { n: 2, titulo: 'Mapa de decisiones', min: 2 },
-  { n: 3, titulo: 'Perfiles de directores', min: 2 },
-  { n: 4, titulo: 'Disposición al cambio', min: 1 },
-  { n: 5, titulo: 'Directorio y gerencia', min: 1 },
-];
-
 // Lo que el usuario va a hacer, visible sin scroll
 const RECORRIDO = [
   {
-    fase: 1, verbo: 'Diagnosticá', color: '#534AB7', bg: '#EEEDFE', href: '/modulo/1',
+    fase: 1, verbo: FASES[0].verbo, color: FASES[0].color, bg: FASES[0].bg, href: FASES[0].href,
     que: 'Respondés 34 preguntas en 5 módulos cortos',
     obtenes: 'Governance Score, nivel de urgencia y perfiles de directores que te faltan',
     tiempo: '~8 min',
   },
   {
-    fase: 2, verbo: 'Constituí', color: '#0F6E56', bg: '#E1F5EE', href: '/fase2/acta-constitutiva',
+    fase: 2, verbo: FASES[1].verbo, color: FASES[1].color, bg: FASES[1].bg, href: FASES[1].href,
     que: 'Completás el acta, el protocolo de socios y la agenda de reuniones',
     obtenes: 'Documentos listos para revisar con tu abogado',
     tiempo: 'Cuando quieras',
   },
   {
-    fase: 3, verbo: 'Operá', color: '#854F0B', bg: '#FAEEDA', href: '/fase3/dashboard',
+    fase: 3, verbo: FASES[2].verbo, color: FASES[2].color, bg: FASES[2].bg, href: FASES[2].href,
     que: 'Cargás tus números y seguís los compromisos del directorio',
     obtenes: 'Dashboard financiero, seguimiento de tareas y evaluación del CEO',
     tiempo: 'Mes a mes',
@@ -146,39 +139,15 @@ export default function HomePage() {
   useEffect(() => {
     const n = storage.getEmpresaNombre();
     if (n) setNombre(n);
-    const count = [
-      !!storage.getModulo1Resultado(),
-      !!storage.getModulo2Resultado(),
-      !!storage.getModulo3Resultado(),
-      !!(storage.getModulo4Diagnostico() || storage.getModulo4Frecuencia()),
-      !!storage.getModulo5Resultado(),
-    ].filter(Boolean).length;
-    setCompletadosFase1(count);
-    const flags = [
-      !!storage.getModulo1Resultado(),
-      !!storage.getModulo2Resultado(),
-      !!storage.getModulo3Resultado(),
-      !!(storage.getModulo4Diagnostico() || storage.getModulo4Frecuencia()),
-      !!storage.getModulo5Resultado(),
-    ];
-    const idx = flags.findIndex(c => !c);
-    setSiguiente(idx === -1 ? 6 : idx + 1);
+    const p = progresoF1();
+    setCompletadosFase1(p.completados);
+    setSiguiente(p.siguiente);
   }, []);
 
   function handleStart() {
     if (nombre.trim()) storage.setEmpresaNombre(nombre.trim());
-    if (completadosFase1 === 5) {
-      router.push('/resultado');
-    } else {
-      const next = [
-        !!storage.getModulo1Resultado(),
-        !!storage.getModulo2Resultado(),
-        !!storage.getModulo3Resultado(),
-        !!(storage.getModulo4Diagnostico() || storage.getModulo4Frecuencia()),
-        !!storage.getModulo5Resultado(),
-      ].findIndex(c => !c) + 1;
-      router.push(`/modulo/${next || 1}`);
-    }
+    const p = progresoF1();
+    router.push(p.terminado ? '/resultado' : `/modulo/${p.siguiente}`);
   }
 
   return (
@@ -188,7 +157,7 @@ export default function HomePage() {
       <header className="bg-white/90 backdrop-blur-md border-b border-gray-100 px-4 py-3 sticky top-0 z-30">
         <div className="max-w-5xl mx-auto flex items-center justify-between">
           <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#534AB7] to-[#7C6FDB] flex items-center justify-center">
+            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-brand to-brand-light flex items-center justify-center">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                 <rect x="2" y="7" width="20" height="14" rx="2" /><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2" />
               </svg>
@@ -198,7 +167,7 @@ export default function HomePage() {
           <div className="flex items-center gap-3">
             {completadosFase1 > 0 && (
               <>
-                <button onClick={() => router.push('/dashboard')} className="text-xs text-gray-500 hover:text-[#534AB7] font-medium hidden sm:block">
+                <button onClick={() => router.push('/dashboard')} className="text-xs text-gray-500 hover:text-brand font-medium hidden sm:block">
                   Mi diagnóstico
                 </button>
                 <button
@@ -218,7 +187,7 @@ export default function HomePage() {
             )}
             <button
               onClick={handleStart}
-              className="px-4 py-2 bg-[#534AB7] hover:bg-[#3C3489] text-white text-xs font-semibold rounded-lg transition-colors"
+              className="px-4 py-2 bg-brand hover:bg-brand-dark text-white text-xs font-semibold rounded-lg transition-colors"
             >
               {completadosFase1 > 0 ? 'Continuar' : 'Empezar gratis'}
             </button>
@@ -227,19 +196,19 @@ export default function HomePage() {
       </header>
 
       {/* ——— Hero ——— */}
-      <section className="bg-gradient-to-b from-white via-[#FAFBFC] to-white px-4 pt-10 sm:pt-14 pb-12">
+      <section className="bg-gradient-to-b from-white via-surface to-white px-4 pt-10 sm:pt-14 pb-12">
         <div className="max-w-6xl mx-auto grid lg:grid-cols-[1.05fr_1fr] gap-10 lg:gap-14 items-center">
 
           {/* Columna izquierda: propuesta + CTA */}
           <div className="text-center lg:text-left">
-            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#EEEDFE] border border-[#DDD9FE] mb-5">
-              <div className="w-1.5 h-1.5 rounded-full bg-[#534AB7]" />
-              <span className="text-xs font-medium text-[#534AB7]">Gratuito · Sin registro · 100% privado</span>
+            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-brand-50 border border-brand-100 mb-5">
+              <div className="w-1.5 h-1.5 rounded-full bg-brand" />
+              <span className="text-xs font-medium text-brand">Gratuito · Sin registro · 100% privado</span>
             </div>
 
             <h1 className="text-4xl sm:text-5xl font-bold text-gray-900 tracking-tight leading-[1.08] mb-5">
               Profesionalizá el{' '}
-              <span className="bg-gradient-to-r from-[#534AB7] to-[#7C6FDB] bg-clip-text text-transparent">
+              <span className="bg-gradient-to-r from-brand to-brand-light bg-clip-text text-transparent">
                 gobierno corporativo
               </span>{' '}
               de tu empresa
@@ -262,12 +231,12 @@ export default function HomePage() {
                   value={nombre}
                   onChange={e => { setNombre(e.target.value); storage.setEmpresaNombre(e.target.value); }}
                   placeholder="Nombre de tu empresa"
-                  className="w-full sm:w-60 pl-10 pr-3 py-3 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#534AB7]/30 focus:border-[#534AB7] bg-white"
+                  className="w-full sm:w-60 pl-10 pr-3 py-3 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand/30 focus:border-brand bg-white"
                 />
               </div>
               <button
                 onClick={handleStart}
-                className="w-full sm:w-auto px-7 py-3 bg-gradient-to-r from-[#534AB7] to-[#6359C7] hover:from-[#3C3489] hover:to-[#534AB7] text-white font-semibold rounded-xl shadow-lg shadow-[#534AB7]/20 hover:shadow-xl hover:shadow-[#534AB7]/30 transition-all text-sm"
+                className="w-full sm:w-auto px-7 py-3 bg-gradient-to-r from-brand to-[#6359C7] hover:from-brand-dark hover:to-brand text-white font-semibold rounded-xl shadow-lg shadow-brand/20 hover:shadow-xl hover:shadow-brand/30 transition-all text-sm"
               >
                 {completadosFase1 === 5 ? 'Ver mi resultado' : completadosFase1 > 0 ? `Continuar diagnóstico (${completadosFase1}/5)` : 'Comenzar diagnóstico gratuito'}
               </button>
@@ -287,7 +256,7 @@ export default function HomePage() {
               <div className="mt-5 max-w-sm mx-auto lg:mx-0">
                 <div className="flex gap-1.5">
                   {MODULOS_F1.map(m => (
-                    <div key={m.n} title={`Módulo ${m.n} · ${m.titulo}`} className={`flex-1 h-1.5 rounded-full ${m.n < siguiente ? 'bg-[#534AB7]' : m.n === siguiente ? 'bg-[#534AB7]/35' : 'bg-gray-200'}`} />
+                    <div key={m.n} title={`Módulo ${m.n} · ${m.titulo}`} className={`flex-1 h-1.5 rounded-full ${m.n < siguiente ? 'bg-brand' : m.n === siguiente ? 'bg-brand/35' : 'bg-gray-200'}`} />
                   ))}
                 </div>
                 <p className="text-[11px] text-gray-400 mt-1.5 text-left">{completadosFase1} de 5 módulos completados</p>
@@ -339,7 +308,7 @@ export default function HomePage() {
       </section>
 
       {/* ——— Stats ——— */}
-      <section className="border-y border-gray-100 bg-[#FAFBFC] px-4 py-8">
+      <section className="border-y border-gray-100 bg-surface px-4 py-8">
         <div className="max-w-4xl mx-auto grid grid-cols-2 sm:grid-cols-4 gap-6">
           {STATS.map(s => (
             <div key={s.label} className="text-center">
@@ -354,7 +323,7 @@ export default function HomePage() {
       <section className="px-4 py-16">
         <div className="max-w-5xl mx-auto">
           <div className="text-center mb-12">
-            <p className="text-xs font-semibold text-[#534AB7] uppercase tracking-wider mb-2">Cómo funciona</p>
+            <p className="text-xs font-semibold text-brand uppercase tracking-wider mb-2">Cómo funciona</p>
             <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 tracking-tight">
               Tres etapas para un gobierno corporativo sólido
             </h2>
@@ -401,7 +370,7 @@ export default function HomePage() {
       </section>
 
       {/* ——— Mid CTA ——— */}
-      <section className="px-4 py-12 bg-gradient-to-r from-[#534AB7] to-[#7C6FDB]">
+      <section className="px-4 py-12 bg-gradient-to-r from-brand to-brand-light">
         <div className="max-w-3xl mx-auto text-center">
           <h2 className="text-xl sm:text-2xl font-bold text-white tracking-tight mb-3">
             Empezá el diagnóstico en 8 minutos
@@ -411,7 +380,7 @@ export default function HomePage() {
           </p>
           <button
             onClick={handleStart}
-            className="px-8 py-3 bg-white text-[#534AB7] font-semibold rounded-xl hover:bg-gray-50 transition-colors text-sm shadow-lg"
+            className="px-8 py-3 bg-white text-brand font-semibold rounded-xl hover:bg-gray-50 transition-colors text-sm shadow-lg"
           >
             {completadosFase1 > 0 ? 'Continuar donde dejé' : 'Comenzar ahora'}
           </button>
@@ -419,10 +388,10 @@ export default function HomePage() {
       </section>
 
       {/* ——— Beneficios ——— */}
-      <section className="px-4 py-16 bg-[#FAFBFC]">
+      <section className="px-4 py-16 bg-surface">
         <div className="max-w-5xl mx-auto">
           <div className="text-center mb-10">
-            <p className="text-xs font-semibold text-[#534AB7] uppercase tracking-wider mb-2">Por qué Directorio AR</p>
+            <p className="text-xs font-semibold text-brand uppercase tracking-wider mb-2">Por qué Directorio AR</p>
             <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 tracking-tight">
               Hecho para la realidad de las empresas argentinas
             </h2>
@@ -430,7 +399,7 @@ export default function HomePage() {
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
             {BENEFICIOS.map(b => (
               <div key={b.titulo} className="bg-white rounded-2xl border border-gray-200 p-5 hover:shadow-md transition-shadow">
-                <div className="w-10 h-10 rounded-xl bg-[#EEEDFE] flex items-center justify-center text-[#534AB7] mb-3">
+                <div className="w-10 h-10 rounded-xl bg-brand-50 flex items-center justify-center text-brand mb-3">
                   {b.icono}
                 </div>
                 <h3 className="text-sm font-bold text-gray-900 mb-1">{b.titulo}</h3>
@@ -449,24 +418,24 @@ export default function HomePage() {
             <div className="bg-white border border-gray-200 rounded-2xl p-5 shadow-sm">
               <div className="flex items-center justify-between mb-3">
                 <span className="text-sm font-semibold text-gray-900">Fase 1 — Diagnóstico</span>
-                <span className="text-sm font-bold text-[#534AB7]">{completadosFase1}/5</span>
+                <span className="text-sm font-bold text-brand">{completadosFase1}/5</span>
               </div>
               <div className="flex gap-1 mb-4">
                 {[1, 2, 3, 4, 5].map(i => (
-                  <div key={i} className={`flex-1 h-2 rounded-full ${i <= completadosFase1 ? 'bg-[#534AB7]' : 'bg-gray-100'}`} />
+                  <div key={i} className={`flex-1 h-2 rounded-full ${i <= completadosFase1 ? 'bg-brand' : 'bg-gray-100'}`} />
                 ))}
               </div>
               <div className="flex gap-2 flex-wrap">
-                <button onClick={handleStart} className="px-4 py-2 bg-[#534AB7] hover:bg-[#3C3489] text-white text-sm font-semibold rounded-xl">
+                <button onClick={handleStart} className="px-4 py-2 bg-brand hover:bg-brand-dark text-white text-sm font-semibold rounded-xl">
                   {completadosFase1 === 5 ? 'Ver resultado' : 'Continuar'}
                 </button>
                 <button onClick={() => router.push('/dashboard')} className="px-4 py-2 border border-gray-200 text-gray-600 text-sm font-medium rounded-xl hover:bg-gray-50">
                   Governance Score
                 </button>
-                <button onClick={() => router.push('/fase2/acta-constitutiva')} className="px-4 py-2 border border-[#B5E8D5] text-[#0F6E56] text-sm font-medium rounded-xl hover:bg-[#E1F5EE]">
+                <button onClick={() => router.push(FASES[1].href)} className="px-4 py-2 border border-[#B5E8D5] text-[#0F6E56] text-sm font-medium rounded-xl hover:bg-[#E1F5EE]">
                   Fase 2
                 </button>
-                <button onClick={() => router.push('/fase3/dashboard')} className="px-4 py-2 border border-[#F0D9A8] text-[#854F0B] text-sm font-medium rounded-xl hover:bg-[#FAEEDA]">
+                <button onClick={() => router.push(FASES[2].href)} className="px-4 py-2 border border-[#F0D9A8] text-[#854F0B] text-sm font-medium rounded-xl hover:bg-[#FAEEDA]">
                   Fase 3
                 </button>
               </div>
@@ -490,7 +459,7 @@ export default function HomePage() {
       </section>
 
       {/* ——— Final CTA ——— */}
-      <section className="px-4 py-16 bg-[#FAFBFC] border-t border-gray-100">
+      <section className="px-4 py-16 bg-surface border-t border-gray-100">
         <div className="max-w-2xl mx-auto text-center">
           <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 tracking-tight mb-3">
             Tu empresa merece un gobierno corporativo profesional
@@ -500,7 +469,7 @@ export default function HomePage() {
           </p>
           <button
             onClick={handleStart}
-            className="px-10 py-4 bg-gradient-to-r from-[#534AB7] to-[#6359C7] hover:from-[#3C3489] hover:to-[#534AB7] text-white font-semibold rounded-xl shadow-lg shadow-[#534AB7]/20 text-sm transition-all"
+            className="px-10 py-4 bg-gradient-to-r from-brand to-[#6359C7] hover:from-brand-dark hover:to-brand text-white font-semibold rounded-xl shadow-lg shadow-brand/20 text-sm transition-all"
           >
             Comenzar diagnóstico gratuito
           </button>
@@ -513,7 +482,7 @@ export default function HomePage() {
         <div className="max-w-5xl mx-auto">
           <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
             <div className="flex items-center gap-2">
-              <div className="w-6 h-6 rounded-md bg-gradient-to-br from-[#534AB7] to-[#7C6FDB] flex items-center justify-center">
+              <div className="w-6 h-6 rounded-md bg-gradient-to-br from-brand to-brand-light flex items-center justify-center">
                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                   <rect x="2" y="7" width="20" height="14" rx="2" /><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2" />
                 </svg>

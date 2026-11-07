@@ -25,10 +25,6 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="es" className={`${inter.variable} h-full antialiased`}>
-      <head>
-        <link rel="manifest" href="/manifest.json" />
-        <meta name="theme-color" content="#534AB7" />
-      </head>
       <body className="min-h-full bg-gray-50 text-gray-900">
         <AppHeader />
         {children}

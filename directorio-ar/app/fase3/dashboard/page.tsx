@@ -1,5 +1,6 @@
 'use client';
 
+import PageHeader from '../../../components/PageHeader';
 import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import {
@@ -11,7 +12,7 @@ import { storage } from '../../../lib/storage';
 import { Sparkline, TrendChart, VIZ } from '../../../components/charts';
 import type { PeriodoFinanciero, PresupuestoAnual, AlertaFinanciera } from '../../../types/fase3';
 
-const inp = "w-full px-3 py-2.5 rounded-xl border border-gray-200 bg-white text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-[#534AB7]/30 focus:border-[#534AB7] transition-all";
+const inp = "w-full px-3 py-2.5 rounded-xl border border-gray-200 bg-white text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-brand/30 focus:border-brand transition-all";
 
 function fmtMoney(n: number): string {
   return '$' + n.toLocaleString('es-AR');
@@ -112,9 +113,9 @@ function CargaDatos({ periodoInicial, onGuardar, onCancelar }: {
         ))}
       </div>
 
-      <div className="bg-[#EEEDFE]/60 rounded-xl p-4 mb-4 border border-[#DDD9FE]">
-        <p className="text-xs font-semibold text-[#3C3489] uppercase tracking-wide mb-1">EBITDA calculado</p>
-        <p className="text-lg font-bold text-[#534AB7]">{fmtMoney(p.ebitda)}</p>
+      <div className="bg-brand-50/60 rounded-xl p-4 mb-4 border border-brand-100">
+        <p className="text-xs font-semibold text-brand-dark uppercase tracking-wide mb-1">EBITDA calculado</p>
+        <p className="text-lg font-bold text-brand">{fmtMoney(p.ebitda)}</p>
       </div>
 
       <div className="mb-5">
@@ -124,7 +125,7 @@ function CargaDatos({ periodoInicial, onGuardar, onCancelar }: {
 
       <div className="flex gap-2">
         <button onClick={onCancelar} className="flex-1 py-2.5 rounded-xl border border-gray-200 text-sm font-semibold text-gray-600 hover:bg-gray-50 transition-all">Cancelar</button>
-        <button onClick={() => onGuardar(p)} className="flex-1 py-2.5 rounded-xl bg-gradient-to-r from-[#534AB7] to-[#7C6FDB] text-white text-sm font-semibold hover:shadow-lg transition-all">Guardar periodo</button>
+        <button onClick={() => onGuardar(p)} className="flex-1 py-2.5 rounded-xl bg-gradient-to-r from-brand to-brand-light text-white text-sm font-semibold hover:shadow-lg transition-all">Guardar periodo</button>
       </div>
     </div>
   );
@@ -163,7 +164,7 @@ function PresupuestoForm({ presupuestoInicial, onGuardar, onCancelar }: {
 
       <div className="flex gap-2 mt-5">
         <button onClick={onCancelar} className="flex-1 py-2.5 rounded-xl border border-gray-200 text-sm font-semibold text-gray-600 hover:bg-gray-50 transition-all">Cancelar</button>
-        <button onClick={() => onGuardar(p)} className="flex-1 py-2.5 rounded-xl bg-gradient-to-r from-[#534AB7] to-[#7C6FDB] text-white text-sm font-semibold hover:shadow-lg transition-all">Guardar presupuesto</button>
+        <button onClick={() => onGuardar(p)} className="flex-1 py-2.5 rounded-xl bg-gradient-to-r from-brand to-brand-light text-white text-sm font-semibold hover:shadow-lg transition-all">Guardar presupuesto</button>
       </div>
     </div>
   );
@@ -245,21 +246,13 @@ export default function ModuloDashboard() {
   ];
 
   return (
-    <div className="min-h-screen bg-[#FAFBFC]">
-      <header className="bg-white/80 backdrop-blur-md border-b border-gray-200 px-4 py-3 flex items-center gap-3 sticky top-14 z-20">
-        <button onClick={() => router.push('/')} className="w-8 h-8 rounded-lg text-gray-500 hover:bg-gray-100 flex items-center justify-center">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 12H5M5 12l7 7M5 12l7-7" /></svg>
-        </button>
-        <div className="flex items-center gap-2.5 flex-1">
-          <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-[#534AB7] to-[#7C6FDB] text-white text-xs font-bold flex items-center justify-center">10</div>
-          <span className="text-sm font-semibold text-gray-900">Dashboard financiero</span>
-        </div>
-      </header>
+    <div className="min-h-screen bg-surface">
+      <PageHeader titulo="Dashboard financiero" backHref="/" />
 
       <div className="flex gap-1 px-4 pt-4 mb-4 max-w-2xl mx-auto">
         {tabs.map(t => (
           <button key={t.id} onClick={() => { if (t.id === 'informe') generarInforme(); else if (t.id === 'carga') { setEditandoId(null); setVista('carga'); } else setVista(t.id); }}
-            className={`flex-1 text-xs font-semibold py-2 rounded-lg transition-all ${vista === t.id ? 'bg-[#534AB7] text-white' : 'bg-gray-100 text-gray-500 hover:bg-gray-200'}`}>
+            className={`flex-1 text-xs font-semibold py-2 rounded-lg transition-all ${vista === t.id ? 'bg-brand text-white' : 'bg-gray-100 text-gray-500 hover:bg-gray-200'}`}>
             {t.label}
           </button>
         ))}
@@ -270,12 +263,12 @@ export default function ModuloDashboard() {
           <div>
             {periodos.length === 0 ? (
               <div className="text-center py-16">
-                <div className="w-14 h-14 rounded-2xl bg-[#EEEDFE] mx-auto mb-4 flex items-center justify-center">
+                <div className="w-14 h-14 rounded-2xl bg-brand-50 mx-auto mb-4 flex items-center justify-center">
                   <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#534AB7" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="1" x2="12" y2="23" /><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" /></svg>
                 </div>
                 <h3 className="text-base font-semibold text-gray-900 mb-1">Sin datos financieros</h3>
                 <p className="text-xs text-gray-400 mb-4">Carga tu primer periodo para ver el dashboard.</p>
-                <button onClick={() => setVista('carga')} className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-[#534AB7] to-[#7C6FDB] text-white text-sm font-semibold hover:shadow-lg transition-all">
+                <button onClick={() => setVista('carga')} className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-brand to-brand-light text-white text-sm font-semibold hover:shadow-lg transition-all">
                   Cargar primer periodo
                 </button>
               </div>
@@ -361,8 +354,8 @@ export default function ModuloDashboard() {
 
                 {/* Presupuesto resumen */}
                 {presupuesto && (
-                  <div className="bg-[#EEEDFE]/60 border border-[#DDD9FE] rounded-2xl p-4 mb-5">
-                    <p className="text-xs font-semibold text-[#3C3489] uppercase tracking-wide mb-2">Presupuesto {presupuesto.anio}</p>
+                  <div className="bg-brand-50/60 border border-brand-100 rounded-2xl p-4 mb-5">
+                    <p className="text-xs font-semibold text-brand-dark uppercase tracking-wide mb-2">Presupuesto {presupuesto.anio}</p>
                     <div className="grid grid-cols-2 gap-2 text-xs">
                       <div><span className="text-gray-500">Ventas plan:</span> <span className="font-semibold text-gray-900">{fmtMoney(presupuesto.ventas)}</span></div>
                       <div><span className="text-gray-500">EBITDA plan:</span> <span className="font-semibold text-gray-900">{fmtMoney(presupuesto.ebitda)}</span></div>
@@ -374,7 +367,7 @@ export default function ModuloDashboard() {
                 <div className="mb-4">
                   <div className="flex items-center justify-between mb-2">
                     <p className="text-xs font-semibold text-gray-400 uppercase tracking-wide">Periodos cargados ({periodos.length})</p>
-                    <button onClick={() => { setEditandoId(null); setVista('carga'); }} className="text-xs font-semibold text-[#534AB7] hover:underline">+ Nuevo periodo</button>
+                    <button onClick={() => { setEditandoId(null); setVista('carga'); }} className="text-xs font-semibold text-brand hover:underline">+ Nuevo periodo</button>
                   </div>
                   <div className="space-y-2">
                     {periodos.map(p => (

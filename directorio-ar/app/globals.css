@@ -3,12 +3,16 @@
 :root {
   --background: #FAFBFC;
   --foreground: #1A1D26;
-  --accent: #534AB7;
-  --accent-dark: #3C3489;
-  --accent-light: #EEEDFE;
-  --surface: #ffffff;
-  --border: #E5E7EB;
-  --muted: #6B7280;
+}
+
+/* Tokens de marca: usar bg-brand, text-brand-dark, border-brand-100, bg-surface, etc. */
+@theme {
+  --color-brand: #534AB7;
+  --color-brand-dark: #3C3489;
+  --color-brand-light: #7C6FDB;
+  --color-brand-50: #EEEDFE;
+  --color-brand-100: #DDD9FE;
+  --color-surface: #FAFBFC;
 }
 
 @theme inline {
@@ -24,14 +28,7 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
-/* Smooth transitions */
-* {
-  transition-property: color, background-color, border-color, opacity;
-  transition-duration: 150ms;
-  transition-timing-function: ease;
-}
-
-/* Remove transition from layout/transform props to avoid jank */
+/* Transiciones solo en elementos interactivos (antes se aplicaban a todo el DOM) */
 button, a, input, [role="button"] {
   transition-property: color, background-color, border-color, opacity, box-shadow, transform;
   transition-duration: 150ms;
@@ -48,4 +45,4 @@ button:active:not(:disabled), [role="button"]:active:not(:disabled) {
 ::-webkit-scrollbar-thumb:hover { background: #9CA3AF; }
 
 /* Selection */
-::selection { background: #534AB7; color: white; }
+::selection { background: var(--color-brand); color: white; }

@@ -1,5 +1,6 @@
 'use client';
 
+import PageHeader from '../../components/PageHeader';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { storage } from '../../lib/storage';
@@ -132,7 +133,7 @@ export default function ResultadoPage() {
 
   if (!ready) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[#FAFBFC]">
+      <div className="min-h-screen flex items-center justify-center bg-surface">
         <div className="text-gray-400 text-sm">Cargando...</div>
       </div>
     );
@@ -161,7 +162,7 @@ export default function ResultadoPage() {
     m1Desc = "La necesidad aun no es critica, pero las buenas practicas se instalan antes de que sean urgentes.";
   }
 
-  const levelBg = m1Pct >= 75 ? 'bg-red-100 text-red-700' : m1Pct >= 55 ? 'bg-purple-100 text-[#534AB7]' : m1Pct >= 30 ? 'bg-yellow-100 text-yellow-800' : 'bg-gray-100 text-gray-600';
+  const levelBg = m1Pct >= 75 ? 'bg-red-100 text-red-700' : m1Pct >= 55 ? 'bg-purple-100 text-brand' : m1Pct >= 30 ? 'bg-yellow-100 text-yellow-800' : 'bg-gray-100 text-gray-600';
 
   // Section 2: Top 2 profiles from M3
   const topPerfiles = (m3?.topPerfiles ?? []).slice(0, 2);
@@ -189,36 +190,27 @@ export default function ResultadoPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#FAFBFC] flex flex-col">
+    <div className="min-h-screen bg-surface flex flex-col">
 
       {/* Header */}
-      <header className="bg-white/80 backdrop-blur-md border-b border-[#E5E7EB] px-4 py-3 flex items-center gap-3 sticky top-14 z-20">
-        <button onClick={() => router.push('/dashboard')} className="flex items-center justify-center w-8 h-8 rounded-lg text-gray-500 hover:text-gray-900 hover:bg-gray-100">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M19 12H5M5 12l7 7M5 12l7-7" />
-          </svg>
-        </button>
-        <div className="flex items-center gap-2.5 flex-1">
-          <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-[#534AB7] to-[#7C6FDB] flex items-center justify-center shadow-sm">
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" /><polyline points="22 4 12 14.01 9 11.01" />
-            </svg>
-          </div>
-          <span className="text-sm font-bold text-gray-900 tracking-tight">Resultado final</span>
-        </div>
-        {nombre && (
+      <PageHeader
+        titulo="Resultado final"
+        backHref="/dashboard"
+        right={<>
+{nombre && (
           <span className="text-xs text-gray-400 font-medium">{nombre}</span>
         )}
-      </header>
+        </>}
+      />
 
       <main className="flex-1 px-4 py-8 max-w-2xl mx-auto w-full space-y-6">
 
         {/* Section 1 — Score M1 */}
-        <div className="border border-[#E5E7EB] rounded-2xl bg-white p-8 text-center shadow-sm">
+        <div className="border border-gray-200 rounded-2xl bg-white p-8 text-center shadow-sm">
           {nombre && <p className="text-xs text-gray-400 uppercase tracking-wider mb-4 font-medium">{nombre}</p>}
           <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">Necesidad de directorio</p>
           <p className="text-6xl sm:text-7xl font-bold tracking-tight mb-3">
-            <span className="bg-gradient-to-r from-[#534AB7] to-[#7C6FDB] bg-clip-text text-transparent">{m1Pct}%</span>
+            <span className="bg-gradient-to-r from-brand to-brand-light bg-clip-text text-transparent">{m1Pct}%</span>
           </p>
           <div className={`inline-flex items-center px-4 py-2 rounded-full text-sm font-semibold ${levelBg} mb-4`}>
             {m1Label}
@@ -229,7 +221,7 @@ export default function ResultadoPage() {
         {/* 4 Visual indicators grid */}
         <div className="grid grid-cols-2 gap-3">
           {/* Indicator 1: Nivel de necesidad (M1) */}
-          <div className="border border-[#E5E7EB] rounded-2xl bg-white p-4 flex flex-col items-center shadow-sm hover:shadow-md transition-shadow">
+          <div className="border border-gray-200 rounded-2xl bg-white p-4 flex flex-col items-center shadow-sm hover:shadow-md transition-shadow">
             <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2 text-center">Nivel de necesidad</p>
             <svg width="80" height="50" viewBox="0 0 120 70">
               <path d="M 10 60 A 50 50 0 0 1 110 60" fill="none" stroke="#f3f4f6" strokeWidth="10" strokeLinecap="round" />
@@ -241,7 +233,7 @@ export default function ResultadoPage() {
           </div>
 
           {/* Indicator 2: Concentración de decisiones (M2) */}
-          <div className="border border-[#E5E7EB] rounded-2xl bg-white p-4 flex flex-col items-center shadow-sm hover:shadow-md transition-shadow">
+          <div className="border border-gray-200 rounded-2xl bg-white p-4 flex flex-col items-center shadow-sm hover:shadow-md transition-shadow">
             <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2 text-center">Concentración</p>
             <svg width="80" height="50" viewBox="0 0 120 70">
               <path d="M 10 60 A 50 50 0 0 1 110 60" fill="none" stroke="#f3f4f6" strokeWidth="10" strokeLinecap="round" />
@@ -253,9 +245,9 @@ export default function ResultadoPage() {
           </div>
 
           {/* Indicator 3: Perfil más crítico (M3) */}
-          <div className="border border-[#E5E7EB] rounded-2xl bg-white p-4 shadow-sm hover:shadow-md transition-shadow">
+          <div className="border border-gray-200 rounded-2xl bg-white p-4 shadow-sm hover:shadow-md transition-shadow">
             <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2 text-center">Perfil más crítico</p>
-            <p className="text-sm font-bold text-[#534AB7] text-center mb-2">{topProfile}</p>
+            <p className="text-sm font-bold text-brand text-center mb-2">{topProfile}</p>
             {topPerfiles[0] && (() => {
               const scores = m3?.scoresCompletos ?? {};
               const totalScore = Object.values(scores).reduce((a, b) => a + b, 0) || 1;
@@ -263,7 +255,7 @@ export default function ResultadoPage() {
               return (
                 <div>
                   <div className="w-full h-2 bg-gray-100 rounded-full overflow-hidden">
-                    <div className="h-full rounded-full bg-gradient-to-r from-[#534AB7] to-[#7C6FDB] transition-all duration-500" style={{ width: `${topPct}%` }} />
+                    <div className="h-full rounded-full bg-gradient-to-r from-brand to-brand-light transition-all duration-500" style={{ width: `${topPct}%` }} />
                   </div>
                   <p className="text-xs text-gray-500 text-center mt-1">{topPct}%</p>
                 </div>
@@ -272,7 +264,7 @@ export default function ResultadoPage() {
           </div>
 
           {/* Indicator 4: Disposición al cambio (M4) */}
-          <div className="border border-[#E5E7EB] rounded-2xl bg-white p-4 flex flex-col items-center shadow-sm hover:shadow-md transition-shadow">
+          <div className="border border-gray-200 rounded-2xl bg-white p-4 flex flex-col items-center shadow-sm hover:shadow-md transition-shadow">
             <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2 text-center">Disposición</p>
             <svg width="80" height="50" viewBox="0 0 120 70">
               <path d="M 10 60 A 50 50 0 0 1 110 60" fill="none" stroke="#f3f4f6" strokeWidth="10" strokeLinecap="round" />
@@ -286,7 +278,7 @@ export default function ResultadoPage() {
 
         {/* Top 2 perfiles (M3) — right after indicators */}
         {topPerfiles.length > 0 && (
-          <div className="border border-[#E5E7EB] rounded-2xl bg-white overflow-hidden shadow-sm">
+          <div className="border border-gray-200 rounded-2xl bg-white overflow-hidden shadow-sm">
             <div className="px-5 pt-5 pb-3 border-b border-gray-100">
               <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Los 2 perfiles mas criticos para tu directorio</p>
             </div>
@@ -298,10 +290,10 @@ export default function ResultadoPage() {
                   ? 'bg-orange-100 text-orange-700'
                   : 'bg-yellow-100 text-yellow-800';
                 return (
-                  <div key={p.perfil} className="border border-[#E5E7EB] rounded-xl p-4 hover:shadow-sm transition-shadow">
+                  <div key={p.perfil} className="border border-gray-200 rounded-xl p-4 hover:shadow-sm transition-shadow">
                     <div className="flex items-center justify-between mb-2">
                       <div className="flex items-center gap-2">
-                        <span className="w-6 h-6 rounded-full bg-gradient-to-br from-[#534AB7] to-[#7C6FDB] text-white text-xs font-bold flex items-center justify-center">{i + 1}</span>
+                        <span className="w-6 h-6 rounded-full bg-gradient-to-br from-brand to-brand-light text-white text-xs font-bold flex items-center justify-center">{i + 1}</span>
                         <span className="text-sm font-semibold text-gray-900">{PERFIL_LABELS[p.perfil] ?? p.perfil}</span>
                       </div>
                       <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${urgColor}`}>
@@ -319,7 +311,7 @@ export default function ResultadoPage() {
         )}
 
         {/* Mapa de decisiones (M2) — without tensions */}
-        <div className="border border-[#E5E7EB] rounded-2xl bg-white overflow-hidden shadow-sm">
+        <div className="border border-gray-200 rounded-2xl bg-white overflow-hidden shadow-sm">
           <div className="px-5 pt-5 pb-3 border-b border-gray-100">
             <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Mapa de decisiones — Como se toman las decisiones hoy</p>
           </div>
@@ -352,20 +344,20 @@ export default function ResultadoPage() {
         </div>
 
         {/* Dinamica (M4) */}
-        <div className="border border-[#E5E7EB] rounded-2xl bg-white overflow-hidden shadow-sm">
+        <div className="border border-gray-200 rounded-2xl bg-white overflow-hidden shadow-sm">
           <div className="px-5 pt-5 pb-3 border-b border-gray-100">
             <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Dinamica y funcionamiento</p>
           </div>
           <div className="px-5 py-4 space-y-4">
             {/* Frecuencia */}
-            <div className="flex items-center justify-between p-3 bg-[#EEEDFE] rounded-xl">
+            <div className="flex items-center justify-between p-3 bg-brand-50 rounded-xl">
               <span className="text-sm text-gray-700">Frecuencia recomendada</span>
-              <span className="text-sm font-bold text-[#534AB7]">{freqText}</span>
+              <span className="text-sm font-bold text-brand">{freqText}</span>
             </div>
 
             {/* Autoevaluacion score */}
             {m4diag && (
-              <div className="flex items-center justify-between p-3 bg-[#FAFBFC] rounded-xl border border-[#E5E7EB]">
+              <div className="flex items-center justify-between p-3 bg-surface rounded-xl border border-gray-200">
                 <span className="text-sm text-gray-700">Disposicion</span>
                 <span className={`text-sm font-bold ${m4ReadyColor}`}>{m4ReadyMsg}</span>
               </div>
@@ -406,9 +398,9 @@ export default function ResultadoPage() {
         </div>
 
         {/* Diagnostico y sugerencias */}
-        <div className="border border-[#E5E7EB] rounded-2xl overflow-hidden shadow-sm">
-          <div className="border-l-4 border-[#534AB7] bg-[#FDFCFF] p-6">
-            <p className="text-xs font-semibold text-[#534AB7] uppercase tracking-wider mb-4">Diagnóstico y sugerencias</p>
+        <div className="border border-gray-200 rounded-2xl overflow-hidden shadow-sm">
+          <div className="border-l-4 border-brand bg-[#FDFCFF] p-6">
+            <p className="text-xs font-semibold text-brand uppercase tracking-wider mb-4">Diagnóstico y sugerencias</p>
             <div className="space-y-4">
               {/* Paragraph 1: M1 assessment */}
               <p className="text-sm text-gray-700 leading-relaxed">
@@ -459,7 +451,7 @@ export default function ResultadoPage() {
         <button
           onClick={handleGeneratePDF}
           disabled={pdfLoading}
-          className="w-full py-4 bg-gradient-to-r from-[#534AB7] to-[#6359C7] hover:from-[#3C3489] hover:to-[#534AB7] text-white rounded-xl text-sm font-semibold shadow-sm hover:shadow-md flex items-center justify-center gap-2"
+          className="w-full py-4 bg-gradient-to-r from-brand to-[#6359C7] hover:from-brand-dark hover:to-brand text-white rounded-xl text-sm font-semibold shadow-sm hover:shadow-md flex items-center justify-center gap-2"
         >
           {pdfLoading ? (
             <>
@@ -493,10 +485,10 @@ export default function ResultadoPage() {
 
         {/* Navigation */}
         <div className="flex gap-3">
-          <button onClick={() => router.push('/dashboard')} className="flex-1 py-2.5 border border-[#E5E7EB] rounded-xl text-sm font-medium text-gray-600 hover:bg-white hover:shadow-sm bg-white/50">
+          <button onClick={() => router.push('/dashboard')} className="flex-1 py-2.5 border border-gray-200 rounded-xl text-sm font-medium text-gray-600 hover:bg-white hover:shadow-sm bg-white/50">
             Ver dashboard
           </button>
-          <button onClick={() => router.push('/')} className="flex-1 py-2.5 border border-[#E5E7EB] rounded-xl text-sm font-medium text-gray-600 hover:bg-white hover:shadow-sm bg-white/50">
+          <button onClick={() => router.push('/')} className="flex-1 py-2.5 border border-gray-200 rounded-xl text-sm font-medium text-gray-600 hover:bg-white hover:shadow-sm bg-white/50">
             Volver al inicio
           </button>
         </div>
@@ -504,7 +496,7 @@ export default function ResultadoPage() {
         {/* Branding footer */}
         <div className="text-center pt-6 pb-4 border-t border-gray-100 mt-4">
           <div className="flex items-center justify-center gap-2 mb-1">
-            <div className="w-5 h-5 rounded-md bg-gradient-to-br from-[#534AB7] to-[#7C6FDB] flex items-center justify-center">
+            <div className="w-5 h-5 rounded-md bg-gradient-to-br from-brand to-brand-light flex items-center justify-center">
               <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                 <rect x="2" y="7" width="20" height="14" rx="2" /><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2" />
               </svg>

@@ -181,7 +181,7 @@ export default function Modulo5() {
   };
 
   return (
-    <ModuleLayout moduleNumber={5} title="Directorio y gerencia">
+    <ModuleLayout moduleNumber={5}>
       {/* Tab navigation */}
       <div className="flex gap-1 mb-4 bg-white border border-gray-200 rounded-xl p-1">
         {tabs.map(t => (
@@ -189,7 +189,7 @@ export default function Modulo5() {
             key={t.key}
             onClick={() => setTab(t.key)}
             className={`flex-1 py-2 text-xs font-semibold rounded-lg transition-colors
-              ${tab === t.key ? 'bg-[#534AB7] text-white' : 'text-gray-500 hover:text-gray-900'}`}
+              ${tab === t.key ? 'bg-brand text-white' : 'text-gray-500 hover:text-gray-900'}`}
           >
             {t.label}
           </button>
@@ -257,7 +257,7 @@ export default function Modulo5() {
         <div className="space-y-3">
           {PROTOCOLO.map(item => (
             <div key={item.number} className="border border-gray-200 rounded-xl bg-white p-4 flex items-start gap-3">
-              <div className="w-7 h-7 rounded-full bg-[#534AB7] text-white text-sm font-bold flex items-center justify-center shrink-0 mt-0.5">
+              <div className="w-7 h-7 rounded-full bg-brand text-white text-sm font-bold flex items-center justify-center shrink-0 mt-0.5">
                 {item.number}
               </div>
               <div>
@@ -274,7 +274,7 @@ export default function Modulo5() {
         <button onClick={() => router.push('/modulo/4')} className="flex-1 py-2.5 border border-gray-200 rounded-xl text-sm font-medium text-gray-600 hover:bg-gray-50">
           ← Módulo 4
         </button>
-        <button onClick={() => router.push('/dashboard')} className="flex-1 py-2.5 bg-[#534AB7] hover:bg-[#3C3489] text-white rounded-xl text-sm font-semibold">
+        <button onClick={() => router.push('/dashboard')} className="flex-1 py-2.5 bg-brand hover:bg-brand-dark text-white rounded-xl text-sm font-semibold">
           Ver dashboard →
         </button>
       </div>

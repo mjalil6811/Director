@@ -2,9 +2,8 @@ import type {
   PeriodoFinanciero, PresupuestoAnual, AlertaFinanciera, DashboardFinancieroResultado,
 } from '../types/fase3';
 
-export function generarId(): string {
-  return Math.random().toString(36).slice(2, 10);
-}
+import { generarId } from './storage-core';
+export { generarId };
 
 export const MESES = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
 

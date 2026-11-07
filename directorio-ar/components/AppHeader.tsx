@@ -3,52 +3,11 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
-
-type Item = { href: string; label: string; match?: string };
-type Fase = { id: 1 | 2 | 3; nombre: string; verbo: string; color: string; bg: string; href: string; prefixes: string[]; items: Item[] };
-
-const FASES: Fase[] = [
-  {
-    id: 1, nombre: 'Diagnóstico', verbo: 'Diagnosticá', color: '#534AB7', bg: '#EEEDFE', href: '/modulo/1',
-    prefixes: ['/modulo', '/informe-preliminar', '/dashboard', '/resultado'],
-    items: [
-      { href: '/modulo/1', label: '1 · ¿Necesitás un directorio?' },
-      { href: '/modulo/2', label: '2 · Mapa de decisiones' },
-      { href: '/informe-preliminar', label: 'Informe preliminar' },
-      { href: '/modulo/3', label: '3 · Perfiles de directores' },
-      { href: '/modulo/4', label: '4 · Dinámica y funcionamiento' },
-      { href: '/modulo/5', label: '5 · Directorio y gerencia' },
-      { href: '/dashboard', label: 'Governance Score' },
-      { href: '/resultado', label: 'Resultado final' },
-    ],
-  },
-  {
-    id: 2, nombre: 'Constitución', verbo: 'Constituí', color: '#0F6E56', bg: '#E1F5EE', href: '/fase2/acta-constitutiva',
-    prefixes: ['/fase2'],
-    items: [
-      { href: '/fase2/acta-constitutiva', label: 'Acta constitutiva' },
-      { href: '/fase2/protocolo', label: 'Protocolo de socios / familia' },
-      { href: '/fase2/reunion', label: 'Reuniones del directorio' },
-    ],
-  },
-  {
-    id: 3, nombre: 'Operación', verbo: 'Operá', color: '#854F0B', bg: '#FAEEDA', href: '/fase3/dashboard',
-    prefixes: ['/fase3'],
-    items: [
-      { href: '/fase3/dashboard', label: 'Dashboard financiero' },
-      { href: '/fase3/seguimiento', label: 'Seguimiento de tareas' },
-      { href: '/fase3/evaluacion-ceo', label: 'Evaluación del CEO' },
-    ],
-  },
-];
-
-function faseActiva(pathname: string) {
-  return FASES.find(f => f.prefixes.some(p => pathname === p || pathname.startsWith(p + '/')));
-}
+import { FASES, faseDeRuta } from '../lib/navegacion';
 
 function Logo() {
   return (
-    <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#534AB7] to-[#7C6FDB] flex items-center justify-center shadow-sm">
+    <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-brand to-brand-light flex items-center justify-center shadow-sm">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
         <rect x="2" y="7" width="20" height="14" rx="2" /><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2" />
       </svg>
@@ -60,7 +19,7 @@ export default function AppHeader() {
   const pathname = usePathname() ?? '/';
   const [open, setOpen] = useState(false);
   const panelRef = useRef<HTMLDivElement>(null);
-  const activa = faseActiva(pathname);
+  const activa = faseDeRuta(pathname);
 
   // Cerrar el menú al navegar o con Escape / click afuera
   useEffect(() => { setOpen(false); }, [pathname]);
@@ -80,7 +39,7 @@ export default function AppHeader() {
     <header className="sticky top-0 z-40 h-14 bg-white/95 backdrop-blur-md border-b border-gray-200 print:hidden">
       <div ref={panelRef} className="relative max-w-6xl mx-auto h-full px-4 flex items-center gap-3">
         {/* Logo → inicio */}
-        <Link href="/" className="flex items-center gap-2.5 shrink-0 rounded-lg focus-visible:outline-2 focus-visible:outline-[#534AB7]" aria-label="Ir al inicio">
+        <Link href="/" className="flex items-center gap-2.5 shrink-0 rounded-lg focus-visible:outline-2 focus-visible:outline-brand" aria-label="Ir al inicio">
           <Logo />
           <span className="hidden sm:block text-sm font-bold text-gray-900 tracking-tight">Directorio AR</span>
         </Link>
@@ -115,7 +74,7 @@ export default function AppHeader() {
         <div className="flex items-center gap-1 shrink-0">
           <Link
             href="/"
-            className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium text-gray-600 hover:text-[#534AB7] hover:bg-[#EEEDFE] transition-colors"
+            className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium text-gray-600 hover:text-brand hover:bg-brand-50 transition-colors"
           >
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
               <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" /><polyline points="9 22 9 12 15 12 15 22" />

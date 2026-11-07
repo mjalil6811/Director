@@ -1,5 +1,6 @@
 'use client';
 
+import PageHeader from '../../components/PageHeader';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { storage } from '../../lib/storage';
@@ -157,25 +158,16 @@ export default function InformePreliminar() {
   const nivelColor = nivelKey === 'prematuro' ? '#6B7280' : nivelKey === 'temprano' ? '#D97706' : nivelKey === 'transicion' ? '#534AB7' : '#DC2626';
 
   return (
-    <div className="min-h-screen bg-[#FAFBFC]">
+    <div className="min-h-screen bg-surface">
 
       {/* Header */}
-      <header className="bg-white/80 backdrop-blur-md border-b border-[#E5E7EB] px-4 py-4 sticky top-14 z-20">
-        <div className="max-w-2xl mx-auto flex items-center gap-3">
-          <button onClick={() => router.push('/')} className="flex items-center justify-center w-8 h-8 rounded-lg hover:bg-gray-100 text-gray-500 hover:text-gray-900">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <polyline points="15 18 9 12 15 6" />
-            </svg>
-          </button>
-          <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-[#534AB7] to-[#7C6FDB] flex items-center justify-center shadow-sm">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-              <rect x="2" y="7" width="20" height="14" rx="2" /><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2" />
-            </svg>
-          </div>
-          <span className="text-sm font-bold text-gray-900 tracking-tight">Informe preliminar</span>
-          <span className="text-xs text-gray-400 ml-auto">Módulos 1 y 2 completados</span>
-        </div>
-      </header>
+      <PageHeader
+        titulo="Informe preliminar"
+        backHref="/"
+        right={<>
+          <span className="text-xs text-gray-400">Módulos 1 y 2 completados</span>
+        </>}
+      />
 
       <main className="max-w-2xl mx-auto px-4 py-8 space-y-6">
 
@@ -183,7 +175,7 @@ export default function InformePreliminar() {
         <div className="text-center mb-2">
           <h1 className="text-2xl font-bold text-gray-900 mb-1 tracking-tight">
             ¿Tu empresa necesita un{' '}
-            <span className="bg-gradient-to-r from-[#534AB7] to-[#7C6FDB] bg-clip-text text-transparent">directorio</span>?
+            <span className="bg-gradient-to-r from-brand to-brand-light bg-clip-text text-transparent">directorio</span>?
           </h1>
           <p className="text-sm text-gray-400">Resultado consolidado de los módulos 1 y 2</p>
         </div>
@@ -216,11 +208,11 @@ export default function InformePreliminar() {
         </div>
 
         {/* Educational box */}
-        <div className="border border-[#E5E7EB] rounded-2xl bg-white p-5 shadow-sm">
-          <p className="text-xs font-semibold text-[#534AB7] uppercase tracking-wider mb-3">¿Qué es un directorio y por qué importa?</p>
+        <div className="border border-gray-200 rounded-2xl bg-white p-5 shadow-sm">
+          <p className="text-xs font-semibold text-brand uppercase tracking-wider mb-3">¿Qué es un directorio y por qué importa?</p>
           <div className="space-y-3">
             <div className="flex gap-3">
-              <div className="w-8 h-8 rounded-lg bg-[#EEEDFE] flex items-center justify-center shrink-0 mt-0.5">
+              <div className="w-8 h-8 rounded-lg bg-brand-50 flex items-center justify-center shrink-0 mt-0.5">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#534AB7" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                   <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
                 </svg>
@@ -231,7 +223,7 @@ export default function InformePreliminar() {
               </div>
             </div>
             <div className="flex gap-3">
-              <div className="w-8 h-8 rounded-lg bg-[#EEEDFE] flex items-center justify-center shrink-0 mt-0.5">
+              <div className="w-8 h-8 rounded-lg bg-brand-50 flex items-center justify-center shrink-0 mt-0.5">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#534AB7" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                   <circle cx="12" cy="12" r="10" /><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" /><line x1="12" y1="17" x2="12.01" y2="17" />
                 </svg>
@@ -242,7 +234,7 @@ export default function InformePreliminar() {
               </div>
             </div>
             <div className="flex gap-3">
-              <div className="w-8 h-8 rounded-lg bg-[#EEEDFE] flex items-center justify-center shrink-0 mt-0.5">
+              <div className="w-8 h-8 rounded-lg bg-brand-50 flex items-center justify-center shrink-0 mt-0.5">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#534AB7" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                   <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /><path d="M23 21v-2a4 4 0 0 0-3-3.87" /><path d="M16 3.13a4 4 0 0 1 0 7.75" />
                 </svg>
@@ -258,7 +250,7 @@ export default function InformePreliminar() {
         {/* Two donut charts side by side */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           {/* M1 — Nivel de necesidad */}
-          <div className="border border-[#E5E7EB] rounded-2xl bg-white p-5 shadow-sm hover:shadow-md transition-shadow">
+          <div className="border border-gray-200 rounded-2xl bg-white p-5 shadow-sm hover:shadow-md transition-shadow">
             <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-4 text-center">Nivel de necesidad</p>
             <DonutChart
               segments={[
@@ -271,7 +263,7 @@ export default function InformePreliminar() {
           </div>
 
           {/* M2 — Concentración de decisiones */}
-          <div className="border border-[#E5E7EB] rounded-2xl bg-white p-5 shadow-sm hover:shadow-md transition-shadow">
+          <div className="border border-gray-200 rounded-2xl bg-white p-5 shadow-sm hover:shadow-md transition-shadow">
             <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-4 text-center">Concentración de decisiones</p>
 
             {/* Resultado principal */}
@@ -325,7 +317,7 @@ export default function InformePreliminar() {
         </div>
 
         {/* M1 dimensions as bars */}
-        <div className="border border-[#E5E7EB] rounded-2xl bg-white p-5 shadow-sm">
+        <div className="border border-gray-200 rounded-2xl bg-white p-5 shadow-sm">
           <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-4">Detalle por dimensión</p>
           <div className="space-y-3">
             {dims.map(d => (
@@ -340,7 +332,7 @@ export default function InformePreliminar() {
         </div>
 
         {/* M2 decision distribution bars */}
-        <div className="border border-[#E5E7EB] rounded-2xl bg-white p-5 shadow-sm">
+        <div className="border border-gray-200 rounded-2xl bg-white p-5 shadow-sm">
           <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-4">Distribución de decisiones</p>
           <div className="space-y-3">
             <HBar label="Concentrada en el dueño" pct={Math.round((m2.conteos.concentrada / totalSit) * 100)} color="#f87171" />
@@ -352,12 +344,12 @@ export default function InformePreliminar() {
 
         {/* Top 3 tensions */}
         {m2.tensiones.length > 0 && (
-          <div className="border border-[#E5E7EB] rounded-2xl bg-white p-5 shadow-sm">
+          <div className="border border-gray-200 rounded-2xl bg-white p-5 shadow-sm">
             <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">Principales tensiones detectadas</p>
             <div className="space-y-3">
               {m2.tensiones.slice(0, 3).map(t => (
-                <div key={t.pregunta} className="flex items-start gap-3 p-3 rounded-xl bg-[#EEEDFE] border border-[#DDD9FE]">
-                  <span className="w-5 h-5 rounded-full bg-[#534AB7] text-white text-xs font-bold flex items-center justify-center shrink-0 mt-0.5">
+                <div key={t.pregunta} className="flex items-start gap-3 p-3 rounded-xl bg-brand-50 border border-brand-100">
+                  <span className="w-5 h-5 rounded-full bg-brand text-white text-xs font-bold flex items-center justify-center shrink-0 mt-0.5">
                     {t.pregunta}
                   </span>
                   <p className="text-xs text-gray-600 leading-snug">{t.beneficio}</p>
@@ -368,13 +360,13 @@ export default function InformePreliminar() {
         )}
 
         {/* CTA */}
-        <div className="border border-[#E5E7EB] rounded-2xl bg-white p-6 text-center shadow-sm">
+        <div className="border border-gray-200 rounded-2xl bg-white p-6 text-center shadow-sm">
           <p className="text-sm text-gray-500 mb-4">
             Ahora que sabés que tu empresa se beneficiaría de un directorio, el siguiente paso es definir <strong>qué perfiles necesitás</strong>.
           </p>
           <button
             onClick={() => router.push('/modulo/3')}
-            className="w-full py-3.5 px-4 bg-gradient-to-r from-[#534AB7] to-[#6359C7] hover:from-[#3C3489] hover:to-[#534AB7] text-white font-semibold rounded-xl shadow-sm hover:shadow-md text-sm"
+            className="w-full py-3.5 px-4 bg-gradient-to-r from-brand to-[#6359C7] hover:from-brand-dark hover:to-brand text-white font-semibold rounded-xl shadow-sm hover:shadow-md text-sm"
           >
             Continuar — Definir perfiles del directorio →
           </button>

@@ -1,5 +1,6 @@
 'use client';
 
+import PageHeader from '../../../components/PageHeader';
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import {
@@ -11,7 +12,7 @@ import { storage } from '../../../lib/storage';
 import type { Reunion, ItemReunion, TareaReunion } from '../../../types/fase2';
 import VotacionPanel from '../../../components/VotacionPanel';
 
-const inp = "w-full px-3 py-2.5 rounded-xl border border-gray-200 bg-white text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-[#534AB7]/30 focus:border-[#534AB7] transition-all";
+const inp = "w-full px-3 py-2.5 rounded-xl border border-gray-200 bg-white text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-brand/30 focus:border-brand transition-all";
 
 function fmtTime(seg: number): string {
   const m = Math.floor(Math.abs(seg) / 60);
@@ -113,7 +114,7 @@ function ModoEnVivo({ reunion, onActualizar, onSalir }: {
             <span className="text-sm text-white/40">/ {item.duracionMinutos} min</span>
           </div>
           <div className="h-1.5 bg-white/10 rounded-full overflow-hidden mb-4">
-            <div className={`h-full rounded-full transition-all ${excedido ? 'bg-red-500' : 'bg-[#7C6FDB]'}`} style={{ width: `${progreso}%` }} />
+            <div className={`h-full rounded-full transition-all ${excedido ? 'bg-red-500' : 'bg-brand-light'}`} style={{ width: `${progreso}%` }} />
           </div>
           <div className="flex gap-2">
             <button onClick={() => setCorriendo(c => !c)}
@@ -158,7 +159,7 @@ function ModoEnVivo({ reunion, onActualizar, onSalir }: {
 
       <div className="px-4 pb-8">
         <button onClick={completarItem}
-          className="w-full py-4 rounded-2xl bg-[#534AB7] hover:bg-[#3C3489] text-white font-bold text-sm transition-colors">
+          className="w-full py-4 rounded-2xl bg-brand hover:bg-brand-dark text-white font-bold text-sm transition-colors">
           {itemIdx < items.length - 1 ? `Completado → ${items[itemIdx + 1]?.titulo}` : 'Finalizar reunión'}
         </button>
         <p className="text-center text-xs text-white/30 mt-3">
@@ -183,7 +184,7 @@ function ListaReuniones({ reuniones, onNueva, onSeleccionar }: {
           <h2 className="text-base font-semibold text-gray-900">Reuniones</h2>
           <p className="text-xs text-gray-400 mt-0.5">{reuniones.length} registrada{reuniones.length !== 1 ? 's' : ''}</p>
         </div>
-        <button onClick={onNueva} className="px-4 py-2 bg-[#534AB7] hover:bg-[#3C3489] text-white text-sm font-semibold rounded-xl">+ Nueva</button>
+        <button onClick={onNueva} className="px-4 py-2 bg-brand hover:bg-brand-dark text-white text-sm font-semibold rounded-xl">+ Nueva</button>
       </div>
       {reuniones.length === 0 ? (
         <div className="text-center py-16 text-gray-400">
@@ -197,7 +198,7 @@ function ListaReuniones({ reuniones, onNueva, onSeleccionar }: {
         <div className="space-y-3">
           {[...reuniones].sort((a, b) => b.numero - a.numero).map(r => (
             <button key={r.id} onClick={() => onSeleccionar(r.id)}
-              className="w-full text-left bg-white rounded-2xl border border-gray-200 p-4 hover:border-[#534AB7]/40 transition-all">
+              className="w-full text-left bg-white rounded-2xl border border-gray-200 p-4 hover:border-brand/40 transition-all">
               <div className="flex items-start justify-between">
                 <div>
                   <div className="flex items-center gap-2 mb-1 flex-wrap">
@@ -244,13 +245,13 @@ function NuevaReunion({ numero, onCrear, onCancelar }: { numero: number; onCrear
         </div>
       </div>
       <label className="flex items-center gap-2 cursor-pointer mb-5">
-        <input type="checkbox" checked={form.soloObligatorios} onChange={e => setForm(p => ({ ...p, soloObligatorios: e.target.checked }))} className="rounded border-gray-300 text-[#534AB7] w-4 h-4" />
+        <input type="checkbox" checked={form.soloObligatorios} onChange={e => setForm(p => ({ ...p, soloObligatorios: e.target.checked }))} className="rounded border-gray-300 text-brand w-4 h-4" />
         <span className="text-sm text-gray-600">Solo ítems obligatorios (~80 min)</span>
       </label>
       <div className="flex gap-3">
         <button onClick={onCancelar} className="flex-1 py-2.5 rounded-xl border border-gray-200 text-sm font-medium text-gray-600 hover:bg-gray-50">Cancelar</button>
         <button onClick={() => onCrear(crearReunion(numero, form.fecha, form.hora, form.lugar || 'A confirmar', form.modalidad, form.tipo, form.soloObligatorios))}
-          className="flex-1 py-2.5 rounded-xl bg-[#534AB7] hover:bg-[#3C3489] text-white text-sm font-semibold">Crear</button>
+          className="flex-1 py-2.5 rounded-xl bg-brand hover:bg-brand-dark text-white text-sm font-semibold">Crear</button>
       </div>
     </div>
   );
@@ -315,7 +316,7 @@ function DetalleReunion({ reunion, onActualizar, onVolver, onModoEnVivo, empresa
           <span>{calcularDuracion(reunion.orden)} min est.</span>
         </div>
         <div className="h-1.5 bg-gray-100 rounded-full overflow-hidden mb-3">
-          <div className="h-full bg-gradient-to-r from-[#534AB7] to-[#7C6FDB] rounded-full transition-all" style={{ width: `${pct}%` }} />
+          <div className="h-full bg-gradient-to-r from-brand to-brand-light rounded-full transition-all" style={{ width: `${pct}%` }} />
         </div>
         <button onClick={onModoEnVivo}
           className="w-full py-2.5 rounded-xl bg-gray-950 hover:bg-gray-800 text-white text-sm font-semibold flex items-center justify-center gap-2 transition-colors">
@@ -342,7 +343,7 @@ function DetalleReunion({ reunion, onActualizar, onVolver, onModoEnVivo, empresa
               <div key={item.id} className={`bg-white rounded-2xl border transition-all ${item.completado ? 'border-gray-100 opacity-60' : 'border-gray-200'}`}>
                 <div className="flex items-center gap-3 p-4">
                   <span className="text-xs text-gray-400 w-5 text-center shrink-0">{idx + 1}</span>
-                  <input type="checkbox" checked={item.completado} onChange={e => actualizarItem(item.id, { completado: e.target.checked })} className="w-4 h-4 rounded border-gray-300 text-[#534AB7] shrink-0" />
+                  <input type="checkbox" checked={item.completado} onChange={e => actualizarItem(item.id, { completado: e.target.checked })} className="w-4 h-4 rounded border-gray-300 text-brand shrink-0" />
                   <div className="flex-1 min-w-0">
                     <span className="text-xs px-1.5 py-0.5 rounded-full font-medium" style={{ background: meta.bg, color: meta.color }}>{meta.label}</span>
                     <p className={`text-sm font-medium mt-1 ${item.completado ? 'line-through text-gray-400' : 'text-gray-800'}`}>{item.titulo}</p>
@@ -364,7 +365,7 @@ function DetalleReunion({ reunion, onActualizar, onVolver, onModoEnVivo, empresa
                     <div className="mb-3">
                       <div className="flex items-center justify-between mb-1.5">
                         <label className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Decisiones</label>
-                        <button onClick={() => agregarDecision(item.id)} className="text-xs text-[#534AB7] font-medium">+ Agregar</button>
+                        <button onClick={() => agregarDecision(item.id)} className="text-xs text-brand font-medium">+ Agregar</button>
                       </div>
                       {item.decisiones.map((d, di) => (
                         <input key={di} className={`${inp} text-xs mb-2`} value={d} onChange={e => updDecision(item.id, di, e.target.value)} placeholder={`Decisión ${di + 1}...`} />
@@ -373,7 +374,7 @@ function DetalleReunion({ reunion, onActualizar, onVolver, onModoEnVivo, empresa
                     <div>
                       <div className="flex items-center justify-between mb-1.5">
                         <label className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Tareas</label>
-                        <button onClick={() => agregarTarea(item.id)} className="text-xs text-[#534AB7] font-medium">+ Tarea</button>
+                        <button onClick={() => agregarTarea(item.id)} className="text-xs text-brand font-medium">+ Tarea</button>
                       </div>
                       {item.tareas.map(t => (
                         <div key={t.id} className="bg-gray-50 rounded-xl p-3 mb-2">
@@ -398,7 +399,7 @@ function DetalleReunion({ reunion, onActualizar, onVolver, onModoEnVivo, empresa
           <div className="flex justify-between mb-4">
             <p className="text-sm text-gray-600">{reunion.asistentes.filter(a => a.presente).length}/{reunion.asistentes.length} presentes</p>
             <button onClick={() => onActualizar({ asistentes: [...reunion.asistentes, { nombre: '', cargo: '', presente: true }] })}
-              className="text-xs px-3 py-1.5 rounded-lg border border-[#534AB7] text-[#534AB7] hover:bg-[#EEEDFE] font-medium">+ Agregar</button>
+              className="text-xs px-3 py-1.5 rounded-lg border border-brand text-brand hover:bg-brand-50 font-medium">+ Agregar</button>
           </div>
           {reunion.asistentes.map((a, i) => (
             <div key={i} className="bg-white rounded-xl border border-gray-200 p-3 mb-2">
@@ -407,13 +408,13 @@ function DetalleReunion({ reunion, onActualizar, onVolver, onModoEnVivo, empresa
                 <input className={`${inp} text-xs`} value={a.cargo} onChange={e => { const u = [...reunion.asistentes]; u[i] = { ...a, cargo: e.target.value }; onActualizar({ asistentes: u }); }} placeholder="Cargo" />
               </div>
               <label className="flex items-center gap-2 cursor-pointer">
-                <input type="checkbox" checked={a.presente} onChange={e => { const u = [...reunion.asistentes]; u[i] = { ...a, presente: e.target.checked }; onActualizar({ asistentes: u }); }} className="rounded border-gray-300 text-[#534AB7]" />
+                <input type="checkbox" checked={a.presente} onChange={e => { const u = [...reunion.asistentes]; u[i] = { ...a, presente: e.target.checked }; onActualizar({ asistentes: u }); }} className="rounded border-gray-300 text-brand" />
                 <span className="text-xs text-gray-600">Presente</span>
               </label>
             </div>
           ))}
           <label className="flex items-center gap-2 cursor-pointer bg-white rounded-xl border border-gray-200 p-3 mt-3">
-            <input type="checkbox" checked={reunion.quorumAlcanzado} onChange={e => onActualizar({ quorumAlcanzado: e.target.checked })} className="rounded border-gray-300 text-[#534AB7]" />
+            <input type="checkbox" checked={reunion.quorumAlcanzado} onChange={e => onActualizar({ quorumAlcanzado: e.target.checked })} className="rounded border-gray-300 text-brand" />
             <span className="text-sm font-medium text-gray-700">Quórum alcanzado</span>
           </label>
         </div>
@@ -438,7 +439,7 @@ function DetalleReunion({ reunion, onActualizar, onVolver, onModoEnVivo, empresa
               <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1.5">Próxima reunión</label>
               <input type="date" className={inp} value={reunion.fechaProximaReunion ?? ''} onChange={e => onActualizar({ fechaProximaReunion: e.target.value })} />
             </div>
-            <button onClick={() => setActaModal(true)} className="w-full py-3 rounded-xl bg-[#534AB7] hover:bg-[#3C3489] text-white text-sm font-semibold">Generar acta</button>
+            <button onClick={() => setActaModal(true)} className="w-full py-3 rounded-xl bg-brand hover:bg-brand-dark text-white text-sm font-semibold">Generar acta</button>
           </div>
         </div>
       )}
@@ -488,21 +489,14 @@ export default function ModuloReuniones() {
   }
 
   return (
-    <div className="min-h-screen bg-[#FAFBFC]">
-      <div className="h-1 w-full bg-gray-100">
-        <div className="h-full bg-gradient-to-r from-[#534AB7] to-[#7C6FDB] w-2/4" />
-      </div>
-      <header className="bg-white/80 backdrop-blur-md border-b border-gray-200 px-4 py-3 flex items-center gap-3 sticky top-14 z-20">
-        <button onClick={() => { if (vista !== 'lista') { setVista('lista'); setActiva(null); } else router.push('/'); }}
-          className="w-8 h-8 rounded-lg text-gray-500 hover:bg-gray-100 flex items-center justify-center">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 12H5M5 12l7 7M5 12l7-7" /></svg>
-        </button>
-        <div className="flex items-center gap-2.5 flex-1">
-          <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-[#534AB7] to-[#7C6FDB] text-white text-xs font-bold flex items-center justify-center">8</div>
-          <span className="text-sm font-semibold text-gray-900">Reuniones del directorio</span>
-        </div>
-        <span className="text-xs text-gray-400">Fase 2</span>
-      </header>
+    <div className="min-h-screen bg-surface">
+      <PageHeader
+        titulo="Reuniones del directorio"
+        onBack={() => { if (vista !== 'lista') { setVista('lista'); setActiva(null); } else router.push('/'); }}
+        right={<>
+          <span className="text-xs text-gray-400">Fase 2</span>
+        </>}
+      />
       <main className="max-w-2xl mx-auto px-4 py-8">
         {vista === 'lista' && <ListaReuniones reuniones={reuniones} onNueva={() => setVista('nueva')} onSeleccionar={id => { setActiva(id); setVista('detalle'); }} />}
         {vista === 'nueva' && <NuevaReunion numero={reuniones.length + 1} onCrear={agregar} onCancelar={() => setVista('lista')} />}

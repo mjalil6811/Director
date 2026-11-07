@@ -33,9 +33,8 @@ export const TIPO_ITEM_META: Record<TipoReunionItem, { label: string; color: str
   tema_libre: { label: 'Tema libre', color: '#888780', bg: '#F1EFE8' },
 };
 
-export function generarId(): string {
-  return Math.random().toString(36).slice(2, 10);
-}
+import { generarId } from './storage-core';
+export { generarId };
 
 export function crearReunion(
   numero: number, fecha: string, hora: string, lugar: string,

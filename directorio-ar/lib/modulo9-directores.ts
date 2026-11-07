@@ -113,6 +113,5 @@ export function calcularEstadoBusqueda(
 
 // ——— ID único ——————————————————————————————————————————————————————————————
 
-export function generarId(): string {
-  return Math.random().toString(36).slice(2, 10);
-}
+import { generarId } from './storage-core';
+export { generarId };

@@ -2,29 +2,13 @@
 
 import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import { storage } from '../../../lib/storage';
+import { moduloDesbloqueado } from '../../../lib/progreso';
+import { MODULOS_F1, TOTAL_MODULOS_F1 } from '../../../lib/navegacion';
 import Modulo1 from './Modulo1';
 import Modulo2 from './Modulo2';
 import Modulo3 from './Modulo3';
 import Modulo4 from './Modulo4';
 import Modulo5 from './Modulo5';
-
-function isModuloUnlocked(id: number): boolean {
-  if (id === 1) return true;
-  if (id === 2) return !!storage.getModulo1Resultado();
-  if (id === 3) return !!storage.getModulo2Resultado();
-  if (id === 4) return !!storage.getModulo3Resultado();
-  if (id === 5) return !!(storage.getModulo4Diagnostico() || storage.getModulo4Frecuencia());
-  return false;
-}
-
-const MODULO_LABELS: Record<number, string> = {
-  1: '¿Necesitás un directorio?',
-  2: 'Mapa de decisiones',
-  3: '¿Qué perfiles necesitás?',
-  4: 'Dinámica y funcionamiento',
-  5: 'Directorio y gerencia',
-};
 
 export default function ModuloPage() {
   const params = useParams();
@@ -34,11 +18,11 @@ export default function ModuloPage() {
   const [blocked, setBlocked] = useState(false);
 
   useEffect(() => {
-    if (isNaN(id) || id < 1 || id > 5) {
+    if (isNaN(id) || id < 1 || id > TOTAL_MODULOS_F1) {
       router.replace('/');
       return;
     }
-    if (!isModuloUnlocked(id)) {
+    if (!moduloDesbloqueado(id)) {
       setBlocked(true);
     }
     setReady(true);
@@ -59,11 +43,11 @@ export default function ModuloPage() {
           </div>
           <h2 className="text-base font-bold text-gray-900 mb-2">Módulo bloqueado</h2>
           <p className="text-sm text-gray-500 mb-6">
-            Para acceder al <strong>Módulo {id} — {MODULO_LABELS[id]}</strong>, primero tenés que completar el Módulo {prevId}.
+            Para acceder al <strong>Módulo {id} — {MODULOS_F1[id - 1].titulo}</strong>, primero tenés que completar el Módulo {prevId}.
           </p>
           <button
             onClick={() => router.push(`/modulo/${prevId}`)}
-            className="w-full py-3 px-4 bg-[#534AB7] hover:bg-[#3C3489] text-white font-semibold rounded-xl transition-colors text-sm mb-3"
+            className="w-full py-3 px-4 bg-brand hover:bg-brand-dark text-white font-semibold rounded-xl transition-colors text-sm mb-3"
           >
             Ir al Módulo {prevId}
           </button>

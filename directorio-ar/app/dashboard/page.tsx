@@ -1,5 +1,6 @@
 'use client';
 
+import PageHeader from '../../components/PageHeader';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { storage } from '../../lib/storage';
@@ -218,7 +219,7 @@ export default function GovernanceScorePage() {
   }, [router]);
 
   if (!ready) return (
-    <div className="min-h-screen flex items-center justify-center bg-[#FAFBFC]">
+    <div className="min-h-screen flex items-center justify-center bg-surface">
       <div className="text-gray-400 text-sm">Calculando score...</div>
     </div>
   );
@@ -235,26 +236,16 @@ export default function GovernanceScorePage() {
   const pendientes = gs.dimensiones.filter(d => !d.tieneDatos);
 
   return (
-    <div className="min-h-screen bg-[#FAFBFC] flex flex-col">
+    <div className="min-h-screen bg-surface flex flex-col">
 
       {/* Header */}
-      <header className="bg-white/90 backdrop-blur-md border-b border-[#E5E7EB] px-4 py-3 flex items-center gap-3 sticky top-14 z-20">
-        <button
-          onClick={() => router.back()}
-          className="flex items-center justify-center w-8 h-8 rounded-lg text-gray-500 hover:text-gray-900 hover:bg-gray-100"
-        >
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M19 12H5M5 12l7 7M5 12l7-7" />
-          </svg>
-        </button>
-        <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-[#534AB7] to-[#7C6FDB] flex items-center justify-center shadow-sm">
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-            <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
-          </svg>
-        </div>
-        <span className="text-sm font-bold text-gray-900 tracking-tight">Governance Score</span>
-        {nombre && <span className="text-xs text-gray-400 ml-auto font-medium">{nombre}</span>}
-      </header>
+      <PageHeader
+        titulo="Governance Score"
+        onBack={() => router.back()}
+        right={<>
+{nombre && <span className="text-xs text-gray-400 font-medium">{nombre}</span>}
+        </>}
+      />
 
       <main className="flex-1 max-w-2xl mx-auto w-full px-4 py-8 space-y-6">
 
@@ -284,7 +275,7 @@ export default function GovernanceScorePage() {
           {pendientes.length > 0 && (
             <p className="text-xs text-gray-600 mt-3 bg-white/70 rounded-lg px-3 py-2 inline-block">
               Score parcial: calculado con {gs.completadas} de 5 dimensiones.{' '}
-              <button onClick={() => router.push(`/modulo/${pendientes[0].fuente.replace('Módulo ', '')}`)} className="font-semibold text-[#534AB7] hover:underline">
+              <button onClick={() => router.push(`/modulo/${pendientes[0].fuente.replace('Módulo ', '')}`)} className="font-semibold text-brand hover:underline">
                 Completar {pendientes[0].fuente} →
               </button>
             </p>
@@ -292,7 +283,7 @@ export default function GovernanceScorePage() {
         </div>
 
         {/* Radar chart */}
-        <div className="bg-white border border-[#E5E7EB] rounded-2xl p-6 shadow-sm">
+        <div className="bg-white border border-gray-200 rounded-2xl p-6 shadow-sm">
           <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-4 text-center">
             Perfil de gobierno corporativo
           </p>
@@ -312,7 +303,7 @@ export default function GovernanceScorePage() {
         </div>
 
         {/* 5 dimensions */}
-        <div className="bg-white border border-[#E5E7EB] rounded-2xl overflow-hidden shadow-sm">
+        <div className="bg-white border border-gray-200 rounded-2xl overflow-hidden shadow-sm">
           <div className="px-5 pt-5 pb-3 border-b border-gray-100">
             <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Las 5 dimensiones</p>
           </div>
@@ -330,7 +321,7 @@ export default function GovernanceScorePage() {
                     </div>
                     <button
                       onClick={() => router.push(`/modulo/${d.fuente.replace('Módulo ', '')}`)}
-                      className="text-xs font-semibold text-[#534AB7] border border-[#DDD9FE] bg-[#EEEDFE] px-3 py-1.5 rounded-lg hover:bg-[#DDD9FE] shrink-0"
+                      className="text-xs font-semibold text-brand border border-brand-100 bg-brand-50 px-3 py-1.5 rounded-lg hover:bg-brand-100 shrink-0"
                     >
                       Completar →
                     </button>
@@ -362,7 +353,7 @@ export default function GovernanceScorePage() {
         </div>
 
         {/* Benchmark */}
-        <div className="bg-white border border-[#E5E7EB] rounded-2xl p-5 shadow-sm">
+        <div className="bg-white border border-gray-200 rounded-2xl p-5 shadow-sm">
           <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-4">
             Benchmark — ¿Cómo estás vs el mercado?
           </p>
@@ -377,7 +368,7 @@ export default function GovernanceScorePage() {
 
         {/* Próximos pasos priorizados */}
         {weakDims.length > 0 && (
-          <div className="bg-white border border-[#E5E7EB] rounded-2xl overflow-hidden shadow-sm">
+          <div className="bg-white border border-gray-200 rounded-2xl overflow-hidden shadow-sm">
             <div className="px-5 pt-5 pb-3 border-b border-gray-100">
               <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider">
                 Dónde mejorar primero
@@ -385,7 +376,7 @@ export default function GovernanceScorePage() {
             </div>
             <div className="p-4 space-y-3">
               {weakDims.map((d, i) => (
-                <div key={d.id} className="flex items-start gap-3 p-3 rounded-xl bg-[#FAFBFC] border border-[#E5E7EB]">
+                <div key={d.id} className="flex items-start gap-3 p-3 rounded-xl bg-surface border border-gray-200">
                   <div
                     className="w-7 h-7 rounded-full text-white text-xs font-bold flex items-center justify-center shrink-0 mt-0.5"
                     style={{ backgroundColor: '#534AB7' }}
@@ -402,7 +393,7 @@ export default function GovernanceScorePage() {
                         const modNum = d.fuente.replace('Módulo ', '');
                         router.push(`/modulo/${modNum}`);
                       }}
-                      className="mt-2 text-xs text-[#534AB7] font-semibold hover:underline"
+                      className="mt-2 text-xs text-brand font-semibold hover:underline"
                     >
                       Ir a {d.fuente} →
                     </button>
@@ -441,8 +432,8 @@ export default function GovernanceScorePage() {
         </div>
 
         {/* Nota sobre uso del score */}
-        <div className="bg-[#EEEDFE] border border-[#DDD9FE] rounded-2xl p-5">
-          <p className="text-xs font-semibold text-[#534AB7] uppercase tracking-wider mb-2">
+        <div className="bg-brand-50 border border-brand-100 rounded-2xl p-5">
+          <p className="text-xs font-semibold text-brand uppercase tracking-wider mb-2">
             ¿Para qué sirve este score?
           </p>
           <p className="text-sm text-gray-700 leading-relaxed">
@@ -451,7 +442,7 @@ export default function GovernanceScorePage() {
         </div>
 
         {/* Fase 2: Constitución del directorio */}
-        <div className="bg-white border border-[#E5E7EB] rounded-2xl overflow-hidden shadow-sm">
+        <div className="bg-white border border-gray-200 rounded-2xl overflow-hidden shadow-sm">
           <div className="px-5 pt-5 pb-3 border-b border-gray-100">
             <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Fase 2 — Constitución del directorio</p>
             <p className="text-xs text-gray-400 mt-1">Herramientas para pasar del diagnóstico a la acción.</p>
@@ -465,7 +456,7 @@ export default function GovernanceScorePage() {
               <button
                 key={item.href}
                 onClick={() => router.push(item.href)}
-                className="w-full flex items-center gap-3 p-3 rounded-xl border border-[#E5E7EB] hover:border-[#534AB7] hover:bg-[#FDFCFF] transition-colors text-left"
+                className="w-full flex items-center gap-3 p-3 rounded-xl border border-gray-200 hover:border-brand hover:bg-[#FDFCFF] transition-colors text-left"
               >
                 <span className="text-xl">{item.icon}</span>
                 <div className="flex-1 min-w-0">
@@ -484,13 +475,13 @@ export default function GovernanceScorePage() {
         <div className="flex gap-3 pb-4">
           <button
             onClick={() => router.push('/resultado')}
-            className="flex-1 py-3 border border-[#E5E7EB] rounded-xl text-sm font-medium text-gray-600 hover:bg-white bg-white/50"
+            className="flex-1 py-3 border border-gray-200 rounded-xl text-sm font-medium text-gray-600 hover:bg-white bg-white/50"
           >
             Ver resultado completo
           </button>
           <button
             onClick={() => router.push('/')}
-            className="flex-1 py-3 bg-[#534AB7] hover:bg-[#3C3489] text-white rounded-xl text-sm font-semibold"
+            className="flex-1 py-3 bg-brand hover:bg-brand-dark text-white rounded-xl text-sm font-semibold"
           >
             Volver al inicio
           </button>

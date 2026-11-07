@@ -1,8 +1,7 @@
 import type { TareaGestion, EstadoTarea, SeguimientoResultado } from '../types/fase3';
 
-export function generarId(): string {
-  return Math.random().toString(36).slice(2, 10);
-}
+import { generarId } from './storage-core';
+export { generarId };
 
 export function calcularEstado(tarea: TareaGestion): EstadoTarea {
   if (tarea.estado === 'completada') return 'completada';

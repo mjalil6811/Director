@@ -1,5 +1,6 @@
 'use client';
 
+import PageHeader from '../../../components/PageHeader';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import {
@@ -30,10 +31,10 @@ function SeleccionTipo({ onSelect }: { onSelect: (t: TipoProtocolo) => void }) {
       <div className="space-y-3">
         {tipos.map(t => (
           <button key={t.tipo} onClick={() => onSelect(t.tipo)}
-            className="w-full text-left bg-white rounded-2xl border border-gray-200 p-5 hover:border-[#534AB7]/50 hover:bg-[#FAFBFC] transition-all group">
+            className="w-full text-left bg-white rounded-2xl border border-gray-200 p-5 hover:border-brand/50 hover:bg-surface transition-all group">
             <div className="flex items-start justify-between">
               <div>
-                <p className="font-semibold text-gray-900 text-sm group-hover:text-[#534AB7] transition-colors">{t.titulo}</p>
+                <p className="font-semibold text-gray-900 text-sm group-hover:text-brand transition-colors">{t.titulo}</p>
                 <p className="text-xs text-gray-400 mt-1 leading-relaxed max-w-xs">{t.desc}</p>
               </div>
               <span className="text-xs bg-gray-100 text-gray-500 px-2.5 py-1 rounded-full font-medium shrink-0 ml-3">{t.tag}</span>
@@ -74,10 +75,10 @@ function Resultado({ resultado, empresaNombre, onReiniciar }: {
       <div className="bg-white rounded-2xl border border-gray-200 p-4 mb-4">
         <div className="flex items-center justify-between mb-3">
           <span className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Cobertura</span>
-          <span className="text-sm font-bold text-[#534AB7]">{resultado.coberturaPorcentaje}%</span>
+          <span className="text-sm font-bold text-brand">{resultado.coberturaPorcentaje}%</span>
         </div>
         <div className="h-2 bg-gray-100 rounded-full overflow-hidden mb-4">
-          <div className="h-full bg-gradient-to-r from-[#534AB7] to-[#7C6FDB] rounded-full transition-all" style={{ width: `${resultado.coberturaPorcentaje}%` }} />
+          <div className="h-full bg-gradient-to-r from-brand to-brand-light rounded-full transition-all" style={{ width: `${resultado.coberturaPorcentaje}%` }} />
         </div>
         <p className="text-xs font-semibold text-gray-600 mb-2">Cláusulas acordadas ({resultado.clausulasGeneradas.length})</p>
         <div className="space-y-1.5">
@@ -102,10 +103,10 @@ function Resultado({ resultado, empresaNombre, onReiniciar }: {
       )}
 
       <div className="flex gap-3">
-        <button onClick={copiar} className="flex-1 py-3 rounded-xl border border-[#534AB7] text-[#534AB7] font-semibold text-sm hover:bg-[#EEEDFE] transition-colors">
+        <button onClick={copiar} className="flex-1 py-3 rounded-xl border border-brand text-brand font-semibold text-sm hover:bg-brand-50 transition-colors">
           {copiado ? '✓ Copiado' : 'Copiar protocolo'}
         </button>
-        <button onClick={onReiniciar} className="flex-1 py-3 rounded-xl bg-[#534AB7] hover:bg-[#3C3489] text-white font-semibold text-sm transition-colors">
+        <button onClick={onReiniciar} className="flex-1 py-3 rounded-xl bg-brand hover:bg-brand-dark text-white font-semibold text-sm transition-colors">
           Editar respuestas
         </button>
       </div>
@@ -151,26 +152,17 @@ export default function ModuloProtocolo() {
   };
 
   return (
-    <div className="min-h-screen bg-[#FAFBFC]">
-      <div className="h-1 w-full bg-gray-100">
-        <div className="h-full bg-gradient-to-r from-[#534AB7] to-[#7C6FDB] transition-all" style={{ width: tipo ? `${(respondidos / Math.max(escenarios.length, 1)) * 100}%` : '5%' }} />
-      </div>
+    <div className="min-h-screen bg-surface">
 
-      <header className="bg-white/80 backdrop-blur-md border-b border-gray-200 px-4 py-3 flex items-center gap-3 sticky top-14 z-20">
-        <button onClick={() => { if (mostrarResultado) setMostrarResultado(false); else if (tipo) setTipo(null); else router.push('/'); }}
-          className="w-8 h-8 rounded-lg text-gray-500 hover:bg-gray-100 flex items-center justify-center">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 12H5M5 12l7 7M5 12l7-7" /></svg>
-        </button>
-        <div className="flex items-center gap-2.5 flex-1">
-          <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-[#534AB7] to-[#7C6FDB] text-white text-xs font-bold flex items-center justify-center">7</div>
-          <span className="text-sm font-semibold text-gray-900">
-            {mostrarResultado ? 'Tu protocolo' : tipo ? 'Protocolo de socios' : 'Protocolo'}
-          </span>
-        </div>
-        {tipo && !mostrarResultado && (
+      <PageHeader
+        titulo={mostrarResultado ? 'Tu protocolo' : tipo ? 'Protocolo de socios' : 'Protocolo'}
+        onBack={() => { if (mostrarResultado) setMostrarResultado(false); else if (tipo) setTipo(null); else router.push('/'); }}
+        right={<>
+{tipo && !mostrarResultado && (
           <span className="text-xs text-gray-400">{respondidos}/{escenarios.length} situaciones</span>
         )}
-      </header>
+        </>}
+      />
 
       <main className="max-w-xl mx-auto px-4 py-8">
         {!tipo && <SeleccionTipo onSelect={t => { setTipo(t); setRespuestas([]); }} />}
@@ -187,7 +179,7 @@ export default function ModuloProtocolo() {
           <div>
             <div className="flex gap-2 overflow-x-auto pb-2 mb-5">
               <button onClick={() => setCategoriaActiva(null)}
-                className={`px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition-all shrink-0 ${!categoriaActiva ? 'bg-[#534AB7] text-white' : 'bg-white border border-gray-200 text-gray-600'}`}>
+                className={`px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition-all shrink-0 ${!categoriaActiva ? 'bg-brand text-white' : 'bg-white border border-gray-200 text-gray-600'}`}>
                 Todas
               </button>
               {categorias.map(cat => {
@@ -195,7 +187,7 @@ export default function ModuloProtocolo() {
                 const totalCat = escenarios.filter(e => e.categoria === cat).length;
                 return (
                   <button key={cat} onClick={() => setCategoriaActiva(cat === categoriaActiva ? null : cat)}
-                    className={`px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition-all shrink-0 ${cat === categoriaActiva ? 'bg-[#534AB7] text-white' : 'bg-white border border-gray-200 text-gray-600'}`}>
+                    className={`px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition-all shrink-0 ${cat === categoriaActiva ? 'bg-brand text-white' : 'bg-white border border-gray-200 text-gray-600'}`}>
                     {CATEGORIAS_ESCENARIO[cat].label}
                     {respondidosEnCat > 0 && <span className="ml-1 opacity-70">{respondidosEnCat}/{totalCat}</span>}
                   </button>
@@ -207,7 +199,7 @@ export default function ModuloProtocolo() {
               {escenariosFiltrados.map(esc => {
                 const respuesta = getRespuesta(esc.id);
                 return (
-                  <div key={esc.id} className={`bg-white rounded-2xl border transition-all ${respuesta ? 'border-[#534AB7]/20' : 'border-gray-200'}`}>
+                  <div key={esc.id} className={`bg-white rounded-2xl border transition-all ${respuesta ? 'border-brand/20' : 'border-gray-200'}`}>
                     <div className="p-4">
                       <div className="flex items-start gap-2 mb-2">
                         {esc.obligatorio
@@ -224,14 +216,14 @@ export default function ModuloProtocolo() {
                           const elegida = respuesta?.opcionId === op.id;
                           return (
                             <button key={op.id} onClick={() => responder(esc.id, op.id)}
-                              className={`w-full text-left p-3 rounded-xl border transition-all ${elegida ? 'border-[#534AB7] bg-[#EEEDFE]/60' : 'border-gray-100 hover:border-gray-300 bg-gray-50/50'}`}>
+                              className={`w-full text-left p-3 rounded-xl border transition-all ${elegida ? 'border-brand bg-brand-50/60' : 'border-gray-100 hover:border-gray-300 bg-gray-50/50'}`}>
                               <div className="flex items-start gap-2.5">
-                                <div className={`w-4 h-4 rounded-full border-2 mt-0.5 shrink-0 flex items-center justify-center transition-all ${elegida ? 'border-[#534AB7] bg-[#534AB7]' : 'border-gray-300'}`}>
+                                <div className={`w-4 h-4 rounded-full border-2 mt-0.5 shrink-0 flex items-center justify-center transition-all ${elegida ? 'border-brand bg-brand' : 'border-gray-300'}`}>
                                   {elegida && <div className="w-1.5 h-1.5 rounded-full bg-white" />}
                                 </div>
                                 <div className="flex-1">
                                   <div className="flex items-center gap-2 flex-wrap">
-                                    <p className={`text-xs font-medium ${elegida ? 'text-[#3C3489]' : 'text-gray-700'}`}>{op.texto}</p>
+                                    <p className={`text-xs font-medium ${elegida ? 'text-brand-dark' : 'text-gray-700'}`}>{op.texto}</p>
                                     <span className={`text-[10px] px-1.5 py-0.5 rounded-full font-medium ${NIVEL_COLOR[op.nivel]}`}>{NIVEL_LABEL[op.nivel]}</span>
                                   </div>
                                   {op.advertencia && elegida && (
@@ -256,7 +248,7 @@ export default function ModuloProtocolo() {
                 </p>
               )}
               <button onClick={verResultado} disabled={!puedeVerResultado}
-                className="w-full py-3 rounded-xl bg-[#534AB7] hover:bg-[#3C3489] text-white font-semibold text-sm disabled:opacity-40 disabled:cursor-not-allowed transition-colors">
+                className="w-full py-3 rounded-xl bg-brand hover:bg-brand-dark text-white font-semibold text-sm disabled:opacity-40 disabled:cursor-not-allowed transition-colors">
                 Ver mi protocolo →
               </button>
             </div>

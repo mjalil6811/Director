@@ -2,12 +2,9 @@ import type {
   Votacion, VotoDirector, TipoVoto, TipoMayoria,
   ResultadoVotacion, EstadoVotacion,
 } from '../types/fase2';
+import { generarId, getItem, setItem } from './storage-core';
 
-// ——— ID ———————————————————————————————————————————————————————————————————
-
-export function generarId(): string {
-  return Math.random().toString(36).slice(2, 10);
-}
+export { generarId };
 
 // ——— Metadatos de voto ————————————————————————————————————————————————————
 
@@ -144,18 +141,6 @@ ${v.votos.map(vt => `  ${vt.directorNombre}: ${VOTO_META[vt.voto].label}${vt.com
 // ——— Storage de votaciones ———————————————————————————————————————————————
 
 const VOTACIONES_KEY = 'directorio_ar:fase2:votaciones';
-
-function isBrowser(): boolean { return typeof window !== 'undefined'; }
-
-function getItem<T>(key: string): T | null {
-  if (!isBrowser()) return null;
-  try { const v = localStorage.getItem(key); return v ? JSON.parse(v) as T : null; } catch { return null; }
-}
-
-function setItem<T>(key: string, value: T): void {
-  if (!isBrowser()) return;
-  try { localStorage.setItem(key, JSON.stringify(value)); } catch { }
-}
 
 export const storageVotaciones = {
   getVotaciones: (): Votacion[] => getItem<Votacion[]>(VOTACIONES_KEY) ?? [],

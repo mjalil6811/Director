@@ -36,7 +36,7 @@ function Accordion({ title, children }: { title: string; children: React.ReactNo
 function AgendaBlock({ number, title, time, content, nota }: { number: number; title: string; time: string; content: string; nota?: string }) {
   return (
     <div className="flex gap-3 py-2 border-b border-gray-100 last:border-0">
-      <div className="shrink-0 w-6 h-6 rounded-full bg-[#534AB7] bg-opacity-10 text-[#534AB7] text-xs font-bold flex items-center justify-center mt-0.5">
+      <div className="shrink-0 w-6 h-6 rounded-full bg-brand bg-opacity-10 text-brand text-xs font-bold flex items-center justify-center mt-0.5">
         {number}
       </div>
       <div className="flex-1">
@@ -46,7 +46,7 @@ function AgendaBlock({ number, title, time, content, nota }: { number: number; t
         </div>
         <p className="text-xs text-gray-600 leading-relaxed">{content}</p>
         {nota && (
-          <p className="text-xs text-[#534AB7] mt-1 italic">{nota}</p>
+          <p className="text-xs text-brand mt-1 italic">{nota}</p>
         )}
       </div>
     </div>
@@ -174,7 +174,7 @@ export default function Modulo4() {
   ];
 
   return (
-    <ModuleLayout moduleNumber={4} title="Dinámica y funcionamiento">
+    <ModuleLayout moduleNumber={4}>
       <div className="border border-purple-100 bg-purple-50 rounded-xl px-5 py-4 mb-4">
         <p className="text-sm text-gray-700 leading-relaxed">
           Este módulo te muestra cómo funciona un directorio en la práctica: frecuencia de reuniones, qué decisiones le corresponden, y una autoevaluación para saber si estás listo para dar el paso.
@@ -188,7 +188,7 @@ export default function Modulo4() {
             key={t.key}
             onClick={() => setTab(t.key)}
             className={`flex-1 py-2 text-xs font-semibold rounded-lg transition-colors
-              ${tab === t.key ? 'bg-[#534AB7] text-white' : 'text-gray-500 hover:text-gray-900'}`}
+              ${tab === t.key ? 'bg-brand text-white' : 'text-gray-500 hover:text-gray-900'}`}
           >
             {t.label}
           </button>
@@ -330,7 +330,7 @@ export default function Modulo4() {
                     <p className="text-xs text-green-600 leading-relaxed">{item.loQueDeberiaPasar}</p>
                   </div>
                   <div className="p-3 bg-purple-50 rounded-xl">
-                    <p className="text-xs font-semibold text-[#534AB7] mb-1">Como lograrlo</p>
+                    <p className="text-xs font-semibold text-brand mb-1">Como lograrlo</p>
                     <p className="text-xs text-gray-700 leading-relaxed">{item.comoLograrlo}</p>
                   </div>
                 </div>
@@ -342,7 +342,7 @@ export default function Modulo4() {
           <div className="space-y-2">
             {PROTOCOLO.map(item => (
               <div key={item.number} className="border border-gray-200 rounded-xl bg-white p-4 flex items-start gap-3">
-                <div className="w-7 h-7 rounded-full bg-[#534AB7] text-white text-sm font-bold flex items-center justify-center shrink-0 mt-0.5">
+                <div className="w-7 h-7 rounded-full bg-brand text-white text-sm font-bold flex items-center justify-center shrink-0 mt-0.5">
                   {item.number}
                 </div>
                 <div>
@@ -389,7 +389,7 @@ export default function Modulo4() {
                   {readyLabel}
                 </div>
                 <div className="w-full bg-gray-200 rounded-full h-2.5 mb-1">
-                  <div className="h-2.5 rounded-full bg-[#534AB7] transition-all duration-500" style={{ width: `${pct}%` }} />
+                  <div className="h-2.5 rounded-full bg-brand transition-all duration-500" style={{ width: `${pct}%` }} />
                 </div>
                 <p className="text-xs text-gray-500 mt-2 mb-3">{pct}% — {diagAnswered} de 5 respondidas</p>
                 <p className="text-sm text-gray-700 leading-relaxed">{readyDesc}</p>
@@ -432,7 +432,7 @@ export default function Modulo4() {
         <button onClick={() => router.push('/modulo/3')} className="flex-1 py-2.5 border border-gray-200 rounded-xl text-sm font-medium text-gray-600 hover:bg-gray-50">
           ← Módulo 3
         </button>
-        <button onClick={() => router.push('/modulo/5')} className="flex-1 py-2.5 bg-[#534AB7] hover:bg-[#3C3489] text-white rounded-xl text-sm font-semibold">
+        <button onClick={() => router.push('/modulo/5')} className="flex-1 py-2.5 bg-brand hover:bg-brand-dark text-white rounded-xl text-sm font-semibold">
           Módulo 5 →
         </button>
       </div>
