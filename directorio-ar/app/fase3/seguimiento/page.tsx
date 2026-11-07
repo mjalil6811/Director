@@ -8,6 +8,7 @@ import {
 } from '../../../lib/modulo11-seguimiento';
 import { storageFase2 } from '../../../lib/storage-fase2';
 import { storageFase3 } from '../../../lib/storage-fase3';
+import { StatusDonut, VIZ } from '../../../components/charts';
 import type { TareaGestion, EstadoTarea, PrioridadTarea } from '../../../types/fase3';
 
 const inp = "w-full px-3 py-2.5 rounded-xl border border-gray-200 bg-white text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-[#534AB7]/30 focus:border-[#534AB7] transition-all";
@@ -237,7 +238,7 @@ export default function ModuloSeguimiento() {
 
   return (
     <div className="min-h-screen bg-[#FAFBFC]">
-      <header className="bg-white/80 backdrop-blur-md border-b border-gray-200 px-4 py-3 flex items-center gap-3 sticky top-0 z-20">
+      <header className="bg-white/80 backdrop-blur-md border-b border-gray-200 px-4 py-3 flex items-center gap-3 sticky top-14 z-20">
         <button onClick={() => router.push('/')} className="w-8 h-8 rounded-lg text-gray-500 hover:bg-gray-100 flex items-center justify-center">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 12H5M5 12l7 7M5 12l7-7" /></svg>
         </button>
@@ -278,6 +279,26 @@ export default function ModuloSeguimiento() {
                 <p className="text-[10px] text-gray-400 font-semibold uppercase">Este mes</p>
               </div>
             </div>
+
+            {/* Estado de los compromisos */}
+            {tareas.length > 0 && (() => {
+              const conEstado = tareas.map(t => calcularEstado(t));
+              const contar = (e: EstadoTarea) => conEstado.filter(x => x === e).length;
+              return (
+                <div className="bg-white rounded-2xl border border-gray-100 p-4 shadow-sm mb-5">
+                  <p className="text-sm font-semibold text-gray-900 mb-3">Estado de los compromisos</p>
+                  <StatusDonut
+                    centerLabel="tareas"
+                    items={[
+                      { key: 'completada', label: 'Completadas', value: contar('completada'), color: VIZ.good },
+                      { key: 'en_curso', label: 'En curso', value: contar('en_curso'), color: VIZ.s1 },
+                      { key: 'pendiente', label: 'Pendientes', value: contar('pendiente'), color: '#C4C8CF' },
+                      { key: 'vencida', label: 'Vencidas', value: contar('vencida'), color: VIZ.bad },
+                    ]}
+                  />
+                </div>
+              );
+            })()}
 
             {/* Importar */}
             <button onClick={importarDesdeReuniones} className="w-full mb-4 py-2.5 rounded-xl border border-dashed border-gray-300 text-xs font-semibold text-gray-500 hover:border-[#534AB7] hover:text-[#534AB7] transition-all">

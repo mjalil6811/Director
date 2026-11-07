@@ -140,12 +140,12 @@ function TensionCard({ tension }: { tension: typeof TENSIONES[0] }) {
 export default function Modulo5() {
   const router = useRouter();
   const [tab, setTab] = useState<Tab>('tensiones');
-  const [respuestas, setRespuestas] = useState<(1 | 0.5 | 0 | null)[]>(new Array(10).fill(null));
+  const [respuestas, setRespuestas] = useState<(1 | 0.5 | 0 | null)[]>(new Array(AFIRMACIONES_M5.length).fill(null));
   const [resultado, setResultado] = useState<Modulo5Resultado | null>(null);
 
   useEffect(() => {
     const saved = storage.getModulo5Respuestas();
-    if (saved && saved.length === 10) {
+    if (saved && saved.length === AFIRMACIONES_M5.length) {
       setRespuestas(saved as (1 | 0.5 | 0 | null)[]);
       const res = storage.getModulo5Resultado();
       if (res) setResultado(res);
@@ -165,7 +165,7 @@ export default function Modulo5() {
   }
 
   const answeredCount = respuestas.filter(v => v !== null).length;
-  const allAnswered = answeredCount === 10;
+  const allAnswered = answeredCount === AFIRMACIONES_M5.length;
 
   const tabs: { key: Tab; label: string }[] = [
     { key: 'tensiones', label: '7 Tensiones' },
@@ -213,7 +213,7 @@ export default function Modulo5() {
                 {resultado.nivel}
               </div>
               <ProgressBar percentage={resultado.porcentaje ?? 0} label={`${resultado.porcentaje}%`} />
-              <p className="text-xs text-gray-500 mt-2">{answeredCount} de 10 afirmaciones evaluadas</p>
+              <p className="text-xs text-gray-500 mt-2">{answeredCount} de {AFIRMACIONES_M5.length} afirmaciones evaluadas</p>
             </div>
           )}
 

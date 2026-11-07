@@ -1,13 +1,8 @@
 import type { Modulo5Resultado } from "../types";
 
 export const AFIRMACIONES_M5 = [
-  "El CEO informa al directorio antes de tomar decisiones importantes, no después.",
-  "El directorio recibe información financiera completa antes de cada reunión.",
-  "El presidente del directorio y el CEO son personas distintas.",
-  "El directorio ha cuestionado en profundidad al menos una propuesta en el último año.",
   "Los directores no contactan directamente a gerentes de segunda línea.",
   "La agenda de reuniones la define el presidente del directorio, no el CEO.",
-  "Existe un proceso formal de evaluación anual del CEO.",
   "El CEO ve al directorio como un recurso estratégico, no como una carga.",
   "Hay un acuerdo claro sobre qué decide la gerencia sola y qué requiere aprobación.",
   "El directorio realiza una autoevaluación anual de su propio funcionamiento.",

@@ -12,7 +12,6 @@ export const DIMENSIONES_EVALUACION: DimensionEvaluacion[] = [
     preguntas: [
       { id: 'e1', texto: '¿El CEO tiene una visión clara y bien articulada del futuro de la empresa?', tipo: 'escala' },
       { id: 'e2', texto: '¿El CEO adapta la estrategia frente a cambios del mercado con agilidad?', tipo: 'escala' },
-      { id: 'e3', texto: '¿El CEO alinea al equipo gerencial detrás de los objetivos estratégicos?', tipo: 'escala' },
     ],
   },
   {
@@ -22,7 +21,6 @@ export const DIMENSIONES_EVALUACION: DimensionEvaluacion[] = [
     preguntas: [
       { id: 'ej1', texto: '¿El CEO cumple con los compromisos financieros establecidos en el presupuesto?', tipo: 'escala' },
       { id: 'ej2', texto: '¿El CEO implementa las decisiones del directorio con eficacia y en los plazos acordados?', tipo: 'escala' },
-      { id: 'ej3', texto: '¿El CEO gestiona bien los recursos de la empresa (capital, talento, tiempo)?', tipo: 'escala' },
     ],
   },
   {
@@ -32,7 +30,6 @@ export const DIMENSIONES_EVALUACION: DimensionEvaluacion[] = [
     preguntas: [
       { id: 'l1', texto: '¿El CEO construye y retiene un equipo gerencial de alta calidad?', tipo: 'escala' },
       { id: 'l2', texto: '¿El CEO delega apropiadamente y desarrolla capacidades en su equipo?', tipo: 'escala' },
-      { id: 'l3', texto: '¿El CEO promueve una cultura organizacional sana y de alto desempeño?', tipo: 'escala' },
     ],
   },
   {
@@ -42,7 +39,6 @@ export const DIMENSIONES_EVALUACION: DimensionEvaluacion[] = [
     preguntas: [
       { id: 'g1', texto: '¿El CEO informa al directorio oportunamente, incluyendo malas noticias?', tipo: 'escala' },
       { id: 'g2', texto: '¿El CEO respeta las decisiones del directorio aunque no esté de acuerdo?', tipo: 'escala' },
-      { id: 'g3', texto: '¿El CEO utiliza al directorio como un recurso estratégico real?', tipo: 'escala' },
     ],
   },
   {

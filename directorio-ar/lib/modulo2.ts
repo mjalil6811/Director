@@ -20,17 +20,6 @@ export const SITUACIONES_M2: SituacionM2[] = [
     beneficioDirectorio: "Esta es una decisión donde el directorio debe liderar (modo 'take charge'): evalúa el endeudamiento con análisis independiente, hace las preguntas correctas antes de opinar y protege el patrimonio de todos los socios — no solo del que firma.",
   },
   {
-    texto: "El gerente comercial quiere contratar dos vendedores nuevos. ¿Cómo se resuelve?",
-    aclaracion: "Es una decisión operativa dentro de un presupuesto ya aprobado.",
-    opciones: [
-      { label: "El dueño aprueba cada contratación personalmente", tipo: "concentrada" },
-      { label: "El gerente propone y el dueño da el OK", tipo: "parcial" },
-      { label: "El gerente decide dentro de su presupuesto aprobado", tipo: "delegada" },
-      { label: "No hay regla clara, a veces sí a veces no", tipo: "gris" },
-    ],
-    beneficioDirectorio: "Esta es una decisión donde el directorio debe mantenerse al margen (modo 'stay out'): aprueba el presupuesto y deja que la gerencia ejecute con autonomía. Intervenir en contrataciones operativas es micro-gestión encubierta.",
-  },
-  {
     texto: "Dos socios no se ponen de acuerdo sobre expandir a otra provincia. ¿Qué pasa?",
     aclaracion: "Es una decisión estratégica con impacto en la operación y el capital.",
     opciones: [
@@ -42,17 +31,6 @@ export const SITUACIONES_M2: SituacionM2[] = [
     beneficioDirectorio: "El directorio actúa como socio estratégico (modo 'partner'): facilita el debate con datos, practica la indagación antes que la recomendación, y funciona como árbitro institucional entre socios — sin que gane el que tiene más poder.",
   },
   {
-    texto: "Un cliente clave tiene una queja grave. El equipo no sabe qué hacer. ¿Quién resuelve?",
-    aclaracion: "Es una situación operativa que requiere respuesta inmediata.",
-    opciones: [
-      { label: "El dueño, porque es el único que puede hablar con ese cliente", tipo: "concentrada" },
-      { label: "El gerente comercial consulta al dueño y después actúa", tipo: "parcial" },
-      { label: "El gerente comercial tiene autonomía para resolver esto", tipo: "delegada" },
-      { label: "No hay protocolo, se resuelve como se puede", tipo: "gris" },
-    ],
-    beneficioDirectorio: "Un directorio efectivo detecta esta dependencia y trabaja para eliminarla. Esta situación es operativa pura — el directorio debe mantenerse al margen y asegurar que la gerencia tenga la autonomía y los protocolos para resolver sin escalar al dueño.",
-  },
-  {
     texto: "Hay que definir cuánto cobra el CEO o dueño-gerente este año. ¿Cómo se decide?",
     aclaracion: "Si el CEO fija su propio sueldo, hay un conflicto de interés evidente.",
     opciones: [
@@ -62,17 +40,6 @@ export const SITUACIONES_M2: SituacionM2[] = [
       { label: "No se revisa nunca, siempre fue igual", tipo: "gris" },
     ],
     beneficioDirectorio: "La compensación del CEO es una decisión donde el directorio debe liderar ('take charge'). Es una de las funciones más importantes del directorio como equipo: elimina el conflicto de interés y alinea incentivos con resultados reales.",
-  },
-  {
-    texto: "Apareció la oportunidad de comprar un competidor. ¿Cómo se maneja?",
-    aclaracion: "Una adquisición compromete capital, estrategia y riesgo al mismo tiempo.",
-    opciones: [
-      { label: "El dueño decide solo si le parece buena idea", tipo: "concentrada" },
-      { label: "Se comenta entre socios pero no hay análisis formal", tipo: "parcial" },
-      { label: "Se hace un análisis financiero y estratégico antes de decidir", tipo: "delegada" },
-      { label: "Probablemente se deje pasar por falta de proceso", tipo: "gris" },
-    ],
-    beneficioDirectorio: "Las decisiones de M&A son el caso paradigmático del modo 'take charge': alto impacto, irreversibles, requieren análisis independiente. El directorio lidera, hace las preguntas difíciles que nadie quiere hacer, y decide como equipo — no como grupo de individuos.",
   },
   {
     texto: "Los resultados del trimestre fueron malos. ¿Qué pasa?",
@@ -95,17 +62,6 @@ export const SITUACIONES_M2: SituacionM2[] = [
       { label: "Genera incomodidad y nadie quiere tomar la decisión", tipo: "gris" },
     ],
     beneficioDirectorio: "El directorio lidera esta conversación difícil ('take charge'): establece reglas de juego objetivas para familiares. La diversidad de perspectivas del directorio como equipo genera políticas que protegen tanto a la empresa como a la familia.",
-  },
-  {
-    texto: "La empresa recibe una demanda judicial de un proveedor. ¿Quién se hace cargo?",
-    aclaracion: "En una SA, los directores tienen responsabilidad personal ante conflictos legales.",
-    opciones: [
-      { label: "El dueño habla con el proveedor y trata de arreglar", tipo: "concentrada" },
-      { label: "Se delega al abogado externo sin seguimiento formal", tipo: "parcial" },
-      { label: "Se define una estrategia legal con responsable y plazos", tipo: "delegada" },
-      { label: "Nadie asume la responsabilidad claramente", tipo: "gris" },
-    ],
-    beneficioDirectorio: "Los directores tienen responsabilidad legal personal — esto los motiva a actuar con rigor. El directorio acompaña esta decisión en modo 'partner': no reemplaza al abogado, pero aprueba la estrategia legal con visión de negocio y protege a la empresa institucionalmente.",
   },
   {
     texto: "Cerró bien el año. ¿Cómo se decide cuánto se reparte entre socios?",
@@ -157,8 +113,8 @@ export function calcularModulo2(respuestas: number[]): Modulo2Resultado {
     return sum + (TIPO_SCORE[sit.opciones[opIdx].tipo] ?? 0);
   }, 0);
 
-  const maxScore = 10 * 3;
-  const concentracionPct = Math.round(((conteos.concentrada + conteos.gris) / 10) * 100);
+  const total = SITUACIONES_M2.length;
+  const concentracionPct = Math.round(((conteos.concentrada + conteos.gris) / total) * 100);
 
   let perfil: string;
   if (concentracionPct >= 70) perfil = "Concentración crítica";

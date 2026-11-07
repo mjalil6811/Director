@@ -171,18 +171,7 @@ export const PREGUNTAS_M3: PreguntaM3[] = [
     ],
   },
   {
-    numero: 3, dimension: "Propiedad",
-    texto: "¿Existe o está planificado un proceso de sucesión o traspaso generacional?",
-    aclaracion: "La sucesión es el momento de mayor riesgo en empresas familiares argentinas.",
-    opciones: [
-      { texto: "No aplica a nuestra empresa",                     pesos: {} },
-      { texto: "Está en el horizonte pero no es inmediato",       pesos: { financiero: 1 } },
-      { texto: "Está en proceso activo",                          pesos: { financiero: 2, estratega: 1 } },
-      { texto: "Ya ocurrió y hay tensiones sin resolver",         pesos: { financiero: 2, estratega: 2 } },
-    ],
-  },
-  {
-    numero: 4, dimension: "Finanzas",
+    numero: 3, dimension: "Finanzas",
     texto: "¿Cuál es la situación financiera actual de la empresa?",
     aclaracion: "El nivel de deuda define la urgencia del perfil financiero.",
     opciones: [
@@ -193,7 +182,7 @@ export const PREGUNTAS_M3: PreguntaM3[] = [
     ],
   },
   {
-    numero: 5, dimension: "Finanzas",
+    numero: 4, dimension: "Finanzas",
     texto: "¿La empresa ha tenido o tiene dificultades financieras significativas?",
     aclaracion: "Las crisis financieras activan necesidades de gobierno muy específicas.",
     opciones: [
@@ -204,18 +193,7 @@ export const PREGUNTAS_M3: PreguntaM3[] = [
     ],
   },
   {
-    numero: 6, dimension: "Industria",
-    texto: "¿Qué tan regulada es la industria en la que opera la empresa?",
-    aclaracion: "Sectores como alimentos, salud o financiero tienen alta carga regulatoria en Argentina.",
-    opciones: [
-      { texto: "Poca regulación específica de la industria",                   pesos: { operaciones: 1 } },
-      { texto: "Regulación moderada, cumplimos sin dificultad",                pesos: { operaciones: 1, financiero: 1 } },
-      { texto: "Alta regulación sectorial o habilitaciones críticas",          pesos: { financiero: 2, operaciones: 2 } },
-      { texto: "Regulación nacional y provincial compleja, riesgo de sanciones", pesos: { financiero: 2, operaciones: 2, estratega: 1 } },
-    ],
-  },
-  {
-    numero: 7, dimension: "Mercado",
+    numero: 5, dimension: "Mercado",
     texto: "¿La empresa exporta o tiene planes serios de expansión internacional?",
     aclaracion: "La internacionalización exige un perfil que el mercado local raramente provee.",
     opciones: [
@@ -226,18 +204,7 @@ export const PREGUNTAS_M3: PreguntaM3[] = [
     ],
   },
   {
-    numero: 8, dimension: "Tecnología",
-    texto: "¿Cuán central es la transformación digital para el negocio?",
-    aclaracion: "No hablamos de tener una web — hablamos de si la tecnología puede cambiar el modelo de negocio.",
-    opciones: [
-      { texto: "La tecnología es un soporte, no un diferenciador",             pesos: { operaciones: 1 } },
-      { texto: "Estamos modernizando procesos pero no es urgente",             pesos: { operaciones: 2 } },
-      { texto: "La digitalización es una prioridad estratégica activa",        pesos: { operaciones: 2, estratega: 1 } },
-      { texto: "La tecnología puede redefinir nuestro modelo de negocio",      pesos: { estratega: 2, operaciones: 2 } },
-    ],
-  },
-  {
-    numero: 9, dimension: "Mercado",
+    numero: 6, dimension: "Mercado",
     texto: "¿La empresa tiene competidores fuertes o el mercado está cambiando rápido?",
     aclaracion: "La presión competitiva define la urgencia del perfil comercial y estratégico.",
     opciones: [
@@ -248,7 +215,7 @@ export const PREGUNTAS_M3: PreguntaM3[] = [
     ],
   },
   {
-    numero: 10, dimension: "Comercial",
+    numero: 7, dimension: "Comercial",
     texto: "¿Cómo llegan hoy los nuevos clientes a la empresa?",
     aclaracion: "La dependencia comercial del dueño es uno de los riesgos más subestimados en PyMEs argentinas.",
     opciones: [
@@ -259,18 +226,7 @@ export const PREGUNTAS_M3: PreguntaM3[] = [
     ],
   },
   {
-    numero: 11, dimension: "Estrategia",
-    texto: "¿La empresa tiene planes de adquisición, fusión, venta total o parcial?",
-    aclaracion: "Las operaciones de M&A son las que más requieren gobierno sofisticado.",
-    opciones: [
-      { texto: "No está en los planes",                          pesos: { operaciones: 1 } },
-      { texto: "Se evalúa en el mediano plazo",                  pesos: { estratega: 1, financiero: 1 } },
-      { texto: "Hay una operación concreta en proceso",          pesos: { estratega: 3, financiero: 3 } },
-      { texto: "La empresa está en venta o proceso de fusión activo", pesos: { estratega: 3, financiero: 3 } },
-    ],
-  },
-  {
-    numero: 12, dimension: "Operaciones",
+    numero: 8, dimension: "Operaciones",
     texto: "¿La empresa tiene procesos documentados y sistemas de gestión implementados?",
     aclaracion: "La informalidad operativa es el principal freno al crecimiento en PyMEs argentinas.",
     opciones: [
@@ -280,53 +236,21 @@ export const PREGUNTAS_M3: PreguntaM3[] = [
       { texto: "Sistemas y procesos funcionando con métricas de seguimiento",          pesos: { estratega: 1 } },
     ],
   },
-  {
-    numero: 13, dimension: "Gobierno",
-    texto: "¿Cuál es la disposición real del CEO o dueño a rendir cuentas ante un directorio?",
-    aclaracion: "Esta pregunta define qué tan rápido y profundo puede ser el proceso de gobierno.",
-    opciones: [
-      { texto: "Baja — prefiere decidir solo, sin supervisión externa",              pesos: { operaciones: 1 } },
-      { texto: "Media — lo acepta pero genera algo de incomodidad",                  pesos: { estratega: 1, operaciones: 1 } },
-      { texto: "Alta — lo busca activamente aunque de forma informal",               pesos: { estratega: 2, financiero: 1 } },
-      { texto: "Muy alta — está listo/a para implementar gobierno formal",           pesos: { estratega: 3, financiero: 1, comercial: 1 } },
-    ],
-  },
-  {
-    numero: 14, dimension: "Mercado",
-    texto: "¿La empresa tiene unidades de negocio o actividades vinculadas que operan de forma independiente?",
-    aclaracion: "La diversificación de negocios multiplica la complejidad de las decisiones estratégicas.",
-    opciones: [
-      { texto: "Es un solo negocio sin actividades vinculadas", pesos: { operaciones: 1 } },
-      { texto: "Tiene alguna actividad secundaria menor", pesos: { estratega: 1, operaciones: 1 } },
-      { texto: "Tiene dos o tres unidades de negocio diferenciadas", pesos: { estratega: 2, financiero: 2 } },
-      { texto: "Es un grupo con múltiples empresas o unidades", pesos: { estratega: 3, financiero: 3 } },
-    ],
-  },
-  {
-    numero: 15, dimension: "Mercado",
-    texto: "¿Los ingresos de la empresa dependen de pocos clientes o están diversificados?",
-    aclaracion: "La concentración de ingresos en pocos clientes es un riesgo estratégico que un directorio puede ayudar a gestionar.",
-    opciones: [
-      { texto: "Más del 50% depende de 1 o 2 clientes", pesos: { comercial: 3, estratega: 1 } },
-      { texto: "Hay concentración pero con algo de diversificación", pesos: { comercial: 2 } },
-      { texto: "Los ingresos están razonablemente diversificados", pesos: { comercial: 1 } },
-      { texto: "Alta diversificación, ningún cliente supera el 10%", pesos: { estratega: 1 } },
-    ],
-  },
 ];
 
 // ─── Calculator ────────────────────────────────────────────────────────────────
 
 export function calcularUrgencia(score: number): NivelUrgencia {
-  if (score >= 10) return "Crítico";
-  if (score >= 7)  return "Urgente";
-  if (score >= 4)  return "Recomendado";
+  // Calibrado para 8 preguntas
+  if (score >= 7) return "Crítico";
+  if (score >= 5) return "Urgente";
+  if (score >= 3) return "Recomendado";
   return "Complementario";
 }
 
-export const TOTAL_PREGUNTAS_M3 = PREGUNTAS_M3.length; // 15
+export const TOTAL_PREGUNTAS_M3 = PREGUNTAS_M3.length; // 8
 
-// respuestas: number[] indexed 0–14 (option index chosen per question)
+// respuestas: number[] indexed 0–7 (option index chosen per question)
 export function calcularModulo3(respuestas: number[]): Modulo3Resultado {
   const scores: Record<PerfilKey, number> = { estratega: 0, financiero: 0, comercial: 0, operaciones: 0 };
   const dimensionesActivadas: Record<PerfilKey, string[]> = { estratega: [], financiero: [], comercial: [], operaciones: [] };

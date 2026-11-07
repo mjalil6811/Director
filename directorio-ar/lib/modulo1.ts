@@ -31,7 +31,7 @@ export const DIMENSIONES: Dimension[] = [
         opciones: [
           { texto: "Menos de $50 millones", puntaje: 0 },
           { texto: "Entre $50 y $200 millones", puntaje: 1 },
-          { texto: "Entre $200 millones y $1.000 millones", puntaje: 3 },
+          { texto: "Entre $200 millones y $1.000 millones", puntaje: 2 },
           { texto: "Más de $1.000 millones", puntaje: 3 },
         ],
       },
@@ -99,28 +99,6 @@ export const DIMENSIONES: Dimension[] = [
     preguntas: [
       {
         numero: 7,
-        texto: "Cuando surge una decisión importante que no estaba prevista, ¿cómo se resuelve habitualmente?",
-        aclaracion: "Pensá en las últimas 3 decisiones relevantes que tomó la empresa.",
-        opciones: [
-          { texto: "El dueño decide solo en el momento, sin consultar a nadie", puntaje: 3 },
-          { texto: "Se consulta informalmente con algún socio o gerente de confianza", puntaje: 2 },
-          { texto: "Se consulta con gerentes o empleados clave antes de decidir", puntaje: 1 },
-          { texto: "Hay un proceso definido con roles claros para cada tipo de decisión", puntaje: 0 },
-        ],
-      },
-      {
-        numero: 8,
-        texto: "¿Quién tiene hoy la última palabra en una decisión que afecte el futuro de la empresa?",
-        aclaracion: "No la respuesta formal o deseada — la que refleja lo que realmente pasa.",
-        opciones: [
-          { texto: "Una sola persona, siempre la misma", puntaje: 0 },
-          { texto: "Depende del tema, pero siempre es informal", puntaje: 1 },
-          { texto: "Un grupo de socios o referentes, aunque sin estructura", puntaje: 2 },
-          { texto: "Hay criterios y roles definidos para distintos tipos de decisión", puntaje: 3 },
-        ],
-      },
-      {
-        numero: 9,
         texto: "¿Con qué frecuencia los socios o líderes se reúnen formalmente para revisar el rumbo del negocio?",
         aclaracion: "Si los líderes de la empresa no se juntan nunca a pensar en el futuro, nadie lo está haciendo. El directorio fuerza esa conversación.",
         opciones: [
@@ -137,7 +115,7 @@ export const DIMENSIONES: Dimension[] = [
     key: "motivacion",
     preguntas: [
       {
-        numero: 10,
+        numero: 8,
         texto: "¿Cuál es la razón principal por la que estás considerando armar un directorio?",
         aclaracion: "Elegí la que más se acerca a tu situación real — no la que suena mejor.",
         opciones: [
@@ -147,17 +125,6 @@ export const DIMENSIONES: Dimension[] = [
           { texto: "Creo que es el momento de profesionalizar el gobierno", puntaje: 3 },
         ],
       },
-      {
-        numero: 11,
-        texto: "¿Qué esperás que te aporte concretamente un directorio que hoy no tenés?",
-        aclaracion: "Pensá en lo que más te preocupa o te falta en la conducción de la empresa.",
-        opciones: [
-          { texto: "Una perspectiva externa que cuestione mis decisiones", puntaje: 0 },
-          { texto: "Control y orden en la toma de decisiones entre socios", puntaje: 1 },
-          { texto: "Red de contactos y acceso a oportunidades", puntaje: 2 },
-          { texto: "Estructura para poder delegar y salir de la operación", puntaje: 3 },
-        ],
-      },
     ],
   },
   {
@@ -165,7 +132,7 @@ export const DIMENSIONES: Dimension[] = [
     key: "disponibilidad",
     preguntas: [
       {
-        numero: 12,
+        numero: 9,
         texto: "¿Podrías comprometerte a reunirte con el directorio fuera de la oficina durante 2 horas, al menos una vez por mes?",
         aclaracion: "Hablamos de reuniones que no pueden postergarse por la operación del día a día.",
         opciones: [
@@ -176,18 +143,7 @@ export const DIMENSIONES: Dimension[] = [
         ],
       },
       {
-        numero: 13,
-        texto: "¿Estarías dispuesto/a a preparar y leer información del negocio antes de cada reunión de directorio?",
-        aclaracion: "Cada reunión requiere que los directores lleguen habiendo leído los informes enviados por la gerencia.",
-        opciones: [
-          { texto: "Difícilmente, no suelo tener tiempo para eso", puntaje: 0 },
-          { texto: "Depende del volumen, pero haría el esfuerzo", puntaje: 1 },
-          { texto: "Sí, si el material es concreto y no muy extenso", puntaje: 2 },
-          { texto: "Ya lo hago o lo haría con facilidad", puntaje: 3 },
-        ],
-      },
-      {
-        numero: 14,
+        numero: 10,
         texto: "¿La empresa o sus socios estarían dispuestos a destinar un presupuesto real para el funcionamiento del directorio?",
         aclaracion: "Incluye honorarios de directores independientes, lugar de reunión y materiales.",
         opciones: [
@@ -197,25 +153,14 @@ export const DIMENSIONES: Dimension[] = [
           { texto: "Ya contemplamos este costo o no sería un obstáculo", puntaje: 3 },
         ],
       },
-      {
-        numero: 15,
-        texto: "¿Cuánto tiempo lleva la empresa operando con su estructura actual de conducción?",
-        aclaracion: "Esto nos ayuda a entender si el directorio sería una evolución natural o un cambio disruptivo.",
-        opciones: [
-          { texto: "Menos de 3 años — somos relativamente nuevos", puntaje: 0 },
-          { texto: "Entre 3 y 8 años — estamos en etapa de consolidación", puntaje: 1 },
-          { texto: "Entre 8 y 20 años — empresa establecida con historia", puntaje: 2 },
-          { texto: "Más de 20 años — empresa madura con cultura arraigada", puntaje: 3 },
-        ],
-      },
     ],
   },
 ];
 
 // Flat list for easy indexed access in the UI
 export const PREGUNTAS_M1 = DIMENSIONES.flatMap(d => d.preguntas);
-export const TOTAL_PREGUNTAS = PREGUNTAS_M1.length; // 15
-export const PUNTAJE_MAXIMO = TOTAL_PREGUNTAS * 3;  // 45
+export const TOTAL_PREGUNTAS = PREGUNTAS_M1.length; // 10
+export const PUNTAJE_MAXIMO = TOTAL_PREGUNTAS * 3;  // 30
 
 // ─── Niveles ───────────────────────────────────────────────────────────────────
 
@@ -237,7 +182,7 @@ export function calcularNivel(porcentaje: number): NivelKey {
 
 // ─── Scoring ───────────────────────────────────────────────────────────────────
 
-// respuestas: number[] indexed 0–14 (option index chosen for each question)
+// respuestas: number[] indexed 0–9 (option index chosen for each question)
 export function calcularModulo1(respuestas: number[]): Modulo1Resultado {
   const scoresDim = DIMENSIONES.map(dim => {
     const score = dim.preguntas.reduce((acc, p) => {
@@ -270,9 +215,8 @@ export function calcularModulo1(respuestas: number[]): Modulo1Resultado {
   if ((get("tamano")?.porcentaje ?? 0) >= 60)
     recs.push("El tamaño y complejidad operativa ya justifican estructuras de gobierno más sofisticadas.");
 
-  // Motivación baja (P10=idx9, P11=idx10 → ambas 0)
-  const p10 = respuestas[9]; const p11 = respuestas[10];
-  if (p10 === 0 && p11 === 0)
+  // Motivación externa (P8 = idx 7 → opción 0: "me lo pidió un banco/inversor")
+  if (respuestas[7] === 0)
     recs.push("La motivación declarada es principalmente externa. Los directorios que funcionan nacen de una convicción interna — vale la pena revisar si el momento es el correcto.");
 
   return {
@@ -308,28 +252,17 @@ export function generarInformeParcial(respuestas: number[]): string {
 
   const get = (idx: number) => (respuestas[idx] >= 0 ? respuestas[idx] : -1);
 
-  // P1 — equipo grande
+  // Índices: 0 empleados · 1 facturación · 2 propiedad · 3 sucesión · 4 decisiones estratégicas
+  //          5 separación dueño/gerencia · 6 frecuencia de reuniones · 7 motivación · 8 disponibilidad · 9 presupuesto
   if (get(0) >= 2) signals.push('el tamaño del equipo');
-  // P2 — facturación alta (ahora idx 2=3pts, idx 3=3pts)
   if (get(1) >= 2) signals.push('el volumen de facturación justifica control formal');
-  // P3 — propiedad compleja (ahora todas suman, idx 2-3 = alta)
   if (get(2) >= 2) signals.push('la complejidad en la estructura de propiedad');
-  // P4 — sucesión (ahora todas suman, idx 2-3 = urgente)
   if (get(3) >= 2) signals.push('la proximidad de un proceso de sucesión');
-  // P5 — decisiones: ahora invertido (idx 0=3pts = dueño solo = urgente)
-  if (get(4) >= 2) signals.push('que las decisiones estratégicas recaen en una sola persona sin contrapeso');
-  // P6 — separación dueño/gerencia: invertido (idx 0=3pts = sin separación)
-  if (get(5) >= 2) signals.push('la falta de separación entre quién es dueño y quién gerencia');
-  // P7 — decisiones imprevistas: invertido (idx 0=3pts = dueño solo)
-  if (get(6) >= 2) signals.push('la ausencia de un proceso para decisiones imprevistas');
-  // P8 — última palabra (original)
-  if (get(7) <= 1 && get(7) >= 0) signals.push('la concentración del poder de decisión final');
-  // P9 — frecuencia reuniones: invertido (idx 0=3pts = nunca)
-  if (get(8) >= 2) signals.push('que los líderes de la empresa no se reúnen a pensar en el futuro');
-  // P12 — disponibilidad
-  if (get(11) >= 2) signals.push('la disponibilidad para reunirse regularmente');
-  // P14 — presupuesto
-  if (get(13) <= 1 && get(13) >= 0) signals.push('las restricciones de presupuesto para el directorio');
+  if (get(4) >= 0 && get(4) <= 1) signals.push('que las decisiones estratégicas recaen en pocas personas sin contrapeso');
+  if (get(5) >= 0 && get(5) <= 1) signals.push('la falta de separación entre quién es dueño y quién gerencia');
+  if (get(6) >= 0 && get(6) <= 1) signals.push('que los líderes de la empresa no se reúnen a pensar en el futuro');
+  if (get(8) >= 2) signals.push('la disponibilidad para reunirse regularmente');
+  if (get(9) >= 0 && get(9) <= 1) signals.push('las restricciones de presupuesto para el directorio');
 
   const cap = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
 

@@ -432,8 +432,8 @@ export default function Modulo4() {
         <button onClick={() => router.push('/modulo/3')} className="flex-1 py-2.5 border border-gray-200 rounded-xl text-sm font-medium text-gray-600 hover:bg-gray-50">
           ← Módulo 3
         </button>
-        <button onClick={() => router.push('/dashboard')} className="flex-1 py-2.5 bg-[#534AB7] hover:bg-[#3C3489] text-white rounded-xl text-sm font-semibold">
-          Ver dashboard →
+        <button onClick={() => router.push('/modulo/5')} className="flex-1 py-2.5 bg-[#534AB7] hover:bg-[#3C3489] text-white rounded-xl text-sm font-semibold">
+          Módulo 5 →
         </button>
       </div>
     </ModuleLayout>
