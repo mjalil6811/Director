@@ -8,6 +8,7 @@ import {
 } from '../../../lib/modulo10-dashboard';
 import { storageFase3 } from '../../../lib/storage-fase3';
 import { storage } from '../../../lib/storage';
+import { Sparkline, TrendChart, VIZ } from '../../../components/charts';
 import type { PeriodoFinanciero, PresupuestoAnual, AlertaFinanciera } from '../../../types/fase3';
 
 const inp = "w-full px-3 py-2.5 rounded-xl border border-gray-200 bg-white text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-[#534AB7]/30 focus:border-[#534AB7] transition-all";
@@ -16,18 +17,32 @@ function fmtMoney(n: number): string {
   return '$' + n.toLocaleString('es-AR');
 }
 
-function KpiCard({ label, valor, variacion, prefix }: {
+function fmtCompact(n: number): string {
+  const abs = Math.abs(n);
+  if (abs >= 1e9) return `$${(n / 1e9).toLocaleString('es-AR', { maximumFractionDigits: 1 })} mil M`;
+  if (abs >= 1e6) return `$${(n / 1e6).toLocaleString('es-AR', { maximumFractionDigits: 1 })} M`;
+  if (abs >= 1e3) return `$${(n / 1e3).toLocaleString('es-AR', { maximumFractionDigits: 0 })} K`;
+  return `$${n.toLocaleString('es-AR')}`;
+}
+
+function KpiCard({ label, valor, variacion, prefix, serie, color, invertir }: {
   label: string; valor: string | number; variacion?: { valor: number; positivo: boolean }; prefix?: string;
+  serie?: number[]; color?: string; invertir?: boolean;
 }) {
+  // invertir: para métricas donde subir es malo (ej. deuda)
+  const bueno = variacion ? (invertir ? !variacion.positivo : variacion.positivo) : true;
   return (
-    <div className="bg-white rounded-2xl border border-gray-100 p-4 shadow-sm">
+    <div className="bg-white rounded-2xl border border-gray-100 p-4 shadow-sm flex flex-col">
       <p className="text-[11px] font-semibold text-gray-400 uppercase tracking-wide mb-1">{label}</p>
-      <p className="text-xl font-bold text-gray-900">{prefix}{typeof valor === 'number' ? valor.toLocaleString('es-AR') : valor}</p>
-      {variacion && (
-        <p className={`text-xs font-semibold mt-1 ${variacion.positivo ? 'text-green-600' : 'text-red-500'}`}>
-          {variacion.positivo ? '+' : ''}{variacion.valor}% vs. mes ant.
+      <p className="text-xl font-bold text-gray-900 tabular-nums">{prefix}{typeof valor === 'number' ? valor.toLocaleString('es-AR') : valor}</p>
+      {variacion ? (
+        <p className={`text-xs font-semibold mt-1 ${bueno ? 'text-green-700' : 'text-red-600'}`}>
+          {variacion.positivo ? '▲' : '▼'} {Math.abs(variacion.valor)}% <span className="font-normal text-gray-400">vs. mes ant.</span>
         </p>
+      ) : (
+        <p className="text-xs text-gray-300 mt-1">—</p>
       )}
+      {serie && serie.length >= 2 && <div className="mt-2"><Sparkline values={serie} color={color} /></div>}
     </div>
   );
 }
@@ -212,6 +227,12 @@ export default function ModuloDashboard() {
   const kpis = ultimo ? calcularKPIs(ultimo) : null;
   const variVentas = ultimo && anterior ? calcularVariacion(ultimo.ventas, anterior.ventas) : undefined;
   const variEbitda = ultimo && anterior ? calcularVariacion(ultimo.ebitda, anterior.ebitda) : undefined;
+  const variCaja = ultimo && anterior ? calcularVariacion(ultimo.caja, anterior.caja) : undefined;
+  const variDeuda = ultimo && anterior ? calcularVariacion(ultimo.deudaFinanciera, anterior.deudaFinanciera) : undefined;
+  const serieMargenes = periodos.map(p => {
+    const k = calcularKPIs(p);
+    return { bruto: k.margenBruto, ebitda: k.margenEbitda, neto: k.margenNeto };
+  });
 
   const alertasCriticas = alertas.filter(a => !a.resuelta && a.severidad === 'critica');
   const alertasAdvertencia = alertas.filter(a => !a.resuelta && a.severidad === 'advertencia');
@@ -225,7 +246,7 @@ export default function ModuloDashboard() {
 
   return (
     <div className="min-h-screen bg-[#FAFBFC]">
-      <header className="bg-white/80 backdrop-blur-md border-b border-gray-200 px-4 py-3 flex items-center gap-3 sticky top-0 z-20">
+      <header className="bg-white/80 backdrop-blur-md border-b border-gray-200 px-4 py-3 flex items-center gap-3 sticky top-14 z-20">
         <button onClick={() => router.push('/')} className="w-8 h-8 rounded-lg text-gray-500 hover:bg-gray-100 flex items-center justify-center">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 12H5M5 12l7 7M5 12l7-7" /></svg>
         </button>
@@ -235,7 +256,7 @@ export default function ModuloDashboard() {
         </div>
       </header>
 
-      <div className="flex gap-1 px-4 pt-4 mb-4">
+      <div className="flex gap-1 px-4 pt-4 mb-4 max-w-2xl mx-auto">
         {tabs.map(t => (
           <button key={t.id} onClick={() => { if (t.id === 'informe') generarInforme(); else if (t.id === 'carga') { setEditandoId(null); setVista('carga'); } else setVista(t.id); }}
             className={`flex-1 text-xs font-semibold py-2 rounded-lg transition-all ${vista === t.id ? 'bg-[#534AB7] text-white' : 'bg-gray-100 text-gray-500 hover:bg-gray-200'}`}>
@@ -244,7 +265,7 @@ export default function ModuloDashboard() {
         ))}
       </div>
 
-      <main className="max-w-xl mx-auto px-4 pb-10">
+      <main className="max-w-2xl mx-auto px-4 pb-10">
         {vista === 'panel' && (
           <div>
             {periodos.length === 0 ? (
@@ -284,13 +305,46 @@ export default function ModuloDashboard() {
 
                 {/* KPI Cards */}
                 {ultimo && kpis && (
-                  <div className="grid grid-cols-2 gap-3 mb-5">
-                    <KpiCard label="Ventas" valor={ultimo.ventas} prefix="$" variacion={variVentas} />
-                    <KpiCard label="EBITDA" valor={ultimo.ebitda} prefix="$" variacion={variEbitda} />
-                    <KpiCard label="Margen bruto" valor={`${kpis.margenBruto}%`} />
-                    <KpiCard label="Margen neto" valor={`${kpis.margenNeto}%`} />
-                    <KpiCard label="Caja" valor={ultimo.caja} prefix="$" />
-                    <KpiCard label="Deuda" valor={ultimo.deudaFinanciera} prefix="$" />
+                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 mb-5">
+                    <KpiCard label="Ventas" valor={ultimo.ventas} prefix="$" variacion={variVentas} serie={periodos.map(p => p.ventas)} color={VIZ.s1} />
+                    <KpiCard label="EBITDA" valor={ultimo.ebitda} prefix="$" variacion={variEbitda} serie={periodos.map(p => p.ebitda)} color={VIZ.s2} />
+                    <KpiCard label="Margen bruto" valor={`${kpis.margenBruto}%`} serie={serieMargenes.map(m => m.bruto)} color={VIZ.s1} />
+                    <KpiCard label="Margen neto" valor={`${kpis.margenNeto}%`} serie={serieMargenes.map(m => m.neto)} color={VIZ.s3} />
+                    <KpiCard label="Caja" valor={ultimo.caja} prefix="$" variacion={variCaja} serie={periodos.map(p => p.caja)} color={VIZ.brand} />
+                    <KpiCard label="Deuda" valor={ultimo.deudaFinanciera} prefix="$" variacion={variDeuda} serie={periodos.map(p => p.deudaFinanciera)} color={VIZ.reference} invertir />
+                  </div>
+                )}
+
+                {/* Tendencias */}
+                {periodos.length >= 2 ? (
+                  <>
+                    <div className="bg-white rounded-2xl border border-gray-100 p-4 shadow-sm mb-5">
+                      <p className="text-sm font-semibold text-gray-900">Ventas y EBITDA</p>
+                      <p className="text-xs text-gray-400 mb-3">Evolución mensual{presupuesto ? ' · línea punteada: ventas mensuales presupuestadas' : ''}</p>
+                      <TrendChart
+                        data={periodos.map(p => ({ periodo: `${MESES[p.mes - 1]} ${String(p.anio).slice(2)}`, ventas: p.ventas, ebitda: p.ebitda }))}
+                        series={[{ key: 'ventas', label: 'Ventas', color: VIZ.s1 }, { key: 'ebitda', label: 'EBITDA', color: VIZ.s2 }]}
+                        format={fmtCompact}
+                        reference={presupuesto && presupuesto.ventas > 0 ? { value: Math.round(presupuesto.ventas / 12), label: 'Plan' } : undefined}
+                      />
+                    </div>
+                    <div className="bg-white rounded-2xl border border-gray-100 p-4 shadow-sm mb-5">
+                      <p className="text-sm font-semibold text-gray-900">Márgenes</p>
+                      <p className="text-xs text-gray-400 mb-3">Como % de las ventas de cada mes</p>
+                      <TrendChart
+                        data={periodos.map((p, i) => ({ periodo: `${MESES[p.mes - 1]} ${String(p.anio).slice(2)}`, ...serieMargenes[i] }))}
+                        series={[
+                          { key: 'bruto', label: 'Margen bruto', color: VIZ.s1 },
+                          { key: 'ebitda', label: 'Margen EBITDA', color: VIZ.s2 },
+                          { key: 'neto', label: 'Margen neto', color: VIZ.s3 },
+                        ]}
+                        format={(n) => `${n}%`}
+                      />
+                    </div>
+                  </>
+                ) : (
+                  <div className="bg-white rounded-2xl border border-dashed border-gray-200 p-4 mb-5 text-center">
+                    <p className="text-xs text-gray-500">Cargá al menos 2 períodos para ver la evolución de ventas, EBITDA y márgenes.</p>
                   </div>
                 )}
 

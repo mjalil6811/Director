@@ -156,7 +156,7 @@ export default function ModuloProtocolo() {
         <div className="h-full bg-gradient-to-r from-[#534AB7] to-[#7C6FDB] transition-all" style={{ width: tipo ? `${(respondidos / Math.max(escenarios.length, 1)) * 100}%` : '5%' }} />
       </div>
 
-      <header className="bg-white/80 backdrop-blur-md border-b border-gray-200 px-4 py-3 flex items-center gap-3 sticky top-0 z-20">
+      <header className="bg-white/80 backdrop-blur-md border-b border-gray-200 px-4 py-3 flex items-center gap-3 sticky top-14 z-20">
         <button onClick={() => { if (mostrarResultado) setMostrarResultado(false); else if (tipo) setTipo(null); else router.push('/'); }}
           className="w-8 h-8 rounded-lg text-gray-500 hover:bg-gray-100 flex items-center justify-center">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 12H5M5 12l7 7M5 12l7-7" /></svg>

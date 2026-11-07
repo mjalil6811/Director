@@ -145,6 +145,7 @@ export default function InformePreliminar() {
 
   // Decisiones que dependen de pocas personas (concentradas + zona gris)
   const decisionesRiesgosas = (m2.conteos.concentrada ?? 0) + (m2.conteos.gris ?? 0);
+  const totalSit = Math.max(1, (m2.conteos.concentrada ?? 0) + (m2.conteos.parcial ?? 0) + (m2.conteos.delegada ?? 0) + (m2.conteos.gris ?? 0));
 
   // Dimension data from M1
   const dims = (m1.scoresPorDimension ?? []).map(d => ({
@@ -157,11 +158,9 @@ export default function InformePreliminar() {
 
   return (
     <div className="min-h-screen bg-[#FAFBFC]">
-      {/* Gradient header bar */}
-      <div className="h-1.5 w-full bg-gradient-to-r from-[#534AB7] via-[#7C6FDB] to-[#534AB7]" />
 
       {/* Header */}
-      <header className="bg-white/80 backdrop-blur-md border-b border-[#E5E7EB] px-4 py-4 sticky top-0 z-20">
+      <header className="bg-white/80 backdrop-blur-md border-b border-[#E5E7EB] px-4 py-4 sticky top-14 z-20">
         <div className="max-w-2xl mx-auto flex items-center gap-3">
           <button onClick={() => router.push('/')} className="flex items-center justify-center w-8 h-8 rounded-lg hover:bg-gray-100 text-gray-500 hover:text-gray-900">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -279,7 +278,7 @@ export default function InformePreliminar() {
             <div className="rounded-xl px-4 py-3 text-center mb-4" style={{ backgroundColor: concentracionBg }}>
               <p className="text-lg font-bold" style={{ color: concentracionColor }}>{concentracionLabel}</p>
               <p className="text-xs mt-0.5" style={{ color: concentracionColor + 'BB' }}>
-                {decisionesRiesgosas} de 10 decisiones clave sin responsable claro
+                {decisionesRiesgosas} de {totalSit} decisiones clave sin responsable claro
               </p>
             </div>
 
@@ -344,10 +343,10 @@ export default function InformePreliminar() {
         <div className="border border-[#E5E7EB] rounded-2xl bg-white p-5 shadow-sm">
           <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-4">Distribución de decisiones</p>
           <div className="space-y-3">
-            <HBar label="Concentrada en el dueño" pct={Math.round((m2.conteos.concentrada / 10) * 100)} color="#f87171" />
-            <HBar label="Parcialmente delegada" pct={Math.round((m2.conteos.parcial / 10) * 100)} color="#fbbf24" />
-            <HBar label="Bien delegada" pct={Math.round((m2.conteos.delegada / 10) * 100)} color="#4ade80" />
-            <HBar label="Zona gris (sin responsable claro)" pct={Math.round((m2.conteos.gris / 10) * 100)} color="#9ca3af" />
+            <HBar label="Concentrada en el dueño" pct={Math.round((m2.conteos.concentrada / totalSit) * 100)} color="#f87171" />
+            <HBar label="Parcialmente delegada" pct={Math.round((m2.conteos.parcial / totalSit) * 100)} color="#fbbf24" />
+            <HBar label="Bien delegada" pct={Math.round((m2.conteos.delegada / totalSit) * 100)} color="#4ade80" />
+            <HBar label="Zona gris (sin responsable claro)" pct={Math.round((m2.conteos.gris / totalSit) * 100)} color="#9ca3af" />
           </div>
         </div>
 

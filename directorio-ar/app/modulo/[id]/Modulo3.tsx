@@ -200,6 +200,11 @@ export default function Modulo3() {
     updated[current] = idx;
     setRespuestas(updated);
     storage.setModulo3Respuestas(updated);
+    // Avance automático a la siguiente pregunta
+    if (current < TOTAL_PREGUNTAS_M3 - 1) {
+      const from = current;
+      setTimeout(() => setCurrent(c => (c === from ? c + 1 : c)), 280);
+    }
   }
 
   function handleNext() {
@@ -310,7 +315,7 @@ export default function Modulo3() {
       {current === 0 && (
         <div className="border border-purple-100 bg-purple-50 rounded-xl px-5 py-4 mb-4">
           <p className="text-sm text-gray-700 leading-relaxed">
-            Ya sabemos que tu empresa necesita un directorio. Ahora vamos a definir qué perfiles de directores serían más valiosos según las características de tu negocio. Son 15 preguntas.
+            Ya sabemos que tu empresa necesita un directorio. Ahora vamos a definir qué perfiles de directores serían más valiosos según las características de tu negocio. Son {TOTAL_PREGUNTAS_M3} preguntas.
           </p>
         </div>
       )}

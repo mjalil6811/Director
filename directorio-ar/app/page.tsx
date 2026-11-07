@@ -301,7 +301,7 @@ export default function HomePage() {
             Empezá el diagnóstico en 2 minutos
           </h2>
           <p className="text-sm text-white/70 mb-6">
-            15 preguntas para saber si tu empresa necesita un directorio. Resultado inmediato.
+            10 preguntas para saber si tu empresa necesita un directorio. Resultado inmediato.
           </p>
           <button
             onClick={handleStart}

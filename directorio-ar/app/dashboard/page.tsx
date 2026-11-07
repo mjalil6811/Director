@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { storage } from '../../lib/storage';
+import { ScoreGauge, GovernanceRadar, RankedBars } from '../../components/charts';
 import type {
   Modulo1Resultado,
   Modulo2Resultado,
@@ -155,62 +156,13 @@ function calcularGovernanceScore(
   return { total, nivel, etiqueta, color, colorBg, dimensiones: dims, completadas };
 }
 
-// ——— Radar SVG ——————————————————————————————————————————————————————————————
-
-function RadarChart({ dimensiones }: { dimensiones: DimensionScore[] }) {
-  const cx = 140, cy = 140, r = 110;
-  const n = dimensiones.length;
-  const angles = dimensiones.map((_, i) => (Math.PI * 2 * i) / n - Math.PI / 2);
-
-  function point(angle: number, radius: number) {
-    return { x: cx + radius * Math.cos(angle), y: cy + radius * Math.sin(angle) };
-  }
-
-  const gridLevels = [0.25, 0.5, 0.75, 1];
-
-  const dataPoints = dimensiones.map((d, i) => point(angles[i], (d.score / 100) * r));
-  const dataPath = dataPoints.map((p, i) => `${i === 0 ? 'M' : 'L'} ${p.x} ${p.y}`).join(' ') + ' Z';
-
-  return (
-    <svg viewBox="0 0 280 280" width="100%" style={{ maxWidth: 280 }}>
-      {/* Grid circles */}
-      {gridLevels.map((level, gi) => {
-        const gridPoints = angles.map(a => point(a, level * r));
-        const path = gridPoints.map((p, i) => `${i === 0 ? 'M' : 'L'} ${p.x} ${p.y}`).join(' ') + ' Z';
-        return <path key={gi} d={path} fill="none" stroke="#E5E7EB" strokeWidth="0.5" />;
-      })}
-      {/* Axes */}
-      {angles.map((angle, i) => {
-        const end = point(angle, r);
-        return <line key={i} x1={cx} y1={cy} x2={end.x} y2={end.y} stroke="#E5E7EB" strokeWidth="0.5" />;
-      })}
-      {/* Data area */}
-      <path d={dataPath} fill="#534AB7" fillOpacity="0.15" stroke="#534AB7" strokeWidth="2" strokeLinejoin="round" />
-      {/* Data points */}
-      {dataPoints.map((p, i) => (
-        <circle key={i} cx={p.x} cy={p.y} r="4" fill="#534AB7" />
-      ))}
-      {/* Labels */}
-      {dimensiones.map((d, i) => {
-        const labelPt = point(angles[i], r + 22);
-        return (
-          <text
-            key={i}
-            x={labelPt.x}
-            y={labelPt.y}
-            textAnchor="middle"
-            dominantBaseline="middle"
-            fontSize="9"
-            fill="#6B7280"
-            fontWeight="500"
-          >
-            {d.label.split(' ').slice(0, 2).join(' ')}
-          </text>
-        );
-      })}
-    </svg>
-  );
-}
+const ETIQUETA_CORTA: Record<string, string> = {
+  necesidad: 'Complejidad',
+  decisiones: 'Decisiones',
+  composicion: 'Perfiles',
+  disposicion: 'Disposición',
+  dinamica: 'Dinámica',
+};
 
 // ——— Score bar ——————————————————————————————————————————————————————————————
 
@@ -228,10 +180,10 @@ function ScoreBar({ score, color }: { score: number; color: string }) {
 // ——— Benchmark ——————————————————————————————————————————————————————————————
 
 const BENCHMARKS = [
-  { label: 'PyME familiar sin directorio', score: 18, color: '#9ca3af' },
-  { label: 'PyME con advisory board', score: 38, color: '#fbbf24' },
-  { label: 'Empresa mediana con directorio', score: 62, color: '#534AB7' },
-  { label: 'Empresa con gobierno maduro', score: 84, color: '#0F6E56' },
+  { key: 'pyme', label: 'PyME familiar sin directorio', score: 18 },
+  { key: 'advisory', label: 'PyME con advisory board', score: 38 },
+  { key: 'mediana', label: 'Empresa mediana con directorio', score: 62 },
+  { key: 'madura', label: 'Empresa con gobierno maduro', score: 84 },
 ];
 
 // ——— Page ———————————————————————————————————————————————————————————————————
@@ -275,11 +227,9 @@ export default function GovernanceScorePage() {
 
   return (
     <div className="min-h-screen bg-[#FAFBFC] flex flex-col">
-      {/* Top bar */}
-      <div className="h-1 w-full bg-gradient-to-r from-[#534AB7] via-[#7C6FDB] to-[#534AB7]" />
 
       {/* Header */}
-      <header className="bg-white/90 backdrop-blur-md border-b border-[#E5E7EB] px-4 py-3 flex items-center gap-3 sticky top-0 z-20">
+      <header className="bg-white/90 backdrop-blur-md border-b border-[#E5E7EB] px-4 py-3 flex items-center gap-3 sticky top-14 z-20">
         <button
           onClick={() => router.back()}
           className="flex items-center justify-center w-8 h-8 rounded-lg text-gray-500 hover:text-gray-900 hover:bg-gray-100"
@@ -301,7 +251,7 @@ export default function GovernanceScorePage() {
 
         {/* Hero Score */}
         <div
-          className="rounded-2xl p-8 text-center border"
+          className="rounded-2xl px-6 pt-6 pb-7 text-center border"
           style={{ backgroundColor: gs.colorBg, borderColor: gs.color + '40' }}
         >
           {nombre && (
@@ -312,10 +262,7 @@ export default function GovernanceScorePage() {
           <p className="text-xs font-semibold uppercase tracking-wider mb-4 text-gray-500">
             Índice de madurez de gobierno corporativo
           </p>
-          <p className="text-8xl font-bold tracking-tight mb-2" style={{ color: gs.color }}>
-            {gs.total}
-          </p>
-          <p className="text-sm font-medium mb-3" style={{ color: gs.color }}>/ 100</p>
+          <ScoreGauge value={gs.total} color={gs.color} />
           <div
             className="inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-semibold mb-3"
             style={{ backgroundColor: gs.color + '18', color: gs.color }}
@@ -332,9 +279,12 @@ export default function GovernanceScorePage() {
           <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-4 text-center">
             Perfil de gobierno corporativo
           </p>
-          <div className="flex justify-center">
-            <RadarChart dimensiones={gs.dimensiones} />
-          </div>
+          <p className="text-xs text-gray-400 text-center -mt-3 mb-2">Tu empresa en cada dimensión (0–100) vs. una empresa mediana con directorio</p>
+          <GovernanceRadar
+            data={gs.dimensiones.map(d => ({ label: ETIQUETA_CORTA[d.id] ?? d.label, score: d.score }))}
+            referencia={62}
+            referenciaLabel="Empresa mediana con directorio"
+          />
         </div>
 
         {/* 5 dimensions */}
@@ -373,29 +323,13 @@ export default function GovernanceScorePage() {
           <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-4">
             Benchmark — ¿Cómo estás vs el mercado?
           </p>
-          <div className="space-y-4">
-            {BENCHMARKS.map((b) => (
-              <div key={b.label}>
-                <div className="flex justify-between text-xs mb-1">
-                  <span className="text-gray-600">{b.label}</span>
-                  <span className="font-bold" style={{ color: b.color }}>{b.score}</span>
-                </div>
-                <div className="w-full h-2 bg-gray-100 rounded-full overflow-hidden">
-                  <div className="h-full rounded-full" style={{ width: `${b.score}%`, backgroundColor: b.color }} />
-                </div>
-              </div>
-            ))}
-            {/* Tu score */}
-            <div className="pt-3 border-t border-gray-100">
-              <div className="flex justify-between text-xs mb-1">
-                <span className="font-semibold text-gray-900">{nombre || 'Tu empresa'}</span>
-                <span className="font-bold" style={{ color: gs.color }}>{gs.total}</span>
-              </div>
-              <div className="w-full h-3 bg-gray-100 rounded-full overflow-hidden">
-                <div className="h-full rounded-full" style={{ width: `${gs.total}%`, backgroundColor: gs.color }} />
-              </div>
-            </div>
-          </div>
+          <RankedBars
+            items={[
+              ...BENCHMARKS.map(b => ({ key: b.key, label: b.label, value: b.score })),
+              { key: 'tu', label: nombre || 'Tu empresa', value: gs.total },
+            ]}
+            highlightKey="tu"
+          />
         </div>
 
         {/* Próximos pasos priorizados */}

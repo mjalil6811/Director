@@ -27,6 +27,11 @@ export default function Modulo1() {
     updated[current] = value;
     setRespuestas(updated);
     storage.setModulo1Respuestas(updated);
+    // Avance automático a la siguiente pregunta
+    if (current < TOTAL_PREGUNTAS - 1) {
+      const from = current;
+      setTimeout(() => setCurrent(c => (c === from ? c + 1 : c)), 280);
+    }
   }
 
   function handleNext() {
@@ -63,7 +68,7 @@ export default function Modulo1() {
       {current === 0 && (
         <div className="border border-purple-100 bg-purple-50 rounded-xl px-5 py-4 mb-4">
           <p className="text-sm text-gray-700 leading-relaxed">
-            En este módulo vamos a evaluar si tu empresa tiene las condiciones para beneficiarse de un directorio formal. Son 15 preguntas sobre tamaño, propiedad, gobierno y disponibilidad.
+            En este módulo vamos a evaluar si tu empresa tiene las condiciones para beneficiarse de un directorio formal. Son {TOTAL_PREGUNTAS} preguntas rápidas sobre tamaño, propiedad, gobierno y disponibilidad.
           </p>
         </div>
       )}
