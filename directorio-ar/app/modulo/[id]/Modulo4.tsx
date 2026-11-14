@@ -71,7 +71,7 @@ const PRACTICA_ITEMS = [
     titulo: "El CEO que evita al directorio",
     loQuePasa: "El CEO ve al directorio como una carga o pérdida de control. En Argentina cuando el CEO es el fundador, esto se siente como amenaza.",
     loQueDeberiaPasar: "El CEO valora al directorio como socio estratégico que mejora sus decisiones. El directorio no está para controlar al CEO — está para hacerlo mejor.",
-    comoLograrlo: "Trabajar la disposición del CEO antes de armar el directorio. Practicar la 'indagación antes que la recomendación': que el CEO sienta que el directorio pregunta para entender, no para juzgar. Empezar con un advisory board informal si es necesario.",
+    comoLograrlo: "Trabajar la disposición del CEO antes de armar el directorio. Practicar la 'indagación antes que la recomendación': que el CEO sienta que el directorio pregunta para entender, no para juzgar. Empezar con un consejo asesor informal si es necesario.",
   },
   {
     titulo: "Presidente y CEO en la misma persona",
@@ -227,7 +227,7 @@ export default function Modulo4() {
             <p className="text-xl font-bold text-gray-900 mb-3">{frecuencia}</p>
             <p className="text-sm text-gray-600 leading-relaxed">
               Esta recomendación se calcula en función del puntaje obtenido en el módulo 1.
-              A mayor complejidad y necesidad de gobierno, mayor es la frecuencia recomendada de reuniones del directorio.
+              A mayor complejidad y necesidad de ordenar las decisiones, mayor es la frecuencia recomendada de reuniones del directorio.
             </p>
           </div>
           <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Tipos de reuniones</p>
@@ -404,7 +404,7 @@ export default function Modulo4() {
               readyLabel = "Todavia no — trabaja primero en estos puntos";
               readyColor = "text-red-700";
               readyBg = "bg-red-100";
-              readyDesc = "La disposicion al gobierno corporativo todavia es baja. Antes de armar un directorio, trabaja en la apertura al control externo.";
+              readyDesc = "La disposición a decidir con un directorio todavía es baja. Antes de armarlo, conviene trabajar la apertura a otras miradas.";
             }
             return (
               <div className={`border-2 rounded-xl p-5 ${pct >= 80 ? 'border-green-300' : pct >= 50 ? 'border-yellow-300' : 'border-red-300'}`}>

@@ -47,7 +47,7 @@ export const CATEGORIAS_ESCENARIO: Record<CategoriaEscenario, { label: string; i
   conflictos: { label: 'Conflictos entre socios', icono: '⚖️', descripcion: 'Cómo resolver desacuerdos formalmente.' },
   sucesion: { label: 'Sucesión y continuidad', icono: '🌱', descripcion: 'Qué pasa si un socio fallece o se incapacita.' },
   dividendos: { label: 'Dinero y dividendos', icono: '💰', descripcion: 'Cuándo y cuánto se reparte.' },
-  gobierno: { label: 'Gobierno y control', icono: '🏛️', descripcion: 'Quién decide qué y cómo.' },
+  gobierno: { label: 'Decisiones y control', icono: '🏛️', descripcion: 'Quién decide qué y cómo.' },
 };
 
 // ——— Escenarios ——————————————————————————————————————————————————————————

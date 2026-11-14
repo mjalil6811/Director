@@ -34,7 +34,7 @@ export const DIMENSIONES_EVALUACION: DimensionEvaluacion[] = [
   {
     id: 'gobierno',
     nombre: 'Relación con el directorio',
-    descripcion: 'Calidad de la información que comparte, transparencia y respeto por la autoridad del board.',
+    descripcion: 'Calidad de la información que comparte, transparencia y respeto por la autoridad del directorio.',
     preguntas: [
       { id: 'g1', texto: '¿El CEO informa al directorio oportunamente, incluyendo malas noticias?', tipo: 'escala' },
       { id: 'g2', texto: '¿El CEO respeta las decisiones del directorio aunque no esté de acuerdo?', tipo: 'escala' },

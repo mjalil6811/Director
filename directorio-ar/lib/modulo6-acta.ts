@@ -10,7 +10,7 @@ export const TIPOS_SOCIEDAD: Opcion6[] = [
 ];
 
 export const CARGOS_DIRECTOR: { cargo: DirectorActa['cargo']; ayuda: string }[] = [
-  { cargo: 'Presidente', ayuda: 'Conduce las reuniones, representa al directorio y es la máxima autoridad del board.' },
+  { cargo: 'Presidente', ayuda: 'Conduce las reuniones, representa al directorio y es la máxima autoridad del directorio.' },
   { cargo: 'Vicepresidente', ayuda: 'Reemplaza al Presidente en su ausencia. Recomendado en directorios de 3 o más miembros.' },
   { cargo: 'Secretario', ayuda: 'Redacta y guarda las actas, convoca a las reuniones y lleva el libro de actas.' },
   { cargo: 'Tesorero', ayuda: 'Supervisa las finanzas del directorio, firma cheques y controla el presupuesto.' },

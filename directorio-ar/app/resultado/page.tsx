@@ -405,7 +405,7 @@ export default function ResultadoPage() {
               {/* Paragraph 1: M1 assessment */}
               <p className="text-sm text-gray-700 leading-relaxed">
                 {m1Pct >= 75
-                  ? "Tu empresa presenta una necesidad clara y urgente de formalizar un directorio. La combinación de tamaño, complejidad societaria y nivel de gobierno actual hacen que operar sin este órgano represente un riesgo real para el negocio. Un directorio no es solo un órgano de control — es un socio estratégico que alterna entre liderar, acompañar y delegar según la situación."
+                  ? "Tu empresa presenta una necesidad clara y urgente de formalizar un directorio. La combinación de tamaño, complejidad societaria y la forma actual de decidir hacen que operar sin este órgano represente un riesgo real para el negocio. Un directorio no es solo un órgano de control — es un socio estratégico que alterna entre liderar, acompañar y delegar según la situación."
                   : m1Pct >= 55
                   ? "Tu empresa está en un momento de transición donde un directorio agregaría valor concreto como socio estratégico del CEO. Las señales son claras: hay complejidad suficiente para justificar una estructura de gobierno más formal que no solo supervise, sino que participe activamente en las decisiones clave."
                   : m1Pct >= 30
@@ -433,7 +433,7 @@ export default function ResultadoPage() {
                   ? "La buena noticia es que tu empresa ya muestra disposición real al cambio. Las condiciones están dadas para iniciar el proceso de conformación del directorio en el corto plazo. La clave es practicar la indagación antes que la recomendación: un buen directorio hace las preguntas correctas antes de dar su opinión."
                   : diagPct >= 50
                   ? "Hay disposición al cambio, aunque con algunos puntos por resolver. Recomendamos trabajar en la apertura del CEO a la rendición de cuentas y en la separación formal de roles. El directorio debe poder preguntar antes de opinar — si el CEO no está listo para eso, conviene trabajarlo primero."
-                  : "La disposición al cambio todavía es baja. Antes de conformar un directorio, es fundamental trabajar en la cultura de gobierno: reuniones periódicas, rendición de cuentas y apertura a perspectivas externas. Un directorio solo funciona si el CEO lo ve como aliado, no como amenaza."}
+                  : "La disposición al cambio todavía es baja. Antes de conformar un directorio, es fundamental trabajar en la cultura de equipo: reuniones periódicas, rendición de cuentas y apertura a perspectivas externas. Un directorio solo funciona si el CEO lo ve como aliado, no como amenaza."}
               </p>
 
               {/* Paragraph 5: First 100 days */}
@@ -480,7 +480,7 @@ export default function ResultadoPage() {
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
           </svg>
-          Ver Governance Score — Índice de madurez
+          Ver Índice de preparación
         </button>
 
         {/* Navigation */}
@@ -503,7 +503,7 @@ export default function ResultadoPage() {
             </div>
             <span className="text-xs font-semibold text-gray-400 tracking-wide">Directorio AR</span>
           </div>
-          <p className="text-xs text-gray-300">Gobierno Corporativo</p>
+          <p className="text-xs text-gray-300">Decisiones con respaldo</p>
         </div>
       </main>
     </div>

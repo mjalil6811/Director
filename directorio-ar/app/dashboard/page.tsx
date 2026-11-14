@@ -102,8 +102,8 @@ function calcularGovernanceScore(
   const d4score = m4diag ? (m4diag.porcentaje ?? 0) : 0;
   dims.push({
     id: 'disposicion',
-    label: 'Disposición al gobierno',
-    descripcion: 'Voluntad real del CEO y la organización de operar bajo una estructura de gobierno corporativo.',
+    label: 'Disposición al cambio',
+    descripcion: 'Voluntad real del CEO y de los dueños de decidir con el respaldo de un consejo asesor o directorio.',
     score: d4score,
     tieneDatos: !!m4diag,
     nivel: d4score >= 80 ? 'Alta' : d4score >= 50 ? 'Moderada' : 'Baja',
@@ -141,22 +141,22 @@ function calcularGovernanceScore(
 
   if (total >= 75) {
     nivel = 'Avanzado';
-    etiqueta = 'Gobierno corporativo maduro';
+    etiqueta = 'Decisiones con respaldo sólido';
     color = '#0F6E56';
     colorBg = '#E1F5EE';
   } else if (total >= 55) {
     nivel = 'Intermedio';
-    etiqueta = 'Gobierno en desarrollo';
+    etiqueta = 'Forma de decidir en desarrollo';
     color = '#534AB7';
     colorBg = '#EEEDFE';
   } else if (total >= 35) {
     nivel = 'Inicial';
-    etiqueta = 'Bases de gobierno en construcción';
+    etiqueta = 'Primeros pasos para decidir con respaldo';
     color = '#854F0B';
     colorBg = '#FAEEDA';
   } else {
     nivel = 'Incipiente';
-    etiqueta = 'Gobierno corporativo por formalizar';
+    etiqueta = 'Decisiones todavía concentradas';
     color = '#A32D2D';
     colorBg = '#FCEBEB';
   }
@@ -189,9 +189,9 @@ function ScoreBar({ score, color }: { score: number; color: string }) {
 
 const BENCHMARKS = [
   { key: 'pyme', label: 'PyME familiar sin directorio', score: 18 },
-  { key: 'advisory', label: 'PyME con advisory board', score: 38 },
+  { key: 'advisory', label: 'PyME con consejo asesor', score: 38 },
   { key: 'mediana', label: 'Empresa mediana con directorio', score: 62 },
-  { key: 'madura', label: 'Empresa con gobierno maduro', score: 84 },
+  { key: 'madura', label: 'Empresa con directorio consolidado', score: 84 },
 ];
 
 // ——— Page ———————————————————————————————————————————————————————————————————
@@ -220,7 +220,7 @@ export default function GovernanceScorePage() {
 
   if (!ready) return (
     <div className="min-h-screen flex items-center justify-center bg-surface">
-      <div className="text-gray-400 text-sm">Calculando score...</div>
+      <div className="text-gray-400 text-sm">Calculando índice...</div>
     </div>
   );
 
@@ -240,7 +240,7 @@ export default function GovernanceScorePage() {
 
       {/* Header */}
       <PageHeader
-        titulo="Governance Score"
+        titulo="Índice de preparación"
         onBack={() => router.back()}
         right={<>
 {nombre && <span className="text-xs text-gray-400 font-medium">{nombre}</span>}
@@ -260,7 +260,7 @@ export default function GovernanceScorePage() {
             </p>
           )}
           <p className="text-xs font-semibold uppercase tracking-wider mb-4 text-gray-500">
-            Índice de madurez de gobierno corporativo
+            Qué tan preparada está tu empresa para decidir con respaldo
           </p>
           <ScoreGauge value={gs.total} color={gs.color} />
           <div
@@ -274,7 +274,7 @@ export default function GovernanceScorePage() {
           <p className="text-xs text-gray-400 mt-2">{fecha} · {gs.completadas}/5 módulos completados</p>
           {pendientes.length > 0 && (
             <p className="text-xs text-gray-600 mt-3 bg-white/70 rounded-lg px-3 py-2 inline-block">
-              Score parcial: calculado con {gs.completadas} de 5 dimensiones.{' '}
+              Índice parcial: calculado con {gs.completadas} de 5 dimensiones.{' '}
               <button onClick={() => router.push(`/modulo/${pendientes[0].fuente.replace('Módulo ', '')}`)} className="font-semibold text-brand hover:underline">
                 Completar {pendientes[0].fuente} →
               </button>
@@ -285,7 +285,7 @@ export default function GovernanceScorePage() {
         {/* Radar chart */}
         <div className="bg-white border border-gray-200 rounded-2xl p-6 shadow-sm">
           <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-4 text-center">
-            Perfil de gobierno corporativo
+            Perfil de tu empresa
           </p>
           <p className="text-xs text-gray-400 text-center -mt-3 mb-2">Tu empresa en cada dimensión (0–100) vs. una empresa mediana con directorio</p>
           {dimsConDatos.length >= 3 ? (
@@ -355,7 +355,7 @@ export default function GovernanceScorePage() {
         {/* Benchmark */}
         <div className="bg-white border border-gray-200 rounded-2xl p-5 shadow-sm">
           <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-4">
-            Benchmark — ¿Cómo estás vs el mercado?
+            ¿Cómo estás frente a otras empresas?
           </p>
           <RankedBars
             items={[
@@ -413,18 +413,18 @@ export default function GovernanceScorePage() {
             <div className="space-y-3">
               <p className="text-sm text-gray-700 leading-relaxed">
                 {gs.total >= 75
-                  ? `${nombre || 'Tu empresa'} opera con un nivel de gobierno corporativo avanzado. Las estructuras de decisión, composición del directorio y dinámica con la gerencia muestran madurez real. El foco ahora debe estar en mantener y evolucionar las prácticas, no solo en instalarlas.`
+                  ? `${nombre || 'Tu empresa'} ya decide con un respaldo sólido. Las estructuras de decisión, composición del directorio y dinámica con la gerencia muestran madurez real. El foco ahora debe estar en mantener y evolucionar las prácticas, no solo en instalarlas.`
                   : gs.total >= 55
-                  ? `${nombre || 'Tu empresa'} tiene las bases del gobierno corporativo en construcción. Hay avances reales, pero quedan brechas que si no se resuelven limitan la escala y el acceso a capital. El momento de actuar es ahora, antes de que la complejidad supere la estructura.`
+                  ? `${nombre || 'Tu empresa'} está construyendo una forma más ordenada de decidir. Hay avances reales, pero quedan brechas que si no se resuelven limitan la escala y el acceso a capital. El momento de actuar es ahora, antes de que la complejidad supere la estructura.`
                   : gs.total >= 35
-                  ? `${nombre || 'Tu empresa'} está en una etapa inicial de profesionalización del gobierno. Las condiciones están dadas para avanzar, pero requiere decisiones concretas: definir perfiles, distribuir decisiones y construir la disposición interna al cambio.`
-                  : `${nombre || 'Tu empresa'} tiene el gobierno corporativo por formalizar. No es una crítica — la mayoría de las empresas argentinas están en este punto. El primer paso es construir consciencia sobre qué decisiones son estratégicas y cuáles operativas, antes de instalar estructuras formales.`
+                  ? `${nombre || 'Tu empresa'} está en una etapa inicial de profesionalización de sus decisiones. Las condiciones están dadas para avanzar, pero requiere decisiones concretas: definir perfiles, distribuir decisiones y construir la disposición interna al cambio.`
+                  : `${nombre || 'Tu empresa'} todavía concentra las decisiones en pocas personas. No es una crítica — la mayoría de las empresas argentinas están en este punto. El primer paso es construir consciencia sobre qué decisiones son estratégicas y cuáles operativas, antes de instalar estructuras formales.`
                 }
               </p>
               <p className="text-sm text-gray-700 leading-relaxed">
                 {gs.completadas < 5
-                  ? `Este score está basado en ${gs.completadas} de 5 dimensiones evaluadas. Al completar todos los módulos, el diagnóstico será más preciso y las recomendaciones más específicas.`
-                  : 'El score integra las 5 dimensiones del gobierno corporativo, ponderadas según su impacto real en la efectividad del directorio y la toma de decisiones.'
+                  ? `Este índice está basado en ${gs.completadas} de 5 dimensiones evaluadas. Al completar todos los módulos, el diagnóstico será más preciso y las recomendaciones más específicas.`
+                  : 'El índice integra 5 dimensiones, ponderadas según su impacto real en la efectividad del directorio y la toma de decisiones.'
                 }
               </p>
             </div>
@@ -434,10 +434,10 @@ export default function GovernanceScorePage() {
         {/* Nota sobre uso del score */}
         <div className="bg-brand-50 border border-brand-100 rounded-2xl p-5">
           <p className="text-xs font-semibold text-brand uppercase tracking-wider mb-2">
-            ¿Para qué sirve este score?
+            ¿Para qué sirve este índice?
           </p>
           <p className="text-sm text-gray-700 leading-relaxed">
-            El Governance Score es un indicador de madurez de gobierno corporativo diseñado para el contexto de empresas argentinas. Puede usarse como referencia ante inversores, fondos de PE, SGRs o socios estratégicos que evalúan la solidez institucional de una empresa antes de comprometer capital o alianzas.
+            El Índice de preparación muestra qué tan lista está tu empresa para decidir con el respaldo de un consejo asesor o directorio, pensado para empresas argentinas. Puede usarse como referencia ante inversores, fondos de PE, SGRs o socios estratégicos que evalúan la solidez institucional de una empresa antes de comprometer capital o alianzas.
           </p>
         </div>
 
@@ -451,7 +451,7 @@ export default function GovernanceScorePage() {
             {[
               { href: '/fase2/acta-constitutiva', label: 'Acta constitutiva', desc: 'Redactá el acta de constitución del directorio', icon: '📄' },
               { href: '/fase2/protocolo', label: 'Protocolo de familia / socios', desc: 'Armá el protocolo con las cláusulas que necesitás', icon: '🤝' },
-              { href: '/fase2/reunion', label: 'Reuniones del directorio', desc: 'Planificá y documentá las reuniones del board', icon: '📋' },
+              { href: '/fase2/reunion', label: 'Reuniones del directorio', desc: 'Planificá y documentá las reuniones del directorio', icon: '📋' },
             ].map(item => (
               <button
                 key={item.href}

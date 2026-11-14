@@ -184,7 +184,7 @@ export const PREGUNTAS_M3: PreguntaM3[] = [
   {
     numero: 4, dimension: "Finanzas",
     texto: "¿La empresa ha tenido o tiene dificultades financieras significativas?",
-    aclaracion: "Las crisis financieras activan necesidades de gobierno muy específicas.",
+    aclaracion: "Las crisis financieras exigen perfiles muy específicos en la mesa de decisiones.",
     opciones: [
       { texto: "No, la situación financiera siempre fue estable",              pesos: {} },
       { texto: "Tuvimos tensiones puntuales ya superadas",                     pesos: { financiero: 1 } },

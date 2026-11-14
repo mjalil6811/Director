@@ -22,7 +22,7 @@ const PROCESO = [
     descripcion: 'Respondé 5 módulos que analizan la necesidad real, cómo se toman las decisiones, qué perfiles faltan, la disposición al cambio y la relación con la gerencia.',
     color: '#534AB7',
     colorBg: '#EEEDFE',
-    items: ['Governance Score 0-100', 'Radar de 5 dimensiones', 'Benchmark vs. mercado', 'Diagnóstico personalizado'],
+    items: ['Índice de preparación 0-100', 'Radar de 5 dimensiones', 'Benchmark vs. mercado', 'Diagnóstico personalizado'],
   },
   {
     paso: 'Constituí',
@@ -38,7 +38,7 @@ const PROCESO = [
     descripcion: 'Dashboard financiero para preparar cada reunión, seguimiento de compromisos entre sesiones y evaluación anual del CEO con informe confidencial.',
     color: '#854F0B',
     colorBg: '#FAEEDA',
-    items: ['Dashboard financiero + KPIs', 'Seguimiento de tareas', 'Evaluación del CEO', 'Informes para el board'],
+    items: ['Dashboard financiero + KPIs', 'Seguimiento de tareas', 'Evaluación del CEO', 'Informes para el directorio'],
   },
 ];
 
@@ -82,11 +82,11 @@ const BENEFICIOS = [
 ];
 
 const FAQ = [
-  { q: '¿Para qué tipo de empresa es esto?', a: 'Para PyMEs, empresas familiares y empresas medianas argentinas que quieren profesionalizar su gobierno corporativo. No necesitás tener un directorio armado — la herramienta empieza por evaluar si lo necesitás.' },
+  { q: '¿Para qué tipo de empresa es esto?', a: 'Para PyMEs, empresas familiares y empresas medianas argentinas que quieren tomar mejores decisiones con el respaldo de un consejo asesor o directorio. No necesitás tener un directorio armado — la herramienta empieza por evaluar si lo necesitás.' },
   { q: '¿Es gratis?', a: 'Sí, 100% gratuito. No hay planes pagos, ni límites de uso, ni funcionalidades bloqueadas.' },
   { q: '¿Mis datos son privados?', a: 'Todo se guarda en el localStorage de tu navegador. No hay servidor, no hay base de datos, no hay registro. Tus datos no salen de tu dispositivo.' },
   { q: '¿Necesito completar todo en una sesión?', a: 'No. Cada módulo guarda tu progreso automáticamente. Podés volver cuando quieras y retomar donde dejaste.' },
-  { q: '¿Qué es el Governance Score?', a: 'Es un índice de madurez de gobierno corporativo de 0 a 100 que integra 5 dimensiones: necesidad, decisiones, perfiles, disposición y dinámica. Sirve como referencia ante inversores, fondos y socios estratégicos.' },
+  { q: '¿Qué es el Índice de preparación?', a: 'Es un puntaje de 0 a 100 que mide qué tan preparada está tu empresa para decidir con el respaldo de un consejo asesor o directorio. Integra 5 dimensiones: necesidad, decisiones, perfiles, disposición y dinámica. Sirve como referencia ante inversores, fondos y socios estratégicos.' },
 ];
 
 // Lo que el usuario va a hacer, visible sin scroll
@@ -94,7 +94,7 @@ const RECORRIDO = [
   {
     fase: 1, verbo: FASES[0].verbo, color: FASES[0].color, bg: FASES[0].bg, href: FASES[0].href,
     que: 'Respondés 35 preguntas en 5 módulos cortos, con los criterios oficiales PyME',
-    obtenes: 'Governance Score, nivel de urgencia y perfiles de directores que te faltan',
+    obtenes: 'Índice de preparación, nivel de urgencia y perfiles de directores que te faltan',
     tiempo: '~8 min',
   },
   {
@@ -438,7 +438,7 @@ export default function HomePage() {
                   {terminado ? (abreviado ? 'Ver informe' : 'Ver resultado') : 'Continuar'}
                 </button>
                 <button onClick={() => router.push('/dashboard')} className="px-4 py-2 border border-gray-200 text-gray-600 text-sm font-medium rounded-xl hover:bg-gray-50">
-                  Governance Score
+                  Índice de preparación
                 </button>
                 <button onClick={() => router.push(FASES[1].href)} className="px-4 py-2 border border-[#B5E8D5] text-[#0F6E56] text-sm font-medium rounded-xl hover:bg-[#E1F5EE]">
                   Fase 2
@@ -498,7 +498,7 @@ export default function HomePage() {
               <span className="text-sm font-bold text-gray-900">Directorio AR</span>
             </div>
             <div className="flex items-center gap-6 text-xs text-gray-400">
-              <span>Gobierno corporativo</span>
+              <span>Consejo asesor y directorio</span>
               <span>Empresas argentinas</span>
               <span>100% gratuito</span>
             </div>

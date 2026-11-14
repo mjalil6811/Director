@@ -9,8 +9,8 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "Directorio AR — Gobierno Corporativo",
-  description: "Herramienta de gobierno corporativo para empresas argentinas",
+  title: "Directorio AR — Decisiones con respaldo para tu empresa",
+  description: "Diagnóstico gratuito para PyMEs argentinas: descubrí si es momento de sumar un consejo asesor o directorio, y cómo armarlo.",
   manifest: "/manifest.json",
 };
 

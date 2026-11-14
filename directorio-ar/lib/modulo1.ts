@@ -25,7 +25,7 @@ export type DimensionKey = "tamano" | "propiedad" | "gobierno" | "decisiones" | 
 export const DIMENSIONES_M1: { key: DimensionKey; nombre: string }[] = [
   { key: "tamano", nombre: "Tamaño y complejidad" },
   { key: "propiedad", nombre: "Estructura de propiedad" },
-  { key: "gobierno", nombre: "Gobierno actual" },
+  { key: "gobierno", nombre: "Cómo se decide hoy" },
   { key: "decisiones", nombre: "Toma de decisiones" },
   { key: "disponibilidad", nombre: "Recursos para el directorio" },
 ];
@@ -105,7 +105,7 @@ const PREGUNTAS: PreguntaDef[] = [
       { texto: { propietario: "Las tomo yo (o el socio principal) solo, sin consulta ni contrapeso", gestor: "Las define el dueño solo; yo ejecuto", familiar: "Las toma quien gestiona, sin consultar al resto de los dueños" }, puntaje: 3 },
       { texto: { propietario: "Se discuten entre socios de manera informal, sin registro", gestor: "Los dueños deciden entre ellos de manera informal y me lo comunican", familiar: "Se conversan en familia, de manera informal" }, puntaje: 2 },
       { texto: { propietario: "Hay reuniones periódicas, pero sin estructura formal", gestor: "Las propongo y las validamos en reuniones, sin estructura formal", familiar: "Hay reuniones de socios periódicas, pero sin estructura formal" }, puntaje: 1 },
-      { texto: { propietario: "Existe un órgano de gobierno, aunque sea informal", gestor: "Las aprueba un órgano de gobierno con el que trabajo formalmente", familiar: "Existe un órgano donde los dueños participan formalmente" }, puntaje: 0 },
+      { texto: { propietario: "Existe un directorio o consejo, aunque sea informal", gestor: "Las aprueba un directorio o consejo con el que trabajo formalmente", familiar: "Existe un directorio o consejo donde los dueños participan formalmente" }, puntaje: 0 },
     ],
   },
   {
@@ -189,7 +189,7 @@ export function perfilDeRespuestas(respuestas: number[]): PerfilEmpresa | null {
 
 export const NIVELES = {
   prematuro:  { label: "Directorio prematuro",  descripcion: "La empresa aún no reúne las condiciones para que un directorio agregue valor real. Hay etapas previas a resolver.", color: "#3B6D11", bgColor: "#EAF3DE" },
-  temprano:   { label: "Señales tempranas",     descripcion: "Existen indicadores que justifican pensar en gobierno formal, pero el timing depende de cómo evolucionen ciertos factores clave.", color: "#854F0B", bgColor: "#FAEEDA" },
+  temprano:   { label: "Señales tempranas",     descripcion: "Existen indicadores que justifican pensar en un consejo asesor o directorio, pero el timing depende de cómo evolucionen ciertos factores clave.", color: "#854F0B", bgColor: "#FAEEDA" },
   transicion: { label: "Momento de transición", descripcion: "La empresa está en un punto de inflexión. Armar un directorio en los próximos 12–18 meses sería estratégicamente oportuno.", color: "#185FA5", bgColor: "#E6F1FB" },
   urgente:    { label: "Necesidad urgente",     descripcion: "La empresa tiene múltiples factores que hacen que operar sin un directorio sea un riesgo real. El proceso debería iniciarse cuanto antes.", color: "#993C1D", bgColor: "#FAECE7" },
 } as const;
@@ -231,17 +231,17 @@ export function calcularModulo1(respuestas: number[]): Modulo1Resultado {
   const get = (key: DimensionKey) => scoresDim.find(s => s.key === key)?.porcentaje;
   const recs: string[] = [];
   if (perfil && (perfil.categoria === "tramo2" || perfil.categoria === "grande"))
-    recs.push(`Por facturación tu empresa es ${CATEGORIA_LABEL[perfil.categoria]}: a esta escala, operar sin un órgano de gobierno formal expone el patrimonio de todos los socios.`);
+    recs.push(`Por facturación tu empresa es ${CATEGORIA_LABEL[perfil.categoria]}: a esta escala, decidir sin un consejo asesor o directorio expone el patrimonio de todos los socios.`);
   if ((get("propiedad") ?? 0) >= 60)
     recs.push("La estructura de propiedad es compleja: formalizar quién decide qué, y en qué calidad, es prioritario antes de armar el directorio.");
   if ((get("gobierno") ?? 0) >= 60)
-    recs.push("El gobierno actual está muy concentrado. El directorio es urgente para instalar un contrapeso real en las decisiones estratégicas.");
+    recs.push("Las decisiones hoy están muy concentradas. El directorio es urgente para instalar un contrapeso real en las decisiones estratégicas.");
   if ((get("decisiones") ?? 0) >= 60)
     recs.push("No hay un espacio regular para pensar el rumbo del negocio. Un directorio con agenda fija lo resuelve.");
   if ((get("disponibilidad") ?? 100) <= 33)
     recs.push("El presupuesto disponible es limitado. Un directorio sin recursos se convierte rápido en una formalidad vacía: conviene empezar por un consejo asesor.");
   if ((get("tamano") ?? 0) >= 60 && !recs.some(r => r.startsWith("Por facturación")))
-    recs.push("El tamaño y la complejidad operativa ya justifican estructuras de gobierno más sofisticadas.");
+    recs.push("El tamaño y la complejidad operativa ya justifican una estructura más formal para decidir.");
 
   return {
     score: scoreTotal,

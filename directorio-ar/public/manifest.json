@@ -1,7 +1,7 @@
 {
   "name": "Directorio AR",
   "short_name": "Directorio AR",
-  "description": "Herramienta de gobierno corporativo para empresas argentinas",
+  "description": "Diagnóstico gratuito para PyMEs argentinas: consejo asesor y directorio, paso a paso.",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#ffffff",

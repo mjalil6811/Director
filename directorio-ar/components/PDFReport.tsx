@@ -234,7 +234,7 @@ const TIPO_LABEL: Record<string, string> = {
 function Footer({ pageNum }: { pageNum: number }) {
   return (
     <View style={styles.footer} fixed>
-      <Text style={styles.footerText}>Directorio AR — Diagnóstico de Gobierno Corporativo</Text>
+      <Text style={styles.footerText}>Directorio AR — Diagnóstico de toma de decisiones</Text>
       <Text style={styles.footerText}>{pageNum}</Text>
     </View>
   );
@@ -246,7 +246,7 @@ function PDFDocument({ data }: { data: PDFReportData }) {
       {/* Cover */}
       <Page size="A4" style={styles.coverPage}>
         <Text style={styles.coverTitle}>Directorio AR</Text>
-        <Text style={styles.coverSubtitle}>Diagnóstico de Gobierno Corporativo</Text>
+        <Text style={styles.coverSubtitle}>Diagnóstico de toma de decisiones</Text>
         <View style={styles.coverLine} />
         {data.empresa && (
           <>
@@ -390,7 +390,7 @@ function PDFDocument({ data }: { data: PDFReportData }) {
           </View>
         )}
         <Text style={styles.small}>
-          La frecuencia se determina según el nivel de necesidad de gobierno corporativo identificado en el Módulo 1.
+          La frecuencia se determina según el nivel de necesidad de directorio identificado en el Módulo 1.
           A mayor complejidad, mayor es la frecuencia recomendada.
         </Text>
         <Footer pageNum={5} />

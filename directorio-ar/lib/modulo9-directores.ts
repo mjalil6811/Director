@@ -19,7 +19,7 @@ export const CHECKLIST_ONBOARDING: Omit<ChecklistOnboarding, 'id' | 'completada'
   { categoria: 'informacion', tarea: 'Briefing sobre contingencias legales o financieras relevantes', responsable: 'empresa' },
   // Relaciones
   { categoria: 'relaciones', tarea: 'Reunión de presentación con el CEO y equipo gerencial', responsable: 'empresa' },
-  { categoria: 'relaciones', tarea: 'Reunión individual con cada director del board', responsable: 'director' },
+  { categoria: 'relaciones', tarea: 'Reunión individual con cada director', responsable: 'director' },
   { categoria: 'relaciones', tarea: 'Recorrida por las instalaciones / operación de la empresa', responsable: 'empresa' },
   { categoria: 'relaciones', tarea: 'Reunión con el asesor legal y el contador externo', responsable: 'empresa' },
   // Operativo
@@ -75,7 +75,7 @@ export const PERFILES_DESCRIPCION: Record<CandidatoDirector['perfil'], { label: 
   },
   legal: {
     label: 'Director legal / compliance',
-    descripcion: 'Abogado o experto en cumplimiento normativo, contratos y gobierno corporativo. Fundamental cuando la empresa tiene exposición regulatoria relevante.',
+    descripcion: 'Abogado o experto en cumplimiento normativo, contratos y buenas prácticas societarias. Fundamental cuando la empresa tiene exposición regulatoria relevante.',
     buscarEn: ['Colegios de abogados', 'CAF', 'Firmas legales especializadas'],
   },
   sector: {

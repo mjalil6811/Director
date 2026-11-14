@@ -43,7 +43,7 @@ export const SITUACIONES_M2: SituacionM2[] = [
   },
   {
     texto: "Los resultados del trimestre fueron malos. ¿Qué pasa?",
-    aclaracion: "La cadena de rendición de cuentas define la salud del gobierno corporativo.",
+    aclaracion: "La cadena de rendición de cuentas define qué tan sana es la forma de decidir.",
     opciones: [
       { label: "El dueño lo absorbe solo y ajusta sobre la marcha", tipo: "concentrada" },
       { label: "Se comenta con el equipo pero no hay rendición de cuentas formal", tipo: "parcial" },
@@ -125,7 +125,7 @@ export function calcularModulo2(respuestas: number[]): Modulo2Resultado {
   let nivel: string;
   if (concentracionPct >= 70) nivel = "Las decisiones están peligrosamente concentradas. El directorio es urgente.";
   else if (concentracionPct >= 50) nivel = "Hay una concentración significativa. Un directorio aportaría mucho valor.";
-  else if (concentracionPct >= 30) nivel = "Algunas decisiones necesitan mejor gobierno. Un directorio ayudaría.";
+  else if (concentracionPct >= 30) nivel = "Algunas decisiones necesitan más orden. Un directorio ayudaría.";
   else nivel = "Buen nivel de delegación. Un directorio consolidaría las buenas prácticas.";
 
   return {

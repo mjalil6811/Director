@@ -39,7 +39,7 @@ export const FASES: Fase[] = [
       { href: '/modulo/3', label: `3 · ${MODULOS_F1[2].titulo}` },
       { href: '/modulo/4', label: `4 · ${MODULOS_F1[3].titulo}` },
       { href: '/modulo/5', label: `5 · ${MODULOS_F1[4].titulo}` },
-      { href: '/dashboard', label: 'Governance Score' },
+      { href: '/dashboard', label: 'Índice de preparación' },
       { href: '/resultado', label: 'Resultado final' },
     ],
   },

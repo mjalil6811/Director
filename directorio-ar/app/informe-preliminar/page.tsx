@@ -108,7 +108,7 @@ export default function InformePreliminar() {
     // NIVEL 3 — Urgente: ambos factores en zona media-alta
     diagNivel = 3;
     diagnostico = 'Urgente — no esperes más de 90 días';
-    diagSubtitulo = 'Tu empresa muestra señales claras en complejidad y concentración de decisiones. Cada mes sin estructura de gobierno es un mes de exposición innecesaria.';
+    diagSubtitulo = 'Tu empresa muestra señales claras en complejidad y concentración de decisiones. Cada mes decidiendo sin respaldo es un mes de exposición innecesaria.';
     diagColor = '#92400E';
     diagBg = '#FEF3C7';
   } else if (pct1 >= 30 || concentracion >= 30) {
@@ -122,7 +122,7 @@ export default function InformePreliminar() {
     // NIVEL 1 — Próximo paso de crecimiento
     diagNivel = 1;
     diagnostico = 'Tu próximo paso de crecimiento lo va a requerir';
-    diagSubtitulo = 'Si tu empresa va a crecer, acceder a crédito SGR, incorporar socios o atraer inversores, necesitás gobierno corporativo. Estructurarte ahora, sin presión, es mucho más fácil que hacerlo cuando ya sea urgente.';
+    diagSubtitulo = 'Si tu empresa va a crecer, acceder a crédito SGR, incorporar socios o atraer inversores, necesitás una forma ordenada de tomar decisiones. Organizarte ahora, sin presión, es mucho más fácil que hacerlo cuando ya sea urgente.';
     diagColor = '#065F46';
     diagBg = '#D1FAE5';
   }
@@ -287,7 +287,7 @@ export default function InformePreliminar() {
             <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-4 text-center">Nivel de necesidad</p>
             <DonutChart
               segments={[
-                { value: pct1, color: nivelColor, label: 'Score' },
+                { value: pct1, color: nivelColor, label: 'Puntaje' },
                 { value: 100 - pct1, color: '#f3f4f6', label: 'Restante' },
               ]}
               centerText={`${pct1}%`}
@@ -437,7 +437,7 @@ export default function InformePreliminar() {
 
         {/* Powered by footer */}
         <div className="text-center pt-4 pb-2 border-t border-gray-100">
-          <p className="text-xs text-gray-300 font-medium tracking-wide">Directorio AR · Gobierno Corporativo</p>
+          <p className="text-xs text-gray-300 font-medium tracking-wide">Directorio AR · Decisiones con respaldo</p>
         </div>
       </main>
     </div>
