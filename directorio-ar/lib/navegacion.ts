@@ -19,7 +19,7 @@ export type Fase = {
 
 /** Módulos del diagnóstico (Fase 1). `min` = minutos estimados (~15 s por pregunta). */
 export const MODULOS_F1 = [
-  { n: 1, titulo: '¿Necesitás un directorio?', corto: 'Necesidad', min: 3 },
+  { n: 1, titulo: '¿Te conviene un consejo asesor?', corto: 'Necesidad', min: 3 },
   { n: 2, titulo: 'Mapa de decisiones', corto: 'Decisiones', min: 2 },
   { n: 3, titulo: '¿Qué perfiles necesitás?', corto: 'Perfiles', min: 2 },
   { n: 4, titulo: 'Dinámica y funcionamiento', corto: 'Dinámica', min: 1 },

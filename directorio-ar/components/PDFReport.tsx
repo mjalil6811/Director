@@ -262,7 +262,7 @@ function PDFDocument({ data }: { data: PDFReportData }) {
       {/* Module 1 */}
       {data.m1 && (
         <Page size="A4" style={styles.page}>
-          <Text style={styles.sectionHeader}>Módulo 1 — ¿Necesitás un directorio?</Text>
+          <Text style={styles.sectionHeader}>Módulo 1 — ¿Te conviene un consejo asesor?</Text>
           <View style={styles.card}>
             <View style={styles.row}>
               <Text style={styles.label}>Puntuación:</Text>

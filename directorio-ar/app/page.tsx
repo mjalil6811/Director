@@ -18,27 +18,27 @@ const STATS = [
 const PROCESO = [
   {
     paso: 'Diagnosticá',
-    titulo: 'Evaluá si tu empresa necesita un directorio',
-    descripcion: 'Respondé 5 módulos que analizan la necesidad real, cómo se toman las decisiones, qué perfiles faltan, la disposición al cambio y la relación con la gerencia.',
+    titulo: 'Descubrí si es momento de sumar un consejo asesor',
+    descripcion: 'Respondé 5 módulos cortos sobre cómo se decide hoy en tu empresa, qué perfiles te faltan, tu disposición al cambio y la relación con la gerencia.',
     color: '#534AB7',
     colorBg: '#EEEDFE',
-    items: ['Índice de preparación 0-100', 'Radar de 5 dimensiones', 'Benchmark vs. mercado', 'Diagnóstico personalizado'],
+    items: ['Índice de preparación 0-100', 'Perfil en 5 dimensiones', 'Comparación con otras empresas', 'Recomendaciones a tu medida'],
   },
   {
     paso: 'Constituí',
-    titulo: 'Armá tu directorio con las herramientas correctas',
-    descripcion: 'Redactá el acta constitutiva, definí el protocolo de familia o socios resolviendo escenarios reales, y planificá las primeras reuniones con agenda profesional.',
+    titulo: 'Armá tu consejo con las herramientas correctas',
+    descripcion: 'Dejá por escrito cómo va a funcionar: el acta de constitución, los acuerdos entre socios o familia (resolviendo situaciones reales) y la agenda de las primeras reuniones.',
     color: '#0F6E56',
     colorBg: '#E1F5EE',
-    items: ['Acta constitutiva guiada', 'Protocolo por escenarios', 'Reuniones con modo en vivo', 'Timer y acta automática'],
+    items: ['Acta de constitución guiada', 'Acuerdos entre socios o familia', 'Reuniones con modo en vivo', 'Cronómetro y acta automática'],
   },
   {
     paso: 'Operá',
-    titulo: 'Hacé funcionar tu directorio en el día a día',
-    descripcion: 'Dashboard financiero para preparar cada reunión, seguimiento de compromisos entre sesiones y evaluación anual del CEO con informe confidencial.',
+    titulo: 'Hacé que tu consejo funcione en el día a día',
+    descripcion: 'Un tablero con tus números para preparar cada reunión, el seguimiento de lo acordado entre reuniones y una evaluación anual del CEO con informe confidencial.',
     color: '#854F0B',
     colorBg: '#FAEEDA',
-    items: ['Dashboard financiero + KPIs', 'Seguimiento de tareas', 'Evaluación del CEO', 'Informes para el directorio'],
+    items: ['Tablero financiero e indicadores', 'Seguimiento de compromisos', 'Evaluación del CEO', 'Informe para cada reunión'],
   },
 ];
 
@@ -82,7 +82,7 @@ const BENEFICIOS = [
 ];
 
 const FAQ = [
-  { q: '¿Para qué tipo de empresa es esto?', a: 'Para PyMEs, empresas familiares y empresas medianas argentinas que quieren tomar mejores decisiones con el respaldo de un consejo asesor o directorio. No necesitás tener un directorio armado — la herramienta empieza por evaluar si lo necesitás.' },
+  { q: '¿Para qué tipo de empresa es esto?', a: 'Para PyMEs, empresas familiares y empresas medianas argentinas que quieren tomar mejores decisiones con el respaldo de un consejo asesor o directorio. No necesitás tener nada armado: la herramienta empieza por evaluar si es tu momento.' },
   { q: '¿Es gratis?', a: 'Sí, 100% gratuito. No hay planes pagos, ni límites de uso, ni funcionalidades bloqueadas.' },
   { q: '¿Mis datos son privados?', a: 'Todo se guarda en el localStorage de tu navegador. No hay servidor, no hay base de datos, no hay registro. Tus datos no salen de tu dispositivo.' },
   { q: '¿Necesito completar todo en una sesión?', a: 'No. Cada módulo guarda tu progreso automáticamente. Podés volver cuando quieras y retomar donde dejaste.' },
@@ -94,7 +94,7 @@ const RECORRIDO = [
   {
     fase: 1, verbo: FASES[0].verbo, color: FASES[0].color, bg: FASES[0].bg, href: FASES[0].href,
     que: 'Respondés 35 preguntas en 5 módulos cortos, con los criterios oficiales PyME',
-    obtenes: 'Índice de preparación, nivel de urgencia y perfiles de directores que te faltan',
+    obtenes: 'Índice de preparación, nivel de urgencia y los perfiles de asesores que te faltan',
     tiempo: '~8 min',
   },
   {
@@ -105,8 +105,8 @@ const RECORRIDO = [
   },
   {
     fase: 3, verbo: FASES[2].verbo, color: FASES[2].color, bg: FASES[2].bg, href: FASES[2].href,
-    que: 'Cargás tus números y seguís los compromisos del directorio',
-    obtenes: 'Dashboard financiero, seguimiento de tareas y evaluación del CEO',
+    que: 'Cargás tus números y seguís lo acordado en cada reunión',
+    obtenes: 'Tablero financiero, seguimiento de compromisos y evaluación del CEO',
     tiempo: 'Mes a mes',
   },
 ];
@@ -253,10 +253,10 @@ export default function HomePage() {
               {terminado
                 ? abreviado
                   ? <>Completaste el diagnóstico abreviado. Vas a ver tu <strong className="font-semibold text-gray-900">informe</strong>, y desde ahí podés seguir con el completo.</>
-                  : <>Ya completaste el diagnóstico. Vas a ver tu <strong className="font-semibold text-gray-900">resultado final</strong> y el siguiente paso: constituir el directorio.</>
+                  : <>Ya completaste el diagnóstico. Vas a ver tu <strong className="font-semibold text-gray-900">resultado final</strong> y el siguiente paso: armar tu consejo asesor.</>
                 : completadosFase1 > 0
                 ? <>Próximo paso: <strong className="font-semibold text-gray-900">Módulo {siguiente} · {MODULOS_F1[siguiente - 1]?.titulo}</strong> <span className="text-gray-400">(~{MODULOS_F1[siguiente - 1]?.min} min)</span></>
-                : <>Empezás por el <strong className="font-semibold text-gray-900">Módulo 1 · ¿Necesitás un directorio?</strong> <span className="text-gray-400">(10 preguntas, ~3 min)</span></>}
+                : <>Empezás por el <strong className="font-semibold text-gray-900">Módulo 1 · {MODULOS_F1[0].titulo}</strong> <span className="text-gray-400">(10 preguntas, ~3 min)</span></>}
             </p>
             <p className="text-xs text-gray-400">Se guarda solo en tu dispositivo. Podés pausar y retomar cuando quieras.</p>
 
@@ -384,7 +384,7 @@ export default function HomePage() {
             Empezá el diagnóstico en 8 minutos
           </h2>
           <p className="text-sm text-white/70 mb-6">
-            35 preguntas en 5 módulos cortos para saber si tu empresa necesita un directorio. Resultado inmediato.
+            35 preguntas en 5 módulos cortos para saber si es momento de sumar un consejo asesor. Resultado inmediato.
           </p>
           <button
             onClick={handleStart}
@@ -473,7 +473,7 @@ export default function HomePage() {
             Tu empresa merece decisiones con respaldo
           </h2>
           <p className="text-sm text-gray-500 mb-6 max-w-lg mx-auto">
-            No importa si ya tenés un directorio o si estás pensando en armar uno. Empezá por el diagnóstico y dejá que la herramienta te guíe.
+            No importa si ya tenés asesores o si recién lo estás pensando. Empezá por el diagnóstico y dejá que la herramienta te guíe.
           </p>
           <button
             onClick={handleStart}
