@@ -45,6 +45,7 @@ components/
   PDFReport.tsx, VotacionPanel.tsx, ProgressBar.tsx
 lib/
   navegacion.ts               FUENTE UNICA de fases, modulos y rutas (titulos, colores, links)
+  pymes.ts                    Criterios oficiales PyME (topes Res. 1/2026), industrias, roles y perfil
   progreso.ts                 Progreso de la Fase 1 (completados, siguiente, desbloqueo)
   storage-core.ts             Acceso seguro a localStorage + generarId (compartido)
   storage.ts                  Store Fase 1 · storage-fase2.ts · storage-fase3.ts
@@ -61,6 +62,7 @@ types/                        Tipos TypeScript
 - **Colores:** usar los tokens de `app/globals.css` (`bg-brand`, `text-brand-dark`, `bg-brand-50`, `border-brand-100`, `bg-surface`). No escribir `#534AB7` a mano.
 - **Encabezados:** cada pagina usa `<PageHeader titulo=... backHref|onBack=... right=... />`.
 - **Persistencia:** nunca usar `localStorage` directo; usar los stores (`storage*`) que se apoyan en `storage-core.ts`.
+- **Topes PyME:** se actualizan una vez por año en `lib/pymes.ts` (`NORMA_TOPES` y `TOPES_VENTAS`). Publico objetivo: Mediana Tramo 1/2 por facturacion o mas de 50 empleados; el resto hace el diagnostico abreviado (M1 + M2).
 - **Graficos:** usar los componentes de `components/charts.tsx` (un color por entidad, leyenda y tooltip incluidos).
 
 ## Modulos

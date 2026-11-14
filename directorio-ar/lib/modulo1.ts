@@ -1,174 +1,197 @@
 import type { Modulo1Resultado } from "../types";
+import {
+  ROLES, INDUSTRIAS, OPCIONES_EMPLEADOS, opcionesFacturacion, calcularPerfil, grupoDeRol,
+  CATEGORIA_LABEL, NORMA_TOPES, type GrupoRol, type SectorOficial, type PerfilEmpresa,
+} from "./pymes";
 
-// ─── Types ─────────────────────────────────────────────────────────────────────
+// ─── Tipos ─────────────────────────────────────────────────────────────────────
 
-export type Opcion = { texto: string; puntaje: 0 | 1 | 2 | 3 };
-export type Pregunta = { numero: number; texto: string; aclaracion: string; opciones: [Opcion, Opcion, Opcion, Opcion] };
-export type Dimension = { nombre: string; key: string; preguntas: Pregunta[] };
+/** Texto fijo, o una variante por grupo de quien responde. */
+type Texto = string | Record<GrupoRol, string>;
+type OpcionDef = { texto: Texto; puntaje: number | null };
 
-// ─── Dimensiones y preguntas ───────────────────────────────────────────────────
+type PreguntaDef = {
+  id: string;
+  /** Dimensión que puntúa, o null si es una pregunta de perfil (no suma puntaje). */
+  dimension: DimensionKey | null;
+  texto: Texto;
+  aclaracion: Texto;
+  /** Opciones fijas, o 'facturacion' (dependen de la industria elegida). */
+  opciones: OpcionDef[] | 'facturacion';
+};
 
-export const DIMENSIONES: Dimension[] = [
+export type DimensionKey = "tamano" | "propiedad" | "gobierno" | "decisiones" | "disponibilidad";
+
+export const DIMENSIONES_M1: { key: DimensionKey; nombre: string }[] = [
+  { key: "tamano", nombre: "Tamaño y complejidad" },
+  { key: "propiedad", nombre: "Estructura de propiedad" },
+  { key: "gobierno", nombre: "Gobierno actual" },
+  { key: "decisiones", nombre: "Toma de decisiones" },
+  { key: "disponibilidad", nombre: "Recursos para el directorio" },
+];
+
+/** Pregunta lista para mostrar, ya adaptada a quien responde y a su industria. */
+export type PreguntaResuelta = { id: string; texto: string; aclaracion: string; opciones: { texto: string; puntaje: number | null }[] };
+
+// ─── Preguntas ─────────────────────────────────────────────────────────────────
+// Índices fijos: 0 rol · 1 industria · 2 facturación · 3 empleados · 4 propiedad · 5 sucesión
+//                6 decisiones estratégicas · 7 separación dueño/gerencia · 8 reuniones · 9 presupuesto
+
+export const IDX = { rol: 0, industria: 1, facturacion: 2, empleados: 3 } as const;
+
+const PREGUNTAS: PreguntaDef[] = [
   {
-    nombre: "Tamaño y complejidad",
-    key: "tamano",
-    preguntas: [
-      {
-        numero: 1,
-        texto: "¿Cuántas personas trabajan en la empresa?",
-        aclaracion: "Incluí empleados en relación de dependencia y colaboradores estables.",
-        opciones: [
-          { texto: "Menos de 10 personas", puntaje: 0 },
-          { texto: "Entre 10 y 30 personas", puntaje: 1 },
-          { texto: "Entre 30 y 100 personas", puntaje: 2 },
-          { texto: "Más de 100 personas", puntaje: 3 },
-        ],
-      },
-      {
-        numero: 2,
-        texto: "¿Cuál es la facturación anual aproximada de la empresa?",
-        aclaracion: "En pesos constantes actuales.",
-        opciones: [
-          { texto: "Menos de $50 millones", puntaje: 0 },
-          { texto: "Entre $50 y $200 millones", puntaje: 1 },
-          { texto: "Entre $200 millones y $1.000 millones", puntaje: 2 },
-          { texto: "Más de $1.000 millones", puntaje: 3 },
-        ],
-      },
+    id: "rol",
+    dimension: null,
+    texto: "¿Quién está respondiendo este diagnóstico?",
+    aclaracion: "Adaptamos las preguntas siguientes a tu rol en la empresa.",
+    opciones: ROLES.map(r => ({ texto: r.label, puntaje: null })),
+  },
+  {
+    id: "industria",
+    dimension: null,
+    texto: "¿A qué industria pertenece la empresa?",
+    aclaracion: "Elegí la actividad principal. Define los topes de facturación oficiales que usamos en la próxima pregunta.",
+    opciones: INDUSTRIAS.map(i => ({ texto: `${i.label} — ${i.ejemplos}`, puntaje: null })),
+  },
+  {
+    id: "facturacion",
+    dimension: "tamano",
+    texto: "¿Cuál fue la facturación anual promedio de los últimos 3 años?",
+    aclaracion: `Promedio de los últimos 3 ejercicios cerrados, sin IVA y descontando el 75% de lo exportado. Los rangos son los topes oficiales PyME para tu industria (${NORMA_TOPES}).`,
+    opciones: "facturacion",
+  },
+  {
+    id: "empleados",
+    dimension: "tamano",
+    texto: "¿Cuántas personas trabajan en la empresa?",
+    aclaracion: "Incluí empleados en relación de dependencia y colaboradores estables.",
+    opciones: OPCIONES_EMPLEADOS.map(o => ({ texto: o.texto, puntaje: o.puntaje })),
+  },
+  {
+    id: "propiedad",
+    dimension: "propiedad",
+    texto: "¿Cómo está distribuida la propiedad de la empresa?",
+    aclaracion: "La composición accionaria es uno de los factores que más define la necesidad de un directorio.",
+    opciones: [
+      { texto: "Un solo dueño, sin socios", puntaje: 1 },
+      { texto: "Dos o tres socios fundadores", puntaje: 2 },
+      { texto: "Familia ampliada o segunda generación involucrada", puntaje: 3 },
+      { texto: "Múltiples socios, incluyendo inversores o fondos", puntaje: 3 },
     ],
   },
   {
-    nombre: "Estructura de propiedad",
-    key: "propiedad",
-    preguntas: [
-      {
-        numero: 3,
-        texto: "¿Cómo está distribuida la propiedad de la empresa?",
-        aclaracion: "La composición accionaria es uno de los factores más determinantes para la necesidad de un directorio.",
-        opciones: [
-          { texto: "Un solo dueño, sin socios", puntaje: 1 },
-          { texto: "Dos o tres socios fundadores", puntaje: 2 },
-          { texto: "Familia ampliada o segunda generación involucrada", puntaje: 3 },
-          { texto: "Múltiples socios, incluyendo inversores o fondos", puntaje: 3 },
-        ],
-      },
-      {
-        numero: 4,
-        texto: "¿Existe o existirá en los próximos 3 años algún proceso de sucesión o cambio de control?",
-        aclaracion: "Venta parcial, incorporación de nuevos socios, traspaso generacional, ingreso de inversores.",
-        opciones: [
-          { texto: "No está previsto ningún cambio", puntaje: 1 },
-          { texto: "Hay conversaciones pero nada concreto", puntaje: 2 },
-          { texto: "Está en proceso o muy próximo", puntaje: 3 },
-          { texto: "Ya ocurrió y hay tensiones no resueltas", puntaje: 3 },
-        ],
-      },
+    id: "sucesion",
+    dimension: "propiedad",
+    texto: "¿Existe o existirá en los próximos 3 años algún proceso de sucesión o cambio de control?",
+    aclaracion: "Venta parcial, incorporación de socios, traspaso generacional, ingreso de inversores.",
+    opciones: [
+      { texto: "No está previsto ningún cambio", puntaje: 1 },
+      { texto: "Hay conversaciones pero nada concreto", puntaje: 2 },
+      { texto: "Está en proceso o muy próximo", puntaje: 3 },
+      { texto: "Ya ocurrió y hay tensiones no resueltas", puntaje: 3 },
     ],
   },
   {
-    nombre: "Gobierno actual",
-    key: "gobierno",
-    preguntas: [
-      {
-        numero: 5,
-        texto: "¿Cómo se toman hoy las decisiones estratégicas importantes en la empresa?",
-        aclaracion: "Si una sola persona toma todas las decisiones estratégicas, la empresa está a un error de distancia de una crisis. El directorio existe para evitar exactamente eso.",
-        opciones: [
-          { texto: "Las toma el dueño o CEO solo — sin consulta ni contrapeso", puntaje: 3 },
-          { texto: "Se discuten entre socios informalmente — sin registro ni seguimiento", puntaje: 2 },
-          { texto: "Hay reuniones periódicas pero sin estructura formal", puntaje: 1 },
-          { texto: "Existe algún órgano de gobierno aunque sea informal", puntaje: 0 },
-        ],
-      },
-      {
-        numero: 6,
-        texto: "¿Existe hoy alguna diferencia real entre quién es dueño y quién gerencia la empresa?",
-        aclaracion: "Cuando el dueño es también el gerente, no hay nadie que le diga que no. El directorio rompe esa concentración de poder y protege el patrimonio de todos.",
-        opciones: [
-          { texto: "Los dueños operan el día a día completamente — no hay separación alguna", puntaje: 3 },
-          { texto: "Hay gerentes pero los dueños deciden todo — la separación es cosmética", puntaje: 2 },
-          { texto: "Hay gerentes con algo de autonomía real", puntaje: 1 },
-          { texto: "La gerencia opera con independencia clara de la propiedad", puntaje: 0 },
-        ],
-      },
+    id: "decisiones",
+    dimension: "gobierno",
+    texto: "¿Cómo se toman hoy las decisiones estratégicas importantes?",
+    aclaracion: {
+      propietario: "Si una sola persona decide todo lo estratégico, la empresa está a un error de distancia de una crisis.",
+      gestor: "Pensá en las últimas decisiones relevantes: inversiones, endeudamiento, nuevos mercados.",
+      familiar: "Pensá en las últimas decisiones relevantes: inversiones, endeudamiento, nuevos mercados.",
+    },
+    opciones: [
+      { texto: { propietario: "Las tomo yo (o el socio principal) solo, sin consulta ni contrapeso", gestor: "Las define el dueño solo; yo ejecuto", familiar: "Las toma quien gestiona, sin consultar al resto de los dueños" }, puntaje: 3 },
+      { texto: { propietario: "Se discuten entre socios de manera informal, sin registro", gestor: "Los dueños deciden entre ellos de manera informal y me lo comunican", familiar: "Se conversan en familia, de manera informal" }, puntaje: 2 },
+      { texto: { propietario: "Hay reuniones periódicas, pero sin estructura formal", gestor: "Las propongo y las validamos en reuniones, sin estructura formal", familiar: "Hay reuniones de socios periódicas, pero sin estructura formal" }, puntaje: 1 },
+      { texto: { propietario: "Existe un órgano de gobierno, aunque sea informal", gestor: "Las aprueba un órgano de gobierno con el que trabajo formalmente", familiar: "Existe un órgano donde los dueños participan formalmente" }, puntaje: 0 },
     ],
   },
   {
-    nombre: "Toma de decisiones",
-    key: "decisiones",
-    preguntas: [
-      {
-        numero: 7,
-        texto: "¿Con qué frecuencia los socios o líderes se reúnen formalmente para revisar el rumbo del negocio?",
-        aclaracion: "Si los líderes de la empresa no se juntan nunca a pensar en el futuro, nadie lo está haciendo. El directorio fuerza esa conversación.",
-        opciones: [
-          { texto: "Casi nunca o solo cuando hay una crisis — la estrategia no se discute", puntaje: 3 },
-          { texto: "Una o dos veces al año, sin agenda estructurada", puntaje: 2 },
-          { texto: "Trimestralmente, con algún orden pero sin formato fijo", puntaje: 1 },
-          { texto: "Mensual o bimestralmente, con agenda y seguimiento de acuerdos", puntaje: 0 },
-        ],
-      },
+    id: "separacion",
+    dimension: "gobierno",
+    texto: {
+      propietario: "¿Qué tan separado está hoy tu rol de dueño del de gestión?",
+      gestor: "¿Qué autonomía real tenés frente a los dueños?",
+      familiar: "Los dueños que gestionan, ¿separan su rol de dueño del de gerente?",
+    },
+    aclaracion: {
+      propietario: "Cuando el dueño es también el gerente, nadie le dice que no. El directorio rompe esa concentración y protege el patrimonio de todos.",
+      gestor: "Si los dueños intervienen en todo, el cargo de gerente es solo nominal. El directorio ordena qué decide cada uno.",
+      familiar: "Cuando quien gestiona actúa como único dueño, el resto de los accionistas pierde visibilidad. El directorio la recupera.",
+    },
+    opciones: [
+      { texto: { propietario: "Opero el día a día completamente: no hay separación", gestor: "Ninguna: los dueños deciden incluso lo operativo", familiar: "No: manejan el día a día como si la empresa fuera solo suya" }, puntaje: 3 },
+      { texto: { propietario: "Hay gerentes, pero decido todo yo: la separación es cosmética", gestor: "Poca: tengo el cargo, pero los dueños deciden casi todo", familiar: "Hay gerentes, pero los dueños que gestionan deciden todo" }, puntaje: 2 },
+      { texto: { propietario: "Hay gerentes con algo de autonomía real", gestor: "Bastante en lo operativo; lo estratégico lo deciden los dueños", familiar: "Hay gerentes con algo de autonomía real" }, puntaje: 1 },
+      { texto: { propietario: "La gerencia opera con independencia clara de los dueños", gestor: "Plena, dentro de un presupuesto y objetivos acordados", familiar: "La gerencia opera con independencia clara de la propiedad" }, puntaje: 0 },
     ],
   },
   {
-    nombre: "Motivación para el directorio",
-    key: "motivacion",
-    preguntas: [
-      {
-        numero: 8,
-        texto: "¿Cuál es la razón principal por la que estás considerando armar un directorio?",
-        aclaracion: "Elegí la que más se acerca a tu situación real — no la que suena mejor.",
-        opciones: [
-          { texto: "Me lo pidió un banco, inversor o socio externo", puntaje: 0 },
-          { texto: "Quiero ordenar la empresa antes de crecer o vender", puntaje: 1 },
-          { texto: "Tuvimos un problema serio y necesitamos más control", puntaje: 2 },
-          { texto: "Creo que es el momento de profesionalizar el gobierno", puntaje: 3 },
-        ],
-      },
+    id: "reuniones",
+    dimension: "decisiones",
+    texto: "¿Con qué frecuencia los socios o líderes se reúnen formalmente para revisar el rumbo del negocio?",
+    aclaracion: "Si nadie se junta a pensar el futuro, nadie lo está haciendo. El directorio fuerza esa conversación.",
+    opciones: [
+      { texto: "Casi nunca, o solo cuando hay una crisis", puntaje: 3 },
+      { texto: "Una o dos veces al año, sin agenda estructurada", puntaje: 2 },
+      { texto: "Trimestralmente, con algún orden pero sin formato fijo", puntaje: 1 },
+      { texto: "Mensual o bimestralmente, con agenda y seguimiento de acuerdos", puntaje: 0 },
     ],
   },
   {
-    nombre: "Disponibilidad y compromiso",
-    key: "disponibilidad",
-    preguntas: [
-      {
-        numero: 9,
-        texto: "¿Podrías comprometerte a reunirte con el directorio fuera de la oficina durante 2 horas, al menos una vez por mes?",
-        aclaracion: "Hablamos de reuniones que no pueden postergarse por la operación del día a día.",
-        opciones: [
-          { texto: "Hoy sería muy difícil, mi agenda no lo permite", puntaje: 0 },
-          { texto: "Podría hacerlo pero con mucho esfuerzo y reorganización", puntaje: 1 },
-          { texto: "Sí, si está agendado con anticipación suficiente", puntaje: 2 },
-          { texto: "Sin problema, ya reservo tiempo para pensar en el negocio", puntaje: 3 },
-        ],
-      },
-      {
-        numero: 10,
-        texto: "¿La empresa o sus socios estarían dispuestos a destinar un presupuesto real para el funcionamiento del directorio?",
-        aclaracion: "Incluye honorarios de directores independientes, lugar de reunión y materiales.",
-        opciones: [
-          { texto: "No está en el presupuesto y sería difícil incorporarlo", puntaje: 0 },
-          { texto: "Podríamos destinar algo pequeño como primera instancia", puntaje: 1 },
-          { texto: "Sí, si el valor aportado lo justifica claramente", puntaje: 2 },
-          { texto: "Ya contemplamos este costo o no sería un obstáculo", puntaje: 3 },
-        ],
-      },
+    id: "presupuesto",
+    dimension: "disponibilidad",
+    texto: {
+      propietario: "¿Estarías dispuesto a destinar un presupuesto real al funcionamiento del directorio?",
+      gestor: "¿Los dueños estarían dispuestos a destinar un presupuesto real al funcionamiento del directorio?",
+      familiar: "¿Los dueños estarían dispuestos a destinar un presupuesto real al funcionamiento del directorio?",
+    },
+    aclaracion: "Incluye honorarios de directores independientes, lugar de reunión y materiales.",
+    opciones: [
+      { texto: "No está en el presupuesto y sería difícil incorporarlo", puntaje: 0 },
+      { texto: "Podría destinarse algo pequeño como primera instancia", puntaje: 1 },
+      { texto: "Sí, si el valor aportado lo justifica claramente", puntaje: 2 },
+      { texto: "Ya está contemplado o no sería un obstáculo", puntaje: 3 },
     ],
   },
 ];
 
-// Flat list for easy indexed access in the UI
-export const PREGUNTAS_M1 = DIMENSIONES.flatMap(d => d.preguntas);
-export const TOTAL_PREGUNTAS = PREGUNTAS_M1.length; // 10
-export const PUNTAJE_MAXIMO = TOTAL_PREGUNTAS * 3;  // 30
+export const TOTAL_PREGUNTAS = PREGUNTAS.length; // 10
+
+// ─── Resolución por contexto ───────────────────────────────────────────────────
+
+function txt(t: Texto, grupo: GrupoRol): string {
+  return typeof t === "string" ? t : t[grupo];
+}
+
+function sectorDe(respuestas: number[]): SectorOficial {
+  return INDUSTRIAS[respuestas[IDX.industria]]?.sector ?? "servicios";
+}
+
+/** Devuelve la pregunta `idx` adaptada a lo que ya respondió el usuario (rol e industria). */
+export function resolverPregunta(idx: number, respuestas: number[]): PreguntaResuelta {
+  const p = PREGUNTAS[idx];
+  const grupo = grupoDeRol(respuestas[IDX.rol] >= 0 ? respuestas[IDX.rol] : undefined);
+  const opciones = p.opciones === "facturacion"
+    ? opcionesFacturacion(sectorDe(respuestas)).map(o => ({ texto: o.texto, puntaje: o.puntaje }))
+    : p.opciones.map(o => ({ texto: txt(o.texto, grupo), puntaje: o.puntaje }));
+  return { id: p.id, texto: txt(p.texto, grupo), aclaracion: txt(p.aclaracion, grupo), opciones };
+}
+
+/** Perfil parcial a partir de las respuestas (null hasta que estén las 4 primeras). */
+export function perfilDeRespuestas(respuestas: number[]): PerfilEmpresa | null {
+  return calcularPerfil(respuestas[IDX.rol], respuestas[IDX.industria], respuestas[IDX.facturacion], respuestas[IDX.empleados]);
+}
 
 // ─── Niveles ───────────────────────────────────────────────────────────────────
 
 export const NIVELES = {
-  prematuro:  { label: "Directorio prematuro",    descripcion: "La empresa aún no reúne las condiciones para que un directorio agregue valor real. Hay etapas previas a resolver.",                                                                        color: "#3B6D11", bgColor: "#EAF3DE" },
-  temprano:   { label: "Señales tempranas",        descripcion: "Existen indicadores que justifican pensar en gobierno formal, pero el timing depende de cómo evolucionen ciertos factores clave.",                                                         color: "#854F0B", bgColor: "#FAEEDA" },
-  transicion: { label: "Momento de transición",   descripcion: "La empresa está en un punto de inflexión. Armar un directorio en los próximos 12–18 meses sería estratégicamente oportuno.",                                                               color: "#185FA5", bgColor: "#E6F1FB" },
-  urgente:    { label: "Necesidad urgente",        descripcion: "La empresa tiene múltiples factores que hacen que operar sin un directorio sea un riesgo real. El proceso debería iniciarse cuanto antes.",                                                color: "#993C1D", bgColor: "#FAECE7" },
+  prematuro:  { label: "Directorio prematuro",  descripcion: "La empresa aún no reúne las condiciones para que un directorio agregue valor real. Hay etapas previas a resolver.", color: "#3B6D11", bgColor: "#EAF3DE" },
+  temprano:   { label: "Señales tempranas",     descripcion: "Existen indicadores que justifican pensar en gobierno formal, pero el timing depende de cómo evolucionen ciertos factores clave.", color: "#854F0B", bgColor: "#FAEEDA" },
+  transicion: { label: "Momento de transición", descripcion: "La empresa está en un punto de inflexión. Armar un directorio en los próximos 12–18 meses sería estratégicamente oportuno.", color: "#185FA5", bgColor: "#E6F1FB" },
+  urgente:    { label: "Necesidad urgente",     descripcion: "La empresa tiene múltiples factores que hacen que operar sin un directorio sea un riesgo real. El proceso debería iniciarse cuanto antes.", color: "#993C1D", bgColor: "#FAECE7" },
 } as const;
 
 export type NivelKey = keyof typeof NIVELES;
@@ -180,44 +203,45 @@ export function calcularNivel(porcentaje: number): NivelKey {
   return "urgente";
 }
 
-// ─── Scoring ───────────────────────────────────────────────────────────────────
+// ─── Puntaje ───────────────────────────────────────────────────────────────────
+// El "empuje" hacia la necesidad sale solo de las respuestas: cada pregunta puntuable suma 0–3
+// a su dimensión. Las preguntas sin dato (p. ej. facturación "No lo sé") no cuentan en el máximo.
 
-// respuestas: number[] indexed 0–9 (option index chosen for each question)
 export function calcularModulo1(respuestas: number[]): Modulo1Resultado {
-  const scoresDim = DIMENSIONES.map(dim => {
-    const score = dim.preguntas.reduce((acc, p) => {
-      const globalIdx = PREGUNTAS_M1.findIndex(q => q.numero === p.numero);
-      const opcionIdx = respuestas[globalIdx];
-      if (opcionIdx === undefined || opcionIdx < 0) return acc;
-      return acc + p.opciones[opcionIdx].puntaje;
-    }, 0);
-    const max = dim.preguntas.length * 3;
-    return { key: dim.key, nombre: dim.nombre, score, max, porcentaje: Math.round((score / max) * 100) };
+  const acc = Object.fromEntries(DIMENSIONES_M1.map(d => [d.key, { score: 0, max: 0 }])) as Record<DimensionKey, { score: number; max: number }>;
+
+  PREGUNTAS.forEach((p, idx) => {
+    if (!p.dimension) return;
+    const opcion = resolverPregunta(idx, respuestas).opciones[respuestas[idx]];
+    if (!opcion || opcion.puntaje === null) return;
+    acc[p.dimension].score += opcion.puntaje;
+    acc[p.dimension].max += 3;
   });
 
+  const scoresDim = DIMENSIONES_M1
+    .filter(d => acc[d.key].max > 0)
+    .map(d => ({ key: d.key, nombre: d.nombre, score: acc[d.key].score, max: acc[d.key].max, porcentaje: Math.round((acc[d.key].score / acc[d.key].max) * 100) }));
+
   const scoreTotal = scoresDim.reduce((a, d) => a + d.score, 0);
-  const porcentaje = Math.round((scoreTotal / PUNTAJE_MAXIMO) * 100);
-  const nivelKey = calcularNivel(porcentaje);
-  const nivel = NIVELES[nivelKey].label;
+  const maxTotal = scoresDim.reduce((a, d) => a + d.max, 0);
+  const porcentaje = maxTotal > 0 ? Math.round((scoreTotal / maxTotal) * 100) : 0;
+  const nivel = NIVELES[calcularNivel(porcentaje)].label;
+  const perfil = perfilDeRespuestas(respuestas) ?? undefined;
 
-  // Recomendaciones
-  const get = (key: string) => scoresDim.find(s => s.key === key);
+  const get = (key: DimensionKey) => scoresDim.find(s => s.key === key)?.porcentaje;
   const recs: string[] = [];
-
-  if ((get("propiedad")?.porcentaje ?? 0) >= 60)
-    recs.push("La estructura de propiedad es compleja: formalizar quién decide qué y en qué calidad es una prioridad antes de armar el directorio.");
-  if ((get("gobierno")?.porcentaje ?? 0) >= 60)
-    recs.push("El gobierno actual está muy concentrado en el dueño. El directorio es urgente para instalar un contrapeso real en las decisiones estratégicas.");
-  if ((get("decisiones")?.porcentaje ?? 0) >= 60)
-    recs.push("Las decisiones hoy dependen de una sola persona. Sin un directorio, la empresa está a un error de distancia de una crisis seria.");
-  if ((get("disponibilidad")?.porcentaje ?? 100) <= 33)
-    recs.push("La disponibilidad y el presupuesto son limitados. Un directorio mal financiado o que no puede reunirse regularmente se convierte rápidamente en una formalidad vacía.");
-  if ((get("tamano")?.porcentaje ?? 0) >= 60)
-    recs.push("El tamaño y complejidad operativa ya justifican estructuras de gobierno más sofisticadas.");
-
-  // Motivación externa (P8 = idx 7 → opción 0: "me lo pidió un banco/inversor")
-  if (respuestas[7] === 0)
-    recs.push("La motivación declarada es principalmente externa. Los directorios que funcionan nacen de una convicción interna — vale la pena revisar si el momento es el correcto.");
+  if (perfil && (perfil.categoria === "tramo2" || perfil.categoria === "grande"))
+    recs.push(`Por facturación tu empresa es ${CATEGORIA_LABEL[perfil.categoria]}: a esta escala, operar sin un órgano de gobierno formal expone el patrimonio de todos los socios.`);
+  if ((get("propiedad") ?? 0) >= 60)
+    recs.push("La estructura de propiedad es compleja: formalizar quién decide qué, y en qué calidad, es prioritario antes de armar el directorio.");
+  if ((get("gobierno") ?? 0) >= 60)
+    recs.push("El gobierno actual está muy concentrado. El directorio es urgente para instalar un contrapeso real en las decisiones estratégicas.");
+  if ((get("decisiones") ?? 0) >= 60)
+    recs.push("No hay un espacio regular para pensar el rumbo del negocio. Un directorio con agenda fija lo resuelve.");
+  if ((get("disponibilidad") ?? 100) <= 33)
+    recs.push("El presupuesto disponible es limitado. Un directorio sin recursos se convierte rápido en una formalidad vacía: conviene empezar por un consejo asesor.");
+  if ((get("tamano") ?? 0) >= 60 && !recs.some(r => r.startsWith("Por facturación")))
+    recs.push("El tamaño y la complejidad operativa ya justifican estructuras de gobierno más sofisticadas.");
 
   return {
     score: scoreTotal,
@@ -225,60 +249,6 @@ export function calcularModulo1(respuestas: number[]): Modulo1Resultado {
     porcentaje,
     scoresPorDimension: scoresDim.map(d => ({ nombre: d.nombre, score: d.score, max: d.max, porcentaje: d.porcentaje, key: d.key })),
     recomendaciones: recs,
+    perfil,
   };
-}
-
-// ─── Live partial calculation ──────────────────────────────────────────────────
-
-export function calcularPorcentajeParcial(respuestas: number[]): number {
-  let sum = 0; let answered = 0;
-  respuestas.forEach((opcionIdx, pregIdx) => {
-    if (opcionIdx < 0) return;
-    const pregunta = PREGUNTAS_M1[pregIdx];
-    if (!pregunta) return;
-    sum += pregunta.opciones[opcionIdx].puntaje;
-    answered++;
-  });
-  if (answered === 0) return 0;
-  return Math.round((sum / (answered * 3)) * 100);
-}
-
-export function generarInformeParcial(respuestas: number[]): string {
-  const answered = respuestas.filter(v => v >= 0).length;
-  if (answered === 0) return '';
-
-  const pct = calcularPorcentajeParcial(respuestas);
-  const signals: string[] = [];
-
-  const get = (idx: number) => (respuestas[idx] >= 0 ? respuestas[idx] : -1);
-
-  // Índices: 0 empleados · 1 facturación · 2 propiedad · 3 sucesión · 4 decisiones estratégicas
-  //          5 separación dueño/gerencia · 6 frecuencia de reuniones · 7 motivación · 8 disponibilidad · 9 presupuesto
-  if (get(0) >= 2) signals.push('el tamaño del equipo');
-  if (get(1) >= 2) signals.push('el volumen de facturación justifica control formal');
-  if (get(2) >= 2) signals.push('la complejidad en la estructura de propiedad');
-  if (get(3) >= 2) signals.push('la proximidad de un proceso de sucesión');
-  if (get(4) >= 0 && get(4) <= 1) signals.push('que las decisiones estratégicas recaen en pocas personas sin contrapeso');
-  if (get(5) >= 0 && get(5) <= 1) signals.push('la falta de separación entre quién es dueño y quién gerencia');
-  if (get(6) >= 0 && get(6) <= 1) signals.push('que los líderes de la empresa no se reúnen a pensar en el futuro');
-  if (get(8) >= 2) signals.push('la disponibilidad para reunirse regularmente');
-  if (get(9) >= 0 && get(9) <= 1) signals.push('las restricciones de presupuesto para el directorio');
-
-  const cap = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
-
-  if (pct < 30) {
-    return signals.length > 0
-      ? `Hasta aquí, la empresa muestra un perfil de baja complejidad. Vale la pena observar ${signals[0]}, pero no hay urgencia inmediata.`
-      : 'Con las respuestas hasta ahora, la empresa no muestra señales urgentes que justifiquen un directorio formal.';
-  }
-  if (pct < 55) {
-    const f = signals[0] ?? 'algunos factores relevantes';
-    return `Las respuestas muestran señales tempranas. ${cap(f)} empieza a justificar una estructura de gobierno más formal, aunque todavía no es urgente.`;
-  }
-  if (pct < 75) {
-    const fs = signals.slice(0, 2).join(' y ') || 'varios factores';
-    return `La empresa está en un momento de transición. ${cap(fs)} indican que un directorio agregaría valor concreto en esta etapa.`;
-  }
-  const fs = signals.slice(0, 3).join(', ') || 'múltiples dimensiones';
-  return `Las respuestas apuntan a una necesidad clara. ${cap(fs)} son señales sólidas de que operar sin un directorio representa un riesgo real.`;
 }

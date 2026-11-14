@@ -3,7 +3,8 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import ModuleLayout from '../../../components/ModuleLayout';
-import { PREGUNTAS_M1, TOTAL_PREGUNTAS, calcularModulo1 } from '../../../lib/modulo1';
+import { TOTAL_PREGUNTAS, IDX, calcularModulo1, resolverPregunta, perfilDeRespuestas } from '../../../lib/modulo1';
+import { CATEGORIA_LABEL, INDUSTRIAS } from '../../../lib/pymes';
 import { storage } from '../../../lib/storage';
 
 export default function Modulo1() {
@@ -51,7 +52,8 @@ export default function Modulo1() {
 
   const answeredCount = respuestas.filter(v => v >= 0).length;
   const selected = respuestas[current];
-  const pregunta = PREGUNTAS_M1[current];
+  const pregunta = resolverPregunta(current, respuestas);
+  const perfil = current > IDX.empleados ? perfilDeRespuestas(respuestas) : null;
 
   return (
     <ModuleLayout moduleNumber={1}>
@@ -68,8 +70,21 @@ export default function Modulo1() {
       {current === 0 && (
         <div className="border border-purple-100 bg-purple-50 rounded-xl px-5 py-4 mb-4">
           <p className="text-sm text-gray-700 leading-relaxed">
-            En este módulo vamos a evaluar si tu empresa tiene las condiciones para beneficiarse de un directorio formal. Son {TOTAL_PREGUNTAS} preguntas rápidas sobre tamaño, propiedad, gobierno y disponibilidad.
+            En este módulo vamos a evaluar si tu empresa tiene las condiciones para beneficiarse de un directorio formal. Son {TOTAL_PREGUNTAS} preguntas: primero sobre vos y tu empresa (industria, facturación y empleados, con los criterios oficiales PyME) y después sobre cómo se gobierna hoy.
           </p>
+        </div>
+      )}
+
+      {perfil && (
+        <div className={`rounded-xl px-4 py-3 mb-4 text-xs leading-relaxed border ${perfil.enObjetivo ? 'bg-white border-gray-200 text-gray-600' : 'bg-amber-50 border-amber-200 text-amber-900'}`}>
+          <span className="font-semibold text-gray-900">Tu empresa:</span>{' '}
+          {CATEGORIA_LABEL[perfil.categoria]} · {INDUSTRIAS.find(i => i.key === perfil.industria)?.label}
+          {perfil.masDe50Empleados && ' · más de 50 empleados'}
+          {!perfil.enObjetivo && (
+            <span className="block mt-1">
+              Directorio AR está pensado para medianas empresas (Tramo 1 y 2) o con más de 50 empleados. Vas a hacer un <strong>diagnóstico abreviado</strong> (Módulos 1 y 2), y podés seguir con el completo si querés.
+            </span>
+          )}
         </div>
       )}
 
@@ -97,7 +112,12 @@ export default function Modulo1() {
                   : 'border-gray-200 text-gray-700 hover:border-gray-300 hover:bg-gray-50'
                 }`}
             >
-              {opt.texto}
+              {opt.texto.includes(' — ') ? (
+                <>
+                  <span className="block">{opt.texto.split(' — ')[0]}</span>
+                  <span className={`block text-xs mt-0.5 ${selected === idx ? 'text-brand/70' : 'text-gray-400'} font-normal`}>{opt.texto.split(' — ')[1]}</span>
+                </>
+              ) : opt.texto}
             </button>
           ))}
         </div>

@@ -2,7 +2,7 @@ import type { Modulo1Resultado, Modulo2Resultado, Modulo3Resultado, Modulo4Diagn
 import { getItem, setItem, removeItem } from './storage-core';
 
 const KEYS = {
-  modulo1Respuestas: "directorio_ar:modulo1:respuestas",
+  modulo1Respuestas: "directorio_ar:modulo1:respuestas_v2", // v2: rol, industria y facturación PyME (nov 2026)
   modulo1Resultado: "directorio_ar:modulo1:resultado",
   modulo2Respuestas: "directorio_ar:modulo2:respuestas",
   modulo2Resultado: "directorio_ar:modulo2:resultado",

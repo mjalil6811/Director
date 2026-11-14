@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import ModuleLayout from '../../../components/ModuleLayout';
 import { storage } from '../../../lib/storage';
 import type { Modulo4Diagnostico } from '../../../types';
+import type { GrupoRol } from '../../../lib/pymes';
 
 type Tab = 'frecuencia' | 'decisiones' | 'relacion' | 'autoevaluacion';
 
@@ -108,24 +109,47 @@ const PROTOCOLO = [
   { number: 7, title: "Mapa de modos de intervención", detail: "Definir para cada tipo de decisión si el directorio lidera, acompaña o se mantiene al margen. Revisarlo cada semestre." },
 ];
 
-const DIAG_PREGUNTAS = [
-  "¿El CEO o dueño estaría dispuesto a presentar resultados formalmente ante el directorio?",
-  "¿Existe o podría existir una separación real entre quién preside el directorio y quién gerencia?",
-  "¿La empresa podría comprometerse a enviar información financiera antes de cada reunión?",
-  "¿Hay disposición a que el directorio cuestione decisiones del CEO?",
-  "¿Se aceptaría una evaluación anual del desempeño del CEO por parte del directorio?",
-];
+// Autoevaluación "¿Estás listo?": misma intención, formulada según quién responde (pregunta 1 del Módulo 1).
+const DIAG_PREGUNTAS: Record<GrupoRol, string[]> = {
+  propietario: [
+    "¿Estarías dispuesto a presentar resultados formalmente ante un directorio?",
+    "¿Podrías separar quién preside el directorio de quién gerencia la empresa?",
+    "¿La empresa podría enviar información financiera completa antes de cada reunión?",
+    "¿Aceptarías que el directorio cuestione tus decisiones?",
+    "¿Aceptarías una evaluación anual de tu desempeño por parte del directorio?",
+    "¿Podrías reservar 2 horas por mes, sin postergarlas, para reunirte con el directorio?",
+  ],
+  gestor: [
+    "¿Estarías dispuesto a rendir cuentas formalmente ante un directorio?",
+    "¿Los dueños aceptarían que la presidencia del directorio y la gerencia estén separadas?",
+    "¿La empresa podría enviar información financiera completa antes de cada reunión?",
+    "¿Los dueños aceptarían que el directorio cuestione sus decisiones (y las tuyas)?",
+    "¿Aceptarías una evaluación anual de tu desempeño por parte del directorio?",
+    "¿Los dueños podrían reservar 2 horas por mes, sin postergarlas, para reunirse con el directorio?",
+  ],
+  familiar: [
+    "¿Quien gestiona estaría dispuesto a presentar resultados formalmente ante un directorio?",
+    "¿Existe o podría existir una separación real entre quién preside el directorio y quién gerencia?",
+    "¿La empresa podría enviar información financiera completa antes de cada reunión?",
+    "¿Hay disposición a que el directorio cuestione a quien gestiona?",
+    "¿Se aceptaría una evaluación anual del desempeño del CEO por parte del directorio?",
+    "¿Los dueños podrían reservar 2 horas por mes, sin postergarlas, para reunirse con el directorio?",
+  ],
+};
+const TOTAL_DIAG = DIAG_PREGUNTAS.propietario.length;
 
 export default function Modulo4() {
   const router = useRouter();
   const [tab, setTab] = useState<Tab>('frecuencia');
   const [frecuencia, setFrecuencia] = useState<string>('');
-  const [diagRespuestas, setDiagRespuestas] = useState<(1 | 0.5 | 0 | null)[]>(new Array(5).fill(null));
+  const [diagRespuestas, setDiagRespuestas] = useState<(1 | 0.5 | 0 | null)[]>(new Array(TOTAL_DIAG).fill(null));
   const [diagResultado, setDiagResultado] = useState<Modulo4Diagnostico | null>(null);
+  const [grupo, setGrupo] = useState<GrupoRol>('propietario');
 
   useEffect(() => {
     const m1Result = storage.getModulo1Resultado();
     let freq = '';
+    if (m1Result?.perfil) setGrupo(m1Result.perfil.grupo);
     if (m1Result) {
       const pct = m1Result.porcentaje ?? 0;
       if (pct < 30) freq = "No aplica aún";
@@ -150,9 +174,9 @@ export default function Modulo4() {
     setDiagRespuestas(updated);
 
     const answered = updated.filter(v => v !== null);
-    if (answered.length === 5) {
+    if (answered.length === TOTAL_DIAG) {
       const sum = answered.reduce<number>((s, v) => s + (v ?? 0), 0);
-      const porcentaje = Math.round((sum / 5) * 100);
+      const porcentaje = Math.round((sum / TOTAL_DIAG) * 100);
       let nivel: string;
       if (porcentaje >= 80) nivel = "Estas listo para dar el paso";
       else if (porcentaje >= 50) nivel = "Casi listo — hay cosas por resolver";
@@ -391,14 +415,14 @@ export default function Modulo4() {
                 <div className="w-full bg-gray-200 rounded-full h-2.5 mb-1">
                   <div className="h-2.5 rounded-full bg-brand transition-all duration-500" style={{ width: `${pct}%` }} />
                 </div>
-                <p className="text-xs text-gray-500 mt-2 mb-3">{pct}% — {diagAnswered} de 5 respondidas</p>
+                <p className="text-xs text-gray-500 mt-2 mb-3">{pct}% — {diagAnswered} de {TOTAL_DIAG} respondidas</p>
                 <p className="text-sm text-gray-700 leading-relaxed">{readyDesc}</p>
               </div>
             );
           })()}
 
           <div className="space-y-3">
-            {DIAG_PREGUNTAS.map((pregunta, idx) => (
+            {DIAG_PREGUNTAS[grupo].map((pregunta, idx) => (
               <div key={idx} className="border border-gray-200 rounded-xl bg-white p-4">
                 <p className="text-sm text-gray-800 mb-3 leading-snug">{idx + 1}. {pregunta}</p>
                 <div className="flex gap-2">

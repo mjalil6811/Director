@@ -12,19 +12,41 @@ export function modulosCompletadosF1(): boolean[] {
   ];
 }
 
+/** Empresas fuera del público objetivo hacen solo M1 + M2 y terminan en el informe preliminar. */
+export const MODULOS_ABREVIADO = 2;
+
 export type ProgresoF1 = {
   completados: number;
-  /** Próximo módulo a hacer (1–5), o 6 si ya terminó. */
+  /** Módulos que componen SU recorrido: 5, o 2 si es abreviado. */
+  total: number;
+  abreviado: boolean;
+  /** Próximo módulo a hacer (1–5), o total + 1 si ya terminó. */
   siguiente: number;
   terminado: boolean;
+  /** A dónde ir al terminar el recorrido. */
+  destinoFinal: '/resultado' | '/informe-preliminar';
 };
 
 export function progresoF1(): ProgresoF1 {
-  const flags = modulosCompletadosF1();
+  const abreviado = storage.getModulo1Resultado()?.perfil?.recorrido === 'abreviado';
+  const total = abreviado ? MODULOS_ABREVIADO : TOTAL_MODULOS_F1;
+  const flags = modulosCompletadosF1().slice(0, total);
   const completados = flags.filter(Boolean).length;
   const idx = flags.findIndex(c => !c);
-  const siguiente = idx === -1 ? TOTAL_MODULOS_F1 + 1 : idx + 1;
-  return { completados, siguiente, terminado: idx === -1 };
+  return {
+    completados,
+    total,
+    abreviado,
+    siguiente: idx === -1 ? total + 1 : idx + 1,
+    terminado: idx === -1,
+    destinoFinal: abreviado ? '/informe-preliminar' : '/resultado',
+  };
+}
+
+/** Pasa un diagnóstico abreviado a completo (el usuario eligió seguir con M3–M5). */
+export function pasarARecorridoCompleto(): void {
+  const r = storage.getModulo1Resultado();
+  if (r?.perfil) storage.setModulo1Resultado({ ...r, perfil: { ...r.perfil, recorrido: 'completo' } });
 }
 
 /** Un módulo se desbloquea cuando el anterior está completo. */

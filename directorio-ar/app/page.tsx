@@ -10,7 +10,7 @@ import { FASES, MODULOS_F1 } from '../lib/navegacion';
 
 const STATS = [
   { valor: '~8 min', label: 'Dura el diagnóstico' },
-  { valor: '34', label: 'Preguntas en 5 módulos' },
+  { valor: '35', label: 'Preguntas en 5 módulos' },
   { valor: '12', label: 'Herramientas integradas' },
   { valor: '100%', label: 'Gratuito y privado' },
 ];
@@ -93,7 +93,7 @@ const FAQ = [
 const RECORRIDO = [
   {
     fase: 1, verbo: FASES[0].verbo, color: FASES[0].color, bg: FASES[0].bg, href: FASES[0].href,
-    que: 'Respondés 34 preguntas en 5 módulos cortos',
+    que: 'Respondés 35 preguntas en 5 módulos cortos, con los criterios oficiales PyME',
     obtenes: 'Governance Score, nivel de urgencia y perfiles de directores que te faltan',
     tiempo: '~8 min',
   },
@@ -135,6 +135,9 @@ export default function HomePage() {
   const [nombre, setNombre] = useState('');
   const [completadosFase1, setCompletadosFase1] = useState(0);
   const [siguiente, setSiguiente] = useState(1);
+  const [totalF1, setTotalF1] = useState(5);
+  const [terminado, setTerminado] = useState(false);
+  const [abreviado, setAbreviado] = useState(false);
 
   useEffect(() => {
     const n = storage.getEmpresaNombre();
@@ -142,12 +145,15 @@ export default function HomePage() {
     const p = progresoF1();
     setCompletadosFase1(p.completados);
     setSiguiente(p.siguiente);
+    setTotalF1(p.total);
+    setTerminado(p.terminado);
+    setAbreviado(p.abreviado);
   }, []);
 
   function handleStart() {
     if (nombre.trim()) storage.setEmpresaNombre(nombre.trim());
     const p = progresoF1();
-    router.push(p.terminado ? '/resultado' : `/modulo/${p.siguiente}`);
+    router.push(p.terminado ? p.destinoFinal : `/modulo/${p.siguiente}`);
   }
 
   return (
@@ -206,16 +212,16 @@ export default function HomePage() {
               <span className="text-xs font-medium text-brand">Gratuito · Sin registro · 100% privado</span>
             </div>
 
-            <h1 className="text-4xl sm:text-5xl font-bold text-gray-900 tracking-tight leading-[1.08] mb-5">
-              Profesionalizá el{' '}
+            <h1 className="text-4xl sm:text-5xl lg:text-[2.75rem] font-bold text-gray-900 tracking-tight leading-[1.1] mb-5">
+              Decisiones más profesionales hoy,{' '}
+              <br className="hidden lg:block" />
               <span className="bg-gradient-to-r from-brand to-brand-light bg-clip-text text-transparent">
-                gobierno corporativo
-              </span>{' '}
-              de tu empresa
+                una empresa preparada para mañana
+              </span>
             </h1>
 
             <p className="text-base sm:text-lg text-gray-500 leading-relaxed max-w-xl mx-auto lg:mx-0 mb-7">
-              En 8 minutos sabés si tu empresa necesita un directorio, qué perfiles sumar y por dónde empezar. Después, te acompañamos a armarlo y operarlo.
+              Las empresas que crecen no deciden solas: se apoyan en personas con experiencia para las decisiones importantes. En 8 minutos sabés si es tu momento y cómo dar el primer paso: armar tu <strong className="font-semibold text-gray-700">consejo asesor</strong>.
             </p>
 
             {/* CTA group */}
@@ -238,28 +244,30 @@ export default function HomePage() {
                 onClick={handleStart}
                 className="w-full sm:w-auto px-7 py-3 bg-gradient-to-r from-brand to-[#6359C7] hover:from-brand-dark hover:to-brand text-white font-semibold rounded-xl shadow-lg shadow-brand/20 hover:shadow-xl hover:shadow-brand/30 transition-all text-sm"
               >
-                {completadosFase1 === 5 ? 'Ver mi resultado' : completadosFase1 > 0 ? `Continuar diagnóstico (${completadosFase1}/5)` : 'Comenzar diagnóstico gratuito'}
+                {terminado ? (abreviado ? 'Ver mi informe' : 'Ver mi resultado') : completadosFase1 > 0 ? `Continuar diagnóstico (${completadosFase1}/${totalF1})` : 'Comenzar diagnóstico gratuito'}
               </button>
             </div>
 
             {/* Qué pasa al hacer clic */}
             <p className="text-sm text-gray-600 mb-1">
-              {completadosFase1 === 5
-                ? <>Ya completaste el diagnóstico. Vas a ver tu <strong className="font-semibold text-gray-900">resultado final</strong> y el siguiente paso: constituir el directorio.</>
+              {terminado
+                ? abreviado
+                  ? <>Completaste el diagnóstico abreviado. Vas a ver tu <strong className="font-semibold text-gray-900">informe</strong>, y desde ahí podés seguir con el completo.</>
+                  : <>Ya completaste el diagnóstico. Vas a ver tu <strong className="font-semibold text-gray-900">resultado final</strong> y el siguiente paso: constituir el directorio.</>
                 : completadosFase1 > 0
                 ? <>Próximo paso: <strong className="font-semibold text-gray-900">Módulo {siguiente} · {MODULOS_F1[siguiente - 1]?.titulo}</strong> <span className="text-gray-400">(~{MODULOS_F1[siguiente - 1]?.min} min)</span></>
                 : <>Empezás por el <strong className="font-semibold text-gray-900">Módulo 1 · ¿Necesitás un directorio?</strong> <span className="text-gray-400">(10 preguntas, ~3 min)</span></>}
             </p>
             <p className="text-xs text-gray-400">Se guarda solo en tu dispositivo. Podés pausar y retomar cuando quieras.</p>
 
-            {completadosFase1 > 0 && completadosFase1 < 5 && (
+            {completadosFase1 > 0 && !terminado && (
               <div className="mt-5 max-w-sm mx-auto lg:mx-0">
                 <div className="flex gap-1.5">
-                  {MODULOS_F1.map(m => (
+                  {MODULOS_F1.slice(0, totalF1).map(m => (
                     <div key={m.n} title={`Módulo ${m.n} · ${m.titulo}`} className={`flex-1 h-1.5 rounded-full ${m.n < siguiente ? 'bg-brand' : m.n === siguiente ? 'bg-brand/35' : 'bg-gray-200'}`} />
                   ))}
                 </div>
-                <p className="text-[11px] text-gray-400 mt-1.5 text-left">{completadosFase1} de 5 módulos completados</p>
+                <p className="text-[11px] text-gray-400 mt-1.5 text-left">{completadosFase1} de {totalF1} módulos completados{abreviado ? ' · diagnóstico abreviado' : ''}</p>
               </div>
             )}
           </div>
@@ -272,8 +280,8 @@ export default function HomePage() {
             </div>
             <ol className="space-y-3">
               {RECORRIDO.map(r => {
-                const done = r.fase === 1 && completadosFase1 === 5;
-                const enCurso = r.fase === 1 && completadosFase1 > 0 && completadosFase1 < 5;
+                const done = r.fase === 1 && terminado;
+                const enCurso = r.fase === 1 && completadosFase1 > 0 && !terminado;
                 return (
                   <li key={r.fase}>
                     <button
@@ -287,7 +295,7 @@ export default function HomePage() {
                         <div className="flex items-center gap-2 mb-0.5 flex-wrap">
                           <span className="text-sm font-bold" style={{ color: r.color }}>{r.verbo}</span>
                           <span className="text-[11px] font-medium px-1.5 py-0.5 rounded-md" style={{ color: r.color, backgroundColor: r.bg }}>{r.tiempo}</span>
-                          {enCurso && <span className="text-[11px] font-semibold text-gray-500">· {completadosFase1}/5 hecho</span>}
+                          {enCurso && <span className="text-[11px] font-semibold text-gray-500">· {completadosFase1}/{totalF1} hecho</span>}
                           {r.fase === 1 && completadosFase1 === 0 && <span className="text-[11px] font-semibold text-gray-500">· Empezás acá</span>}
                         </div>
                         <p className="text-[13px] text-gray-700 leading-snug">{r.que}</p>
@@ -325,7 +333,7 @@ export default function HomePage() {
           <div className="text-center mb-12">
             <p className="text-xs font-semibold text-brand uppercase tracking-wider mb-2">Cómo funciona</p>
             <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 tracking-tight">
-              Tres etapas para un gobierno corporativo sólido
+              Tres etapas para decidir mejor y con respaldo
             </h2>
           </div>
 
@@ -376,7 +384,7 @@ export default function HomePage() {
             Empezá el diagnóstico en 8 minutos
           </h2>
           <p className="text-sm text-white/70 mb-6">
-            34 preguntas en 5 módulos cortos para saber si tu empresa necesita un directorio. Resultado inmediato.
+            35 preguntas en 5 módulos cortos para saber si tu empresa necesita un directorio. Resultado inmediato.
           </p>
           <button
             onClick={handleStart}
@@ -418,16 +426,16 @@ export default function HomePage() {
             <div className="bg-white border border-gray-200 rounded-2xl p-5 shadow-sm">
               <div className="flex items-center justify-between mb-3">
                 <span className="text-sm font-semibold text-gray-900">Fase 1 — Diagnóstico</span>
-                <span className="text-sm font-bold text-brand">{completadosFase1}/5</span>
+                <span className="text-sm font-bold text-brand">{completadosFase1}/{totalF1}</span>
               </div>
               <div className="flex gap-1 mb-4">
-                {[1, 2, 3, 4, 5].map(i => (
+                {Array.from({ length: totalF1 }, (_, k) => k + 1).map(i => (
                   <div key={i} className={`flex-1 h-2 rounded-full ${i <= completadosFase1 ? 'bg-brand' : 'bg-gray-100'}`} />
                 ))}
               </div>
               <div className="flex gap-2 flex-wrap">
                 <button onClick={handleStart} className="px-4 py-2 bg-brand hover:bg-brand-dark text-white text-sm font-semibold rounded-xl">
-                  {completadosFase1 === 5 ? 'Ver resultado' : 'Continuar'}
+                  {terminado ? (abreviado ? 'Ver informe' : 'Ver resultado') : 'Continuar'}
                 </button>
                 <button onClick={() => router.push('/dashboard')} className="px-4 py-2 border border-gray-200 text-gray-600 text-sm font-medium rounded-xl hover:bg-gray-50">
                   Governance Score
@@ -462,7 +470,7 @@ export default function HomePage() {
       <section className="px-4 py-16 bg-surface border-t border-gray-100">
         <div className="max-w-2xl mx-auto text-center">
           <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 tracking-tight mb-3">
-            Tu empresa merece un gobierno corporativo profesional
+            Tu empresa merece decisiones con respaldo
           </h2>
           <p className="text-sm text-gray-500 mb-6 max-w-lg mx-auto">
             No importa si ya tenés un directorio o si estás pensando en armar uno. Empezá por el diagnóstico y dejá que la herramienta te guíe.

@@ -5,6 +5,8 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { storage } from '../../lib/storage';
 import { NIVELES, calcularNivel } from '../../lib/modulo1';
+import { CATEGORIA_LABEL, INDUSTRIAS, NORMA_TOPES } from '../../lib/pymes';
+import { pasarARecorridoCompleto } from '../../lib/progreso';
 import type { Modulo1Resultado, Modulo2Resultado } from '../../types';
 
 // ─── Donut Chart ──────────────────────────────────────────────────────────────
@@ -155,6 +157,10 @@ export default function InformePreliminar() {
   }));
 
   // M1 nivel color
+  const perfil = m1.perfil;
+  const abreviado = perfil?.recorrido === 'abreviado';
+  const industriaLabel = perfil ? INDUSTRIAS.find(i => i.key === perfil.industria)?.label : undefined;
+
   const nivelColor = nivelKey === 'prematuro' ? '#6B7280' : nivelKey === 'temprano' ? '#D97706' : nivelKey === 'transicion' ? '#534AB7' : '#DC2626';
 
   return (
@@ -179,6 +185,33 @@ export default function InformePreliminar() {
           </h1>
           <p className="text-sm text-gray-400">Resultado consolidado de los módulos 1 y 2</p>
         </div>
+
+        {/* Perfil de la empresa según criterios oficiales PyME */}
+        {perfil && (
+          <div className={`rounded-2xl border p-4 text-sm leading-relaxed ${abreviado ? 'bg-amber-50 border-amber-200' : 'bg-white border-gray-200'}`}>
+            <p className="text-xs font-semibold uppercase tracking-wider mb-1 text-gray-500">
+              {abreviado ? 'Diagnóstico abreviado' : 'Tu empresa'}
+            </p>
+            <p className="text-gray-800">
+              <strong>{CATEGORIA_LABEL[perfil.categoria]}</strong> · {industriaLabel}
+              {perfil.masDe50Empleados ? ' · más de 50 empleados' : ''}
+            </p>
+            {abreviado ? (
+              <p className="text-xs text-amber-900 mt-2">
+                Directorio AR está pensado para medianas empresas (Tramo 1 y 2) o con más de 50 empleados.
+                Por eso tu diagnóstico termina acá, con lo esencial. Si igual querés el análisis completo
+                (perfiles de directores, dinámica y relación con la gerencia), podés seguir más abajo.
+              </p>
+            ) : perfil.categoria === 'grande' ? (
+              <p className="text-xs text-gray-500 mt-2">
+                Por facturación tu empresa supera el Tramo 2 PyME. La herramienta está calibrada para medianas,
+                pero el diagnóstico aplica igual: a tu escala, el directorio suele ser imprescindible.
+              </p>
+            ) : (
+              <p className="text-xs text-gray-400 mt-2">Categoría según topes de facturación ({NORMA_TOPES}).</p>
+            )}
+          </div>
+        )}
 
         {/* Combined verdict */}
         <div className="border-2 rounded-2xl p-6 text-center shadow-sm" style={{ borderColor: diagColor, backgroundColor: diagBg }}>
@@ -360,6 +393,28 @@ export default function InformePreliminar() {
         )}
 
         {/* CTA */}
+        {abreviado ? (
+          <div className="border border-gray-200 rounded-2xl bg-white p-6 text-center shadow-sm">
+            <p className="text-sm text-gray-700 font-semibold mb-1">Tu diagnóstico abreviado está completo</p>
+            <p className="text-sm text-gray-500 mb-4">
+              Guardamos tus respuestas en este dispositivo. Podés volver cuando la empresa crezca, o seguir ahora con el diagnóstico completo.
+            </p>
+            <div className="flex flex-col sm:flex-row gap-2">
+              <button
+                onClick={() => router.push('/')}
+                className="flex-1 py-3 px-4 bg-brand hover:bg-brand-dark text-white font-semibold rounded-xl text-sm"
+              >
+                Listo, volver al inicio
+              </button>
+              <button
+                onClick={() => { pasarARecorridoCompleto(); router.push('/modulo/3'); }}
+                className="flex-1 py-3 px-4 border border-brand-100 bg-brand-50 text-brand hover:bg-brand-100 font-semibold rounded-xl text-sm"
+              >
+                Hacer el diagnóstico completo →
+              </button>
+            </div>
+          </div>
+        ) : (
         <div className="border border-gray-200 rounded-2xl bg-white p-6 text-center shadow-sm">
           <p className="text-sm text-gray-500 mb-4">
             Ahora que sabés que tu empresa se beneficiaría de un directorio, el siguiente paso es definir <strong>qué perfiles necesitás</strong>.
@@ -371,6 +426,7 @@ export default function InformePreliminar() {
             Continuar — Definir perfiles del directorio →
           </button>
         </div>
+        )}
 
         <button
           onClick={() => router.push('/')}
