@@ -1,4 +1,4 @@
-import type { ItemReunion, TipoReunionItem, Reunion, TareaReunion, ReunionResultado } from '../types/fase2';
+import type { ItemReunion, TipoReunionItem, Reunion, TareaReunion } from '../types/fase2';
 
 export const PLANTILLA_ITEMS: Omit<ItemReunion, 'id' | 'completado' | 'notas' | 'adjuntos' | 'decisiones' | 'tareas'>[] = [
   { tipo: 'apertura', titulo: 'Apertura y convocatoria', descripcion: 'El presidente declara abierta la sesión y confirma que la convocatoria fue cursada en tiempo y forma.', responsable: 'Presidente', duracionMinutos: 5, obligatorio: true },
@@ -79,13 +79,4 @@ ${reunion.observacionesGenerales ? `\nOBSERVACIONES:\n${reunion.observacionesGen
 _________________________          _________________________
 Presidente                          Secretario
 `;
-}
-
-export function calcularStats(reuniones: Reunion[]): ReunionResultado {
-  const tareasAbiertas = reuniones.flatMap(r => r.orden.flatMap(i => i.tareas)).filter(t => !t.completada);
-  const conAsistentes = reuniones.filter(r => r.asistentes.length > 0);
-  const asistenciaPromedio = conAsistentes.length === 0 ? 0 : Math.round(
-    conAsistentes.reduce((s, r) => s + r.asistentes.filter(a => a.presente).length / r.asistentes.length * 100, 0) / conAsistentes.length
-  );
-  return { reuniones, totalReuniones: reuniones.length, tareasAbiertas, asistenciaPromedio };
 }

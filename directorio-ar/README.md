@@ -47,6 +47,8 @@ lib/
   navegacion.ts               FUENTE UNICA de fases, modulos y rutas (titulos, colores, links)
   pymes.ts                    Criterios oficiales PyME (topes Res. 1/2026), industrias, roles y perfil
   progreso.ts                 Progreso de la Fase 1 (completados, siguiente, desbloqueo)
+  indice.ts                   Calculo del Indice de preparacion (0-100) y referencias de mercado
+  contenido-home.ts           Textos de la landing (editar aca, no en app/page.tsx)
   storage-core.ts             Acceso seguro a localStorage + generarId (compartido)
   storage.ts                  Store Fase 1 · storage-fase2.ts · storage-fase3.ts
   moduloN*.ts                 Preguntas y logica de puntaje de cada modulo

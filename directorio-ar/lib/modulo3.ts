@@ -21,14 +21,6 @@ export type PerfilDirectorio = {
   tags: string[];
 };
 
-export type ResultadoPerfil = {
-  perfil: PerfilDirectorio;
-  score: number;
-  urgencia: NivelUrgencia;
-  ranking: 1 | 2 | 3 | 4;
-  justificacion: string;
-};
-
 // ─── Profiles ─────────────────────────────────────────────────────────────────
 
 export const PERFILES: Record<PerfilKey, PerfilDirectorio> = {

@@ -67,9 +67,7 @@ export function opcionesFacturacion(sector: SectorOficial): { texto: string; cat
 
 // ——— Empleados ——————————————————————————————————————————————————————————————
 
-/** Criterio propio de Directorio AR (no oficial): más de 50 empleados entra al público objetivo. */
-export const UMBRAL_EMPLEADOS_OBJETIVO = 50;
-
+// Criterio propio de Directorio AR (no oficial): más de 50 empleados entra al público objetivo (masDe50).
 export const OPCIONES_EMPLEADOS = [
   { texto: 'Hasta 10 personas', puntaje: 0, masDe50: false },
   { texto: 'Entre 11 y 50 personas', puntaje: 1, masDe50: false },

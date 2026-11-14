@@ -5,111 +5,31 @@ import { useRouter } from 'next/navigation';
 import { storage } from '../lib/storage';
 import { progresoF1 } from '../lib/progreso';
 import { FASES, MODULOS_F1 } from '../lib/navegacion';
+import { STATS, PROCESO, BENEFICIOS, FAQ, RECORRIDO } from '../lib/contenido-home';
 
-// ——— Data ———————————————————————————————————————————————————————————————————
-
-const STATS = [
-  { valor: '~8 min', label: 'Dura el diagnóstico' },
-  { valor: '35', label: 'Preguntas en 5 módulos' },
-  { valor: '12', label: 'Herramientas integradas' },
-  { valor: '100%', label: 'Gratuito y privado' },
-];
-
-const PROCESO = [
-  {
-    paso: 'Diagnosticá',
-    titulo: 'Descubrí si es momento de sumar un consejo asesor',
-    descripcion: 'Respondé 5 módulos cortos sobre cómo se decide hoy en tu empresa, qué perfiles te faltan, tu disposición al cambio y la relación con la gerencia.',
-    color: '#534AB7',
-    colorBg: '#EEEDFE',
-    items: ['Índice de preparación 0-100', 'Perfil en 5 dimensiones', 'Comparación con otras empresas', 'Recomendaciones a tu medida'],
-  },
-  {
-    paso: 'Constituí',
-    titulo: 'Armá tu consejo con las herramientas correctas',
-    descripcion: 'Dejá por escrito cómo va a funcionar: el acta de constitución, los acuerdos entre socios o familia (resolviendo situaciones reales) y la agenda de las primeras reuniones.',
-    color: '#0F6E56',
-    colorBg: '#E1F5EE',
-    items: ['Acta de constitución guiada', 'Acuerdos entre socios o familia', 'Reuniones con modo en vivo', 'Cronómetro y acta automática'],
-  },
-  {
-    paso: 'Operá',
-    titulo: 'Hacé que tu consejo funcione en el día a día',
-    descripcion: 'Un tablero con tus números para preparar cada reunión, el seguimiento de lo acordado entre reuniones y una evaluación anual del CEO con informe confidencial.',
-    color: '#854F0B',
-    colorBg: '#FAEEDA',
-    items: ['Tablero financiero e indicadores', 'Seguimiento de compromisos', 'Evaluación del CEO', 'Informe para cada reunión'],
-  },
-];
-
-const BENEFICIOS = [
-  {
-    titulo: 'Diseñado para Argentina',
-    descripcion: 'Tipos societarios (SRL, SA, SAS), CUIT, marco legal argentino, y la realidad de las PyMEs familiares.',
-    icono: (
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <circle cx="12" cy="12" r="10" /><line x1="2" y1="12" x2="22" y2="12" /><path d="M12 2a15 15 0 0 1 4 10 15 15 0 0 1-4 10 15 15 0 0 1-4-10 15 15 0 0 1 4-10z" />
-      </svg>
-    ),
-  },
-  {
-    titulo: 'Sin registro ni servidor',
-    descripcion: 'Todo se guarda en tu dispositivo. No necesitás crear una cuenta ni compartir datos con nadie.',
-    icono: (
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <rect x="3" y="11" width="18" height="11" rx="2" ry="2" /><path d="M7 11V7a5 5 0 0 1 10 0v4" />
-      </svg>
-    ),
-  },
-  {
-    titulo: 'De diagnóstico a acción',
-    descripcion: 'No te dice solo qué necesitás — te da las herramientas para hacerlo: actas, protocolos, reuniones, evaluaciones.',
-    icono: (
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
-      </svg>
-    ),
-  },
-  {
-    titulo: 'Basado en mejores prácticas',
-    descripcion: 'Metodología basada en IFC, OCDE, IAE e IDEA, adaptada para empresas medianas y familiares.',
-    icono: (
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z" /><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z" />
-      </svg>
-    ),
-  },
-];
-
-const FAQ = [
-  { q: '¿Para qué tipo de empresa es esto?', a: 'Para PyMEs, empresas familiares y empresas medianas argentinas que quieren tomar mejores decisiones con el respaldo de un consejo asesor o directorio. No necesitás tener nada armado: la herramienta empieza por evaluar si es tu momento.' },
-  { q: '¿Es gratis?', a: 'Sí, 100% gratuito. No hay planes pagos, ni límites de uso, ni funcionalidades bloqueadas.' },
-  { q: '¿Mis datos son privados?', a: 'Todo se guarda en el localStorage de tu navegador. No hay servidor, no hay base de datos, no hay registro. Tus datos no salen de tu dispositivo.' },
-  { q: '¿Necesito completar todo en una sesión?', a: 'No. Cada módulo guarda tu progreso automáticamente. Podés volver cuando quieras y retomar donde dejaste.' },
-  { q: '¿Qué es el Índice de preparación?', a: 'Es un puntaje de 0 a 100 que mide qué tan preparada está tu empresa para decidir con el respaldo de un consejo asesor o directorio. Integra 5 dimensiones: necesidad, decisiones, perfiles, disposición y dinámica. Sirve como referencia ante inversores, fondos y socios estratégicos.' },
-];
-
-// Lo que el usuario va a hacer, visible sin scroll
-const RECORRIDO = [
-  {
-    fase: 1, verbo: FASES[0].verbo, color: FASES[0].color, bg: FASES[0].bg, href: FASES[0].href,
-    que: 'Respondés 35 preguntas en 5 módulos cortos, con los criterios oficiales PyME',
-    obtenes: 'Índice de preparación, nivel de urgencia y los perfiles de asesores que te faltan',
-    tiempo: '~8 min',
-  },
-  {
-    fase: 2, verbo: FASES[1].verbo, color: FASES[1].color, bg: FASES[1].bg, href: FASES[1].href,
-    que: 'Completás el acta, el protocolo de socios y la agenda de reuniones',
-    obtenes: 'Documentos listos para revisar con tu abogado',
-    tiempo: 'Cuando quieras',
-  },
-  {
-    fase: 3, verbo: FASES[2].verbo, color: FASES[2].color, bg: FASES[2].bg, href: FASES[2].href,
-    que: 'Cargás tus números y seguís lo acordado en cada reunión',
-    obtenes: 'Tablero financiero, seguimiento de compromisos y evaluación del CEO',
-    tiempo: 'Mes a mes',
-  },
-];
+// Íconos de la sección "Por qué Directorio AR" (los textos están en lib/contenido-home.ts)
+const ICONOS = {
+  globo: (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <circle cx="12" cy="12" r="10" /><line x1="2" y1="12" x2="22" y2="12" /><path d="M12 2a15 15 0 0 1 4 10 15 15 0 0 1-4 10 15 15 0 0 1-4-10 15 15 0 0 1 4-10z" />
+    </svg>
+  ),
+  candado: (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <rect x="3" y="11" width="18" height="11" rx="2" ry="2" /><path d="M7 11V7a5 5 0 0 1 10 0v4" />
+    </svg>
+  ),
+  pulso: (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
+    </svg>
+  ),
+  libro: (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z" /><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z" />
+    </svg>
+  ),
+};
 
 // ——— Components ————————————————————————————————————————————————————————————
 
@@ -203,7 +123,7 @@ export default function HomePage() {
 
       {/* ——— Hero ——— */}
       <section className="bg-gradient-to-b from-white via-surface to-white px-4 pt-10 sm:pt-14 pb-12">
-        <div className="max-w-6xl mx-auto grid lg:grid-cols-[1.05fr_1fr] gap-10 lg:gap-14 items-center">
+        <div className="max-w-6xl mx-auto grid lg:grid-cols-[1.2fr_1fr] gap-10 lg:gap-14 items-center">
 
           {/* Columna izquierda: propuesta + CTA */}
           <div className="text-center lg:text-left">
@@ -212,16 +132,16 @@ export default function HomePage() {
               <span className="text-xs font-medium text-brand">Gratuito · Sin registro · 100% privado</span>
             </div>
 
-            <h1 className="text-4xl sm:text-5xl lg:text-[2.75rem] font-bold text-gray-900 tracking-tight leading-[1.1] mb-5">
-              Decisiones más profesionales hoy,{' '}
+            <h1 className="text-4xl sm:text-[2.75rem] lg:text-[2.4rem] font-bold text-gray-900 tracking-tight leading-[1.1] mb-5">
+              La nueva era de los directorios:{' '}
               <br className="hidden lg:block" />
               <span className="bg-gradient-to-r from-brand to-brand-light bg-clip-text text-transparent">
-                una empresa preparada para mañana
+                asesores que suman y preparan tu empresa para el futuro
               </span>
             </h1>
 
             <p className="text-base sm:text-lg text-gray-500 leading-relaxed max-w-xl mx-auto lg:mx-0 mb-7">
-              Las empresas que crecen no deciden solas: se apoyan en personas con experiencia para las decisiones importantes. En 8 minutos sabés si es tu momento y cómo dar el primer paso: armar tu <strong className="font-semibold text-gray-700">consejo asesor</strong>.
+              Un <strong className="font-semibold text-gray-700">consejo asesor</strong> que aporta experiencia y mirada estratégica, y acompaña a los dueños en las decisiones importantes.
             </p>
 
             {/* CTA group */}
@@ -408,7 +328,7 @@ export default function HomePage() {
             {BENEFICIOS.map(b => (
               <div key={b.titulo} className="bg-white rounded-2xl border border-gray-200 p-5 hover:shadow-md transition-shadow">
                 <div className="w-10 h-10 rounded-xl bg-brand-50 flex items-center justify-center text-brand mb-3">
-                  {b.icono}
+                  {ICONOS[b.icono]}
                 </div>
                 <h3 className="text-sm font-bold text-gray-900 mb-1">{b.titulo}</h3>
                 <p className="text-xs text-gray-500 leading-relaxed">{b.descripcion}</p>
