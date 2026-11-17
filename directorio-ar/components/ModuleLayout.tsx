@@ -58,7 +58,7 @@ export default function ModuleLayout({ moduleNumber, title, subtitle, children }
         </div>
       </div>
 
-      <main className="flex-1 px-4 py-8 max-w-2xl mx-auto w-full">
+      <main className="flex-1 px-4 py-5 max-w-2xl mx-auto w-full">
         {subtitle && (
           <p className="text-sm text-gray-500 mb-6 leading-relaxed">{subtitle}</p>
         )}

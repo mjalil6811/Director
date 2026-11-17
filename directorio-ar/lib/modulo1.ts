@@ -58,7 +58,7 @@ const PREGUNTAS: PreguntaDef[] = [
     id: "facturacion",
     dimension: "tamano",
     texto: "¿Cuál fue la facturación anual promedio de los últimos 3 años?",
-    aclaracion: `Promedio de los últimos 3 ejercicios cerrados, sin IVA y descontando el 75% de lo exportado. Los rangos son los topes oficiales PyME para tu industria (${NORMA_TOPES}).`,
+    aclaracion: `Promedio de los últimos 3 ejercicios, sin IVA. Rangos según los topes oficiales PyME de tu industria (${NORMA_TOPES}).`,
     opciones: "facturacion",
   },
   {

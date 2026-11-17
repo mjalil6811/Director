@@ -1,5 +1,6 @@
 'use client';
 
+import Pregunta, { IntroModulo } from '../../../components/Pregunta';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import ModuleLayout from '../../../components/ModuleLayout';
@@ -57,68 +58,26 @@ export default function Modulo2() {
 
   return (
     <ModuleLayout moduleNumber={2}>
-      <div className="mb-5">
-        <div className="flex justify-between text-xs text-gray-400 mb-1.5">
-          <span>{answeredCount} de {TOTAL} respondidas</span>
-          <span>{Math.round((answeredCount / TOTAL) * 100)}%</span>
-        </div>
-        <div className="w-full h-1.5 bg-gray-100 rounded-full overflow-hidden">
-          <div className="h-full bg-brand rounded-full transition-all duration-300" style={{ width: `${(answeredCount / TOTAL) * 100}%` }} />
-        </div>
-      </div>
-
-      {current === 0 && (
-        <div className="border border-purple-100 bg-purple-50 rounded-xl px-5 py-4 mb-4">
-          <p className="text-sm text-gray-700 leading-relaxed">
-            Ahora vamos a mapear cómo se toman las decisiones hoy en tu empresa. No hay respuestas correctas ni incorrectas — el objetivo es identificar dónde hay concentración de poder o zonas grises.
-          </p>
-        </div>
-      )}
-
-      <div className="border border-gray-200 rounded-xl bg-white overflow-hidden mb-4 shadow-sm">
-        <div className="px-5 pt-5 pb-4 border-b border-gray-100">
-          <div className="flex items-center gap-2 mb-3">
-            <span className="w-6 h-6 rounded-full bg-brand text-white text-xs font-bold flex items-center justify-center shrink-0">{current + 1}</span>
-            <span className="text-xs text-gray-400">de {TOTAL}</span>
-          </div>
-          <p className="text-xs font-semibold text-brand uppercase tracking-wider mb-2">¿Quién decide esto HOY en tu empresa?</p>
-          <p className="text-sm font-semibold text-gray-900 leading-snug mb-2">{sit.texto}</p>
-          {sit.aclaracion && (
-            <p className="text-xs text-gray-400 leading-snug">{sit.aclaracion}</p>
-          )}
-        </div>
-        <div className="p-4 space-y-2">
-          {sit.opciones.map((opt, idx) => (
-            <button
-              key={idx}
-              onClick={() => handleSelect(idx)}
-              className={`w-full text-left px-4 py-3 rounded-lg border text-sm transition-all hover:shadow-md transition-shadow
-                ${selected === idx
-                  ? 'border-brand border-l-4 border-l-brand bg-purple-50 text-brand font-medium'
-                  : 'border-gray-200 text-gray-700 hover:border-gray-300 hover:bg-gray-50'
-                }`}
-            >
-              {opt.label}
-            </button>
-          ))}
-        </div>
-      </div>
-
-      <div className="flex gap-3">
-        {current > 0 && (
-          <button onClick={handlePrev} className="flex-1 py-3 border border-gray-200 rounded-xl text-sm font-medium text-gray-600 hover:bg-gray-50">
-            ← Anterior
-          </button>
-        )}
-        <button
-          onClick={handleNext}
-          disabled={selected < 0}
-          className={`flex-1 py-3 rounded-xl text-sm font-semibold transition-colors
-            ${selected >= 0 ? 'bg-brand hover:bg-brand-dark text-white' : 'bg-gray-100 text-gray-400 cursor-not-allowed'}`}
-        >
-          {current === TOTAL - 1 ? 'Ver informe preliminar →' : 'Siguiente →'}
-        </button>
-      </div>
+      <Pregunta
+        numero={current + 1}
+        total={TOTAL}
+        respondidas={answeredCount}
+        tema="¿Quién decide esto hoy?"
+        texto={sit.texto}
+        aclaracion={sit.aclaracion}
+        opciones={sit.opciones.map(o => o.label)}
+        seleccionada={selected}
+        onSelect={handleSelect}
+        onPrev={current > 0 ? handlePrev : undefined}
+        onNext={handleNext}
+        nextDisabled={selected < 0}
+        nextLabel={current === TOTAL - 1 ? 'Ver informe preliminar →' : 'Siguiente →'}
+        arriba={current === 0 ? (
+          <IntroModulo>
+            Ahora mapeamos cómo se toman las decisiones hoy. No hay respuestas correctas: buscamos dónde hay concentración o zonas grises.
+          </IntroModulo>
+        ) : undefined}
+      />
     </ModuleLayout>
   );
 }
