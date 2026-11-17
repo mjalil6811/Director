@@ -23,7 +23,7 @@ export const MODULOS_F1 = [
   { n: 2, titulo: 'Mapa de decisiones', corto: 'Decisiones', min: 2 },
   { n: 3, titulo: '¿Qué perfiles necesitás?', corto: 'Perfiles', min: 2 },
   { n: 4, titulo: 'Dinámica y funcionamiento', corto: 'Dinámica', min: 1 },
-  { n: 5, titulo: 'Directorio y gerencia', corto: 'Gerencia', min: 1 },
+  { n: 5, titulo: 'Consejo y gerencia', corto: 'Gerencia', min: 1 },
 ] as const;
 
 export const TOTAL_MODULOS_F1 = MODULOS_F1.length;

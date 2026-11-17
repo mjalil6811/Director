@@ -10,7 +10,7 @@ const KEYS = {
   modulo3Resultado: "directorio_ar:modulo3:resultado",
   modulo4Frecuencia: "directorio_ar:modulo4:frecuencia",
   modulo4Diagnostico: "directorio_ar:modulo4:diagnostico",
-  modulo5Respuestas: "directorio_ar:modulo5:respuestas",
+  modulo5Respuestas: "directorio_ar:modulo5:respuestas_v2", // v2: índice de opción por tema (nov 2026)
   modulo5Resultado: "directorio_ar:modulo5:resultado",
   empresaNombre: "directorio_ar:empresa:nombre",
 } as const;
@@ -36,8 +36,8 @@ export const storage = {
   getModulo4Diagnostico: () => getItem<Modulo4Diagnostico>(KEYS.modulo4Diagnostico),
   setModulo4Diagnostico: (v: Modulo4Diagnostico) => setItem(KEYS.modulo4Diagnostico, v),
 
-  getModulo5Respuestas: () => getItem<(1 | 0.5 | 0)[]>(KEYS.modulo5Respuestas),
-  setModulo5Respuestas: (v: (1 | 0.5 | 0)[]) => setItem(KEYS.modulo5Respuestas, v),
+  getModulo5Respuestas: () => getItem<number[]>(KEYS.modulo5Respuestas),
+  setModulo5Respuestas: (v: number[]) => setItem(KEYS.modulo5Respuestas, v),
   getModulo5Resultado: () => getItem<Modulo5Resultado>(KEYS.modulo5Resultado),
   setModulo5Resultado: (v: Modulo5Resultado) => setItem(KEYS.modulo5Resultado, v),
 

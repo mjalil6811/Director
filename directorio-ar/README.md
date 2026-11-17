@@ -42,7 +42,7 @@ components/
   PageHeader.tsx              Barra de titulo de cada herramienta (muestra la fase)
   ModuleLayout.tsx            Layout de los modulos M1-M5 con stepper
   charts.tsx                  Graficos (Recharts): gauge, radar, barras, tendencias, dona
-  PDFReport.tsx, VotacionPanel.tsx, ProgressBar.tsx
+  PDFReport.tsx, VotacionPanel.tsx
 lib/
   navegacion.ts               FUENTE UNICA de fases, modulos y rutas (titulos, colores, links)
   pymes.ts                    Criterios oficiales PyME (topes Res. 1/2026), industrias, roles y perfil

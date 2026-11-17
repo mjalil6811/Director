@@ -115,11 +115,11 @@ export function calcularIndicePreparacion(
   const d5score = m5 ? (m5.porcentaje ?? 0) : 0;
   dims.push({
     id: 'dinamica',
-    label: 'Dinámica directorio-gerencia',
-    descripcion: 'Calidad de la relación operativa entre el directorio y la gerencia: información, autonomía y evaluación mutua.',
+    label: 'Consejo y gerencia',
+    descripcion: 'Qué tan claras están las reglas de trabajo entre el consejo y la gerencia: información, decisiones, desacuerdos y evaluación.',
     score: d5score,
     tieneDatos: !!m5,
-    nivel: d5score >= 75 ? 'Sana' : d5score >= 50 ? 'En construcción' : d5score >= 25 ? 'Con tensiones' : 'Crítica',
+    nivel: d5score >= 75 ? 'Reglas claras' : d5score >= 50 ? 'Con ajustes' : d5score >= 25 ? 'Puntos a acordar' : 'Por definir',
     icono: '🔄',
     fuente: 'Módulo 5',
     modulo: 5,
@@ -169,7 +169,7 @@ export const ETIQUETA_CORTA: Record<string, string> = {
   decisiones: 'Decisiones',
   composicion: 'Perfiles',
   disposicion: 'Disposición',
-  dinamica: 'Dinámica',
+  dinamica: 'Gerencia',
 };
 
 // Referencias de mercado para la comparación (0–100)
