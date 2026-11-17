@@ -233,13 +233,13 @@ export function calcularModulo1(respuestas: number[]): Modulo1Resultado {
   if (perfil && (perfil.categoria === "tramo2" || perfil.categoria === "grande"))
     recs.push(`Por facturación tu empresa es ${CATEGORIA_LABEL[perfil.categoria]}: a esta escala, decidir sin un consejo asesor o directorio expone el patrimonio de todos los socios.`);
   if ((get("propiedad") ?? 0) >= 60)
-    recs.push("La estructura de propiedad es compleja: formalizar quién decide qué, y en qué calidad, es prioritario antes de armar el directorio.");
+    recs.push("La estructura de propiedad es compleja: formalizar quién decide qué, y en qué calidad, es prioritario antes de armar el consejo.");
   if ((get("gobierno") ?? 0) >= 60)
-    recs.push("Las decisiones hoy están muy concentradas. El directorio es urgente para instalar un contrapeso real en las decisiones estratégicas.");
+    recs.push("Las decisiones hoy están muy concentradas. Sumar un consejo asesor es urgente para tener un contrapeso real en las decisiones estratégicas.");
   if ((get("decisiones") ?? 0) >= 60)
-    recs.push("No hay un espacio regular para pensar el rumbo del negocio. Un directorio con agenda fija lo resuelve.");
+    recs.push("No hay un espacio regular para pensar el rumbo del negocio. Un consejo con agenda fija lo resuelve.");
   if ((get("disponibilidad") ?? 100) <= 33)
-    recs.push("El presupuesto disponible es limitado. Un directorio sin recursos se convierte rápido en una formalidad vacía: conviene empezar por un consejo asesor.");
+    recs.push("El presupuesto disponible es limitado. Un consejo sin recursos se convierte rápido en una formalidad vacía: conviene empezar por un consejo asesor.");
   if ((get("tamano") ?? 0) >= 60 && !recs.some(r => r.startsWith("Por facturación")))
     recs.push("El tamaño y la complejidad operativa ya justifican una estructura más formal para decidir.");
 

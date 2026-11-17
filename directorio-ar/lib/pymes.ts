@@ -45,8 +45,16 @@ export const CATEGORIA_LABEL: Record<CategoriaPyme, string> = {
   desconocida: 'Sin datos de facturación',
 };
 
-function millones(pesos: number): string {
-  return `$${Math.round(pesos / 1_000_000).toLocaleString('es-AR')} millones`;
+/**
+ * Monto redondeado y fácil de leer:
+ * - menos de 10.000 millones → "$2.300 millones" (redondeado a 100 millones)
+ * - desde 10.000 millones    → "$18,7 mil millones" (un decimal)
+ * Solo cambia cómo se MUESTRA el corte; la categoría sale del índice de la opción elegida.
+ */
+function monto(pesos: number): string {
+  const m = pesos / 1_000_000;
+  if (m < 10_000) return `$${(Math.round(m / 100) * 100).toLocaleString('es-AR')} millones`;
+  return `$${(Math.round(m / 100) / 10).toLocaleString('es-AR', { maximumFractionDigits: 1 })} mil millones`;
 }
 
 /**
@@ -56,11 +64,11 @@ function millones(pesos: number): string {
 export function opcionesFacturacion(sector: SectorOficial): { texto: string; categoria: CategoriaPyme; puntaje: number | null }[] {
   const t = TOPES_VENTAS[sector];
   return [
-    { texto: `Hasta ${millones(t.micro)} — Microempresa`, categoria: 'micro', puntaje: 0 },
-    { texto: `Entre ${millones(t.micro)} y ${millones(t.pequena)} — Pequeña empresa`, categoria: 'pequena', puntaje: 1 },
-    { texto: `Entre ${millones(t.pequena)} y ${millones(t.tramo1)} — Mediana Tramo 1`, categoria: 'tramo1', puntaje: 2 },
-    { texto: `Entre ${millones(t.tramo1)} y ${millones(t.tramo2)} — Mediana Tramo 2`, categoria: 'tramo2', puntaje: 3 },
-    { texto: `Más de ${millones(t.tramo2)} — Gran empresa`, categoria: 'grande', puntaje: 3 },
+    { texto: `Hasta ${monto(t.micro)} — Microempresa`, categoria: 'micro', puntaje: 0 },
+    { texto: `De ${monto(t.micro)} a ${monto(t.pequena)} — Pequeña empresa`, categoria: 'pequena', puntaje: 1 },
+    { texto: `De ${monto(t.pequena)} a ${monto(t.tramo1)} — Mediana Tramo 1`, categoria: 'tramo1', puntaje: 2 },
+    { texto: `De ${monto(t.tramo1)} a ${monto(t.tramo2)} — Mediana Tramo 2`, categoria: 'tramo2', puntaje: 3 },
+    { texto: `Más de ${monto(t.tramo2)} — Gran empresa`, categoria: 'grande', puntaje: 3 },
     { texto: 'No lo sé', categoria: 'desconocida', puntaje: null },
   ];
 }
@@ -69,10 +77,10 @@ export function opcionesFacturacion(sector: SectorOficial): { texto: string; cat
 
 // Criterio propio de Directorio AR (no oficial): más de 50 empleados entra al público objetivo (masDe50).
 export const OPCIONES_EMPLEADOS = [
-  { texto: 'Hasta 10 personas', puntaje: 0, masDe50: false },
-  { texto: 'Entre 11 y 50 personas', puntaje: 1, masDe50: false },
-  { texto: 'Entre 51 y 200 personas', puntaje: 2, masDe50: true },
-  { texto: 'Más de 200 personas', puntaje: 3, masDe50: true },
+  { texto: 'Menos de 50 personas', puntaje: 0, masDe50: false },
+  { texto: 'Entre 50 y 200 personas', puntaje: 1, masDe50: true },
+  { texto: 'Entre 200 y 400 personas', puntaje: 2, masDe50: true },
+  { texto: 'Más de 400 personas', puntaje: 3, masDe50: true },
 ];
 
 // ——— Quién responde ———————————————————————————————————————————————————————

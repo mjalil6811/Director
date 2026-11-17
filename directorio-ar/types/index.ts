@@ -7,7 +7,7 @@ export interface ModuloResultado {
 }
 
 export interface Modulo1Resultado extends ModuloResultado {
-  scoresPorDimension: { nombre: string; score: number; max: number }[];
+  scoresPorDimension: { nombre: string; score: number; max: number; key?: string; porcentaje?: number }[];
   recomendaciones: string[];
   /** Quién responde, industria y categoría PyME. Ausente en resultados guardados con la versión anterior. */
   perfil?: PerfilEmpresa;

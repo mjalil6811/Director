@@ -199,9 +199,31 @@ export default function Modulo4() {
 
   return (
     <ModuleLayout moduleNumber={4}>
-      <div className="border border-purple-100 bg-purple-50 rounded-xl px-5 py-4 mb-4">
-        <p className="text-sm text-gray-700 leading-relaxed">
-          Este módulo te muestra cómo funciona un directorio en la práctica: frecuencia de reuniones, qué decisiones le corresponden, y una autoevaluación para saber si estás listo para dar el paso.
+      {/* Cómo es una reunión, en la práctica */}
+      <div className="border border-brand-100 bg-brand-50/60 rounded-xl px-5 py-5 mb-4">
+        <p className="text-xs font-semibold text-brand uppercase tracking-wider mb-2">Cómo es una reunión, en la práctica</p>
+        <p className="text-sm text-gray-700 leading-relaxed mb-4">
+          Una reunión de directorio o consejo asesor dura unas <strong>2 horas</strong>, se hace en una fecha fija y no se posterga por la urgencia del día.
+          No es para revisar la operación: es para mirar los números con calma, pensar a dónde va la empresa y tomar las decisiones grandes con otras miradas en la mesa.
+        </p>
+        <ol className="grid sm:grid-cols-2 gap-2">
+          {[
+            { paso: 'Antes', texto: 'Una semana antes, todos reciben los números del período y la agenda. Se llega habiendo leído.' },
+            { paso: 'Apertura (15 min)', texto: 'Se repasan los compromisos de la reunión anterior: qué se hizo y qué quedó pendiente.' },
+            { paso: 'El centro (1 h 30)', texto: 'Resultados del período y uno o dos temas estratégicos a fondo. Se pregunta, se debate y se decide.' },
+            { paso: 'Cierre (15 min)', texto: 'Se anotan las decisiones, quién hace qué y para cuándo. Eso queda en el acta.' },
+          ].map((p, i) => (
+            <li key={p.paso} className="flex gap-3 bg-white rounded-lg border border-gray-100 p-3">
+              <span className="w-6 h-6 rounded-full bg-brand text-white text-xs font-bold flex items-center justify-center shrink-0">{i + 1}</span>
+              <div>
+                <p className="text-xs font-semibold text-gray-900">{p.paso}</p>
+                <p className="text-xs text-gray-600 leading-relaxed mt-0.5">{p.texto}</p>
+              </div>
+            </li>
+          ))}
+        </ol>
+        <p className="text-xs text-gray-500 mt-3">
+          Abajo vas a ver con qué frecuencia te conviene reunirte, qué decisiones se llevan a la mesa y cómo es la relación con la gerencia en el día a día.
         </p>
       </div>
 

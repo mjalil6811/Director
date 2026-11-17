@@ -8,6 +8,8 @@ export type NivelUrgencia = "Crítico" | "Urgente" | "Recomendado" | "Complement
 export type PerfilDirectorio = {
   key: PerfilKey;
   nombre: string;
+  /** Nombre corto para gráficos y etiquetas. */
+  corto: string;
   icono: string;
   colorBg: string;
   colorTexto: string;
@@ -26,7 +28,8 @@ export type PerfilDirectorio = {
 export const PERFILES: Record<PerfilKey, PerfilDirectorio> = {
   estratega: {
     key: "estratega",
-    nombre: "Estratega de negocio",
+    nombre: "Asesor estratégico",
+    corto: "Estratégico",
     icono: "ES",
     colorBg: "#EEEDFE",
     colorTexto: "#3C3489",
@@ -53,7 +56,8 @@ export const PERFILES: Record<PerfilKey, PerfilDirectorio> = {
 
   financiero: {
     key: "financiero",
-    nombre: "Director Financiero",
+    nombre: "Asesor financiero",
+    corto: "Financiero",
     icono: "FI",
     colorBg: "#E1F5EE",
     colorTexto: "#085041",
@@ -74,13 +78,14 @@ export const PERFILES: Record<PerfilKey, PerfilDirectorio> = {
     senalClave:
       "Puede leer un balance en 10 minutos y detectar lo que no cierra. Entiende el sistema bancario argentino (SGR, leasing, descuento de cheques, ONs) y el impacto inflacionario en los estados contables.",
     advertenciaArgentina:
-      "El contador de la empresa de toda la vida no es este perfil. El director financiero independiente tiene criterio propio — no defiende las decisiones pasadas que él mismo firmó.",
+      "El contador de la empresa de toda la vida no es este perfil. El asesor financiero independiente tiene criterio propio — no defiende las decisiones pasadas que él mismo firmó.",
     tags: ["Finanzas", "Control", "Deuda"],
   },
 
   comercial: {
     key: "comercial",
-    nombre: "Director Comercial",
+    nombre: "Asesor comercial",
+    corto: "Comercial",
     icono: "CO",
     colorBg: "#FAECE7",
     colorTexto: "#712B13",
@@ -101,13 +106,14 @@ export const PERFILES: Record<PerfilKey, PerfilDirectorio> = {
     senalClave:
       "Tiene red de contactos en la industria que puede abrir puertas. Ha diseñado estructuras de incentivos para equipos de venta. Entiende cómo vender en contexto inflacionario argentino (listas de precios, descuentos, financiación en cuotas).",
     advertenciaArgentina:
-      "Evitar al 'vendedor estrella' que fue muy bueno vendiendo pero nunca lideró un equipo ni pensó estratégicamente. El director comercial en el directorio opera desde la supervisión, no desde la ejecución.",
+      "Evitar al 'vendedor estrella' que fue muy bueno vendiendo pero nunca lideró un equipo ni pensó estratégicamente. El asesor comercial en el consejo opera desde la supervisión, no desde la ejecución.",
     tags: ["Comercial", "Ventas", "Mercado"],
   },
 
   operaciones: {
     key: "operaciones",
-    nombre: "Director de Operaciones",
+    nombre: "Asesor de operaciones",
+    corto: "Operaciones",
     icono: "OP",
     colorBg: "#EAF3DE",
     colorTexto: "#27500A",
@@ -128,7 +134,7 @@ export const PERFILES: Record<PerfilKey, PerfilDirectorio> = {
     senalClave:
       "Ha implementado sistemas de gestión (ERP, CRM, ISO) en organizaciones que no los tenían. Sabe cómo diseñar procesos que escalen sin depender de personas clave. Entiende los desafíos de operar en Argentina: logística, importaciones, costos variables, ausentismo.",
     advertenciaArgentina:
-      "No confundir con el gerente operativo interno que conoce el negocio de memoria pero nunca miró hacia afuera. El director de operaciones en el directorio tiene perspectiva comparada.",
+      "No confundir con el gerente operativo interno que conoce el negocio de memoria pero nunca miró hacia afuera. El asesor de operaciones en el consejo tiene perspectiva comparada.",
     tags: ["Operaciones", "Procesos", "Escala"],
   },
 };
@@ -196,15 +202,15 @@ export const PREGUNTAS_M3: PreguntaM3[] = [
     ],
   },
   {
-    numero: 6, dimension: "Mercado",
-    texto: "¿La empresa tiene competidores fuertes o el mercado está cambiando rápido?",
-    aclaracion: "La presión competitiva define la urgencia del perfil comercial y estratégico.",
+    numero: 6, dimension: "Estrategia",
+    texto: "¿Cuál es el principal desafío de la empresa para los próximos 3 años?",
+    aclaracion: "Elegí el que más te preocupa hoy. Define qué experiencia conviene sumar primero al consejo.",
     opciones: [
-      { texto: "Mercado estable, sin presión competitiva relevante",            pesos: { operaciones: 1 } },
-      { texto: "Algo de presión pero manejable",                               pesos: { comercial: 1, estratega: 1 } },
-      { texto: "Competencia intensa o mercado en cambio",                      pesos: { comercial: 2, estratega: 2 } },
-      { texto: "El negocio actual está en riesgo si no cambiamos algo pronto", pesos: { estratega: 3, comercial: 3 } },
-    ],
+      { texto: "Crecer en ventas o llegar a nuevos clientes y mercados",          pesos: { comercial: 3, estratega: 1 } },
+      { texto: "Ordenar las finanzas, el endeudamiento o conseguir financiamiento", pesos: { financiero: 3, estratega: 1 } },
+      { texto: "Ganar eficiencia y ordenar la operación para poder escalar",      pesos: { operaciones: 3, estratega: 1 } },
+      { texto: "Redefinir el rumbo: nuevos negocios, sucesión o reinvención",     pesos: { estratega: 3, financiero: 1 } },
+    ]
   },
   {
     numero: 7, dimension: "Comercial",

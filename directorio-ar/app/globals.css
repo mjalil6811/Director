@@ -46,3 +46,9 @@ button:active:not(:disabled), [role="button"]:active:not(:disabled) {
 
 /* Selection */
 ::selection { background: var(--color-brand); color: white; }
+
+/* Impresión / PDF: fondo blanco y sin sombras */
+@media print {
+  body { background: white; }
+  * { box-shadow: none !important; }
+}

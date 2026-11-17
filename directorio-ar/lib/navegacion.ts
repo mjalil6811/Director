@@ -31,7 +31,7 @@ export const TOTAL_MODULOS_F1 = MODULOS_F1.length;
 export const FASES: Fase[] = [
   {
     id: 1, nombre: 'Diagnóstico', verbo: 'Diagnosticá', color: '#534AB7', bg: '#EEEDFE', href: '/modulo/1',
-    prefixes: ['/modulo', '/informe-preliminar', '/dashboard', '/resultado'],
+    prefixes: ['/modulo', '/informe-preliminar', '/dashboard', '/resultado', '/informe-asesor'],
     items: [
       { href: '/modulo/1', label: `1 · ${MODULOS_F1[0].titulo}` },
       { href: '/modulo/2', label: `2 · ${MODULOS_F1[1].titulo}` },
@@ -41,6 +41,7 @@ export const FASES: Fase[] = [
       { href: '/modulo/5', label: `5 · ${MODULOS_F1[4].titulo}` },
       { href: '/dashboard', label: 'Índice de preparación' },
       { href: '/resultado', label: 'Resultado final' },
+      { href: '/informe-asesor', label: 'Informe para el asesor' },
     ],
   },
   {

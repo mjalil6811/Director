@@ -40,7 +40,7 @@ function CompositionChart({ data }: { data: { key: PerfilKey; nombre: string; pc
             >
               {pct >= 15 && (
                 <span className="text-xs font-semibold text-white truncate px-1">
-                  {nombre.split(' ')[nombre.split(' ').length > 2 ? 2 : 0]} {pct}%
+                  {PERFILES[key].corto} {pct}%
                 </span>
               )}
             </div>
@@ -251,7 +251,7 @@ export default function Modulo3() {
           {/* Composition chart */}
           <div className="border border-gray-200 rounded-xl bg-white overflow-hidden">
             <div className="px-5 pt-5 pb-3 border-b border-gray-100">
-              <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-1">Composición recomendada del directorio</p>
+              <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-1">Composición recomendada del consejo asesor</p>
               <p className="text-sm text-gray-500">Porcentaje de relevancia de cada perfil según tu empresa.</p>
             </div>
             <div className="px-5 py-6">
@@ -315,7 +315,7 @@ export default function Modulo3() {
       {current === 0 && (
         <div className="border border-purple-100 bg-purple-50 rounded-xl px-5 py-4 mb-4">
           <p className="text-sm text-gray-700 leading-relaxed">
-            Ya sabemos que tu empresa necesita un directorio. Ahora vamos a definir qué perfiles de directores serían más valiosos según las características de tu negocio. Son {TOTAL_PREGUNTAS_M3} preguntas.
+            Ahora vamos a definir qué perfiles de asesores le sumarían más a tu empresa, según las características de tu negocio. Son {TOTAL_PREGUNTAS_M3} preguntas.
           </p>
         </div>
       )}

@@ -37,24 +37,24 @@ export const PROCESO = [
 
 export const BENEFICIOS = [
   {
-    titulo: 'Diseñado para Argentina',
-    descripcion: 'Tipos societarios (SRL, SA, SAS), CUIT, marco legal argentino, y la realidad de las PyMEs familiares.',
+    titulo: 'Pensado para PyMEs argentinas',
+    descripcion: 'Usa los criterios oficiales PyME y contempla la realidad de las empresas familiares y de socios.',
     icono: 'globo' as const,
   },
   {
-    titulo: 'Sin registro ni servidor',
-    descripcion: 'Todo se guarda en tu dispositivo. No necesitás crear una cuenta ni compartir datos con nadie.',
-    icono: 'candado' as const,
-  },
-  {
-    titulo: 'De diagnóstico a acción',
-    descripcion: 'No te dice solo qué necesitás — te da las herramientas para hacerlo: actas, protocolos, reuniones, evaluaciones.',
+    titulo: 'Del diagnóstico a la acción',
+    descripcion: 'No solo te dice qué necesitás: te acompaña a armar tu consejo asesor, con acta, acuerdos entre socios y agenda de reuniones.',
     icono: 'pulso' as const,
   },
   {
-    titulo: 'Basado en mejores prácticas',
-    descripcion: 'Metodología basada en IFC, OCDE, IAE e IDEA, adaptada para empresas medianas y familiares.',
-    icono: 'libro' as const,
+    titulo: 'Decisiones con información',
+    descripcion: 'Tus números, los compromisos pendientes y la evaluación del CEO en un solo lugar, para llegar preparado a cada reunión.',
+    icono: 'grafico' as const,
+  },
+  {
+    titulo: 'Simple y a tu ritmo',
+    descripcion: 'Preguntas claras y sin jerga técnica. Guardás tu avance y retomás cuando quieras.',
+    icono: 'reloj' as const,
   },
 ];
 
