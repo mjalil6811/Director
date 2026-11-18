@@ -107,13 +107,29 @@ export default function Landing() {
     router.push(p.terminado ? p.destinoFinal : `/modulo/${p.siguiente}`);
   }
 
+  /** Empieza el diagnóstico desde la primera pregunta. Si hay progreso guardado, pide confirmación y lo borra. */
+  function empezarDeCero() {
+    const empezado = completadosFase1 > 0 || (storage.getModulo1Respuestas() ?? []).some(v => v >= 0);
+    if (empezado) {
+      if (!confirm('¿Empezar el diagnóstico de cero? Se borran las respuestas guardadas en este navegador. Si querés conservarlas, antes descargá un respaldo.')) return;
+      storage.clearAll();
+      setCompletadosFase1(0);
+      setNombre('');
+    } else if (nombre.trim()) {
+      storage.setEmpresaNombre(nombre.trim());
+    }
+    setMenuAbierto(false);
+    trackEvent('landing_cta_click', { ubicacion: 'header' });
+    router.push('/modulo/1');
+  }
+
   return (
     <div className="min-h-screen bg-white flex flex-col">
 
       {/* ——— Nav ——— */}
       <header className="bg-white/90 backdrop-blur-md border-b border-gray-100 px-4 py-3 sticky top-0 z-30">
         <div className="max-w-6xl mx-auto flex items-center justify-between gap-4">
-          <a href="#inicio" className="flex items-center gap-2.5 shrink-0 rounded-lg">
+          <a href="#inicio" className="flex items-center gap-2.5 shrink-0 rounded-lg" aria-label="Directorio AR: volver al inicio">
             <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-brand to-brand-light flex items-center justify-center">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
                 <rect x="2" y="7" width="20" height="14" rx="2" /><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2" />
@@ -122,18 +138,28 @@ export default function Landing() {
             <span className="text-sm font-bold text-gray-900 tracking-tight">Directorio AR</span>
           </a>
 
-          <nav aria-label="Secciones" className="hidden lg:flex items-center gap-1">
+          <nav aria-label="Secciones" className="hidden lg:flex items-center gap-1.5">
             {NAV.map(n => (
-              <a key={n.href} href={n.href} className="px-3 py-2 rounded-lg text-sm text-gray-600 hover:text-gray-900 hover:bg-gray-50">{n.label}</a>
+              <a key={n.href} href={n.href} className="px-3.5 py-2 rounded-lg text-sm font-semibold bg-brand text-white hover:bg-brand-dark shadow-sm shadow-brand/20">{n.label}</a>
             ))}
           </nav>
 
           <div className="flex items-center gap-2">
             {completadosFase1 > 0 && (
-              <Link href="/dashboard" className="hidden xl:block px-2 py-2 text-xs text-gray-600 hover:text-brand font-medium">
+              <Link href="/dashboard" className="hidden xl:block px-2 py-2 text-sm text-gray-700 hover:text-brand font-medium">
                 Mi diagnóstico
               </Link>
             )}
+            <button
+              type="button"
+              onClick={empezarDeCero}
+              className="hidden sm:inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-sm font-semibold border-2 border-brand text-brand hover:bg-brand-50"
+            >
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+                <path d="M3 12a9 9 0 1 0 3-6.7L3 8" /><path d="M3 3v5h5" />
+              </svg>
+              Empezar de cero
+            </button>
             {/* CTA fijo de mobile (el header es sticky). En desktop el CTA aparece solo en hero, medio y cierre. */}
             <button
               onClick={() => handleStart('header')}
@@ -157,29 +183,20 @@ export default function Landing() {
         </div>
 
         {menuAbierto && (
-          <nav id="menu-landing" aria-label="Secciones" className="lg:hidden max-w-6xl mx-auto mt-3 pt-3 border-t border-gray-100 grid gap-1">
+          <nav id="menu-landing" aria-label="Secciones" className="lg:hidden max-w-6xl mx-auto mt-3 pt-3 border-t border-gray-100 grid gap-1.5">
             {NAV.map(n => (
-              <a key={n.href} href={n.href} onClick={() => setMenuAbierto(false)} className="px-3 py-2.5 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50">{n.label}</a>
+              <a key={n.href} href={n.href} onClick={() => setMenuAbierto(false)} className="px-3 py-2.5 rounded-lg text-sm font-semibold bg-brand text-white hover:bg-brand-dark">{n.label}</a>
             ))}
             {completadosFase1 > 0 && (
-              <>
-                <Link href="/dashboard" className="px-3 py-2.5 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50">Mi diagnóstico</Link>
-                <button
-                  type="button"
-                  onClick={() => {
-                    if (confirm('¿Reiniciar el diagnóstico? Se borran todos los datos de la Fase 1.')) {
-                      storage.clearAll();
-                      setCompletadosFase1(0);
-                      setNombre('');
-                      router.push('/modulo/1');
-                    }
-                  }}
-                  className="text-left px-3 py-2.5 rounded-lg text-sm font-medium text-red-700 hover:bg-red-50"
-                >
-                  Nuevo diagnóstico
-                </button>
-              </>
+              <Link href="/dashboard" className="px-3 py-2.5 rounded-lg text-sm font-medium text-gray-800 border border-gray-200 hover:bg-gray-50">Mi diagnóstico</Link>
             )}
+            <button
+              type="button"
+              onClick={empezarDeCero}
+              className="text-left px-3 py-2.5 rounded-lg text-sm font-semibold border-2 border-brand text-brand hover:bg-brand-50"
+            >
+              ↻ Empezar de cero
+            </button>
           </nav>
         )}
       </header>

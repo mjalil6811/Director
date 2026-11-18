@@ -2,7 +2,7 @@
 // están guardadas (no cambia ninguna clave ni su formato).
 
 export const PREFIJO = 'directorio_ar:';
-import { ESQUEMA_ACTUAL, aplicarMigraciones } from './migraciones';
+import { ESQUEMA_ACTUAL, ESQUEMA_KEY, aplicarMigraciones } from './migraciones';
 
 /** Versión del formato de los datos. Un respaldo de una versión anterior se migra al importarlo. */
 export const SCHEMA_VERSION = ESQUEMA_ACTUAL;
@@ -29,8 +29,9 @@ function clavesGuardadas(): string[] {
   return out;
 }
 
+/** ¿Hay datos del usuario? La marca de versión de esquema no cuenta (existe aunque no haya respuestas). */
 export function hayDatosGuardados(): boolean {
-  return clavesGuardadas().length > 0;
+  return clavesGuardadas().some(k => k !== ESQUEMA_KEY);
 }
 
 export function crearRespaldo(): Respaldo {
