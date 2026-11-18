@@ -4,6 +4,28 @@ import { calcularModulo1 } from '../lib/modulo1';
 import { precargarDecisiones, reglaDecisiones } from '../lib/modulo5';
 import { migrarDatos, ESQUEMA_KEY, ESQUEMA_ACTUAL } from '../lib/migraciones';
 import { calcularEjes, cuadranteDe } from '../lib/ejes';
+import { opcionesFacturacion, montoUsd } from '../lib/pymes';
+
+describe('facturación en dólares', () => {
+  it('muestra rangos en dólares, cortos, sin cambiar el orden de categorías', () => {
+    for (const sector of ['construccion', 'servicios', 'comercio', 'industria', 'agropecuario'] as const) {
+      const ops = opcionesFacturacion(sector);
+      expect(ops.map(o => o.categoria)).toEqual(['micro', 'pequena', 'tramo1', 'tramo2', 'grande', 'desconocida']);
+      for (const o of ops.slice(0, 5)) {
+        expect(o.texto).toMatch(/US\$/);
+        expect(o.texto.split(' — ')[0].length).toBeLessThanOrEqual(32);
+      }
+    }
+  });
+
+  it('redondea según la escala', () => {
+    // Servicios, al tipo de cambio de lib/topes-pyme.ts ($1.575)
+    const plano = (s: string) => s.replace(/ /g, ' ');
+    expect(plano(montoUsd(374_060_000))).toBe('US$ 240 mil');
+    expect(plano(montoUsd(2_255_110_000))).toBe('US$ 1,4 M');
+    expect(plano(montoUsd(18_664_740_000))).toBe('US$ 12 M');
+  });
+});
 
 describe('catálogo de preguntas', () => {
   it('cada pregunta tiene un constructo', () => {

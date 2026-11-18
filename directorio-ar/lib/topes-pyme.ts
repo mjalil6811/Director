@@ -14,7 +14,19 @@ export const NORMA_PYME = {
   fuente: 'https://www.argentina.gob.ar/produccion/registrar-una-pyme/que-es-una-pyme',
 } as const;
 
-export type SectorOficial = 'construccion' | 'servicios' | 'comercio' | 'industria' | 'agropecuario';
+/**
+ * Tipo de cambio para MOSTRAR los topes en dólares. Los topes oficiales son en pesos: la categoría
+ * no cambia por esta conversión, solo cómo se lee el rango.
+ * Dólar oficial Banco Nación, vendedor, al cierre del 17/11/2026.
+ * TODO(matias): confirmar en bna.com.ar y actualizar cuando lo creas necesario (se cambia solo acá).
+ */
+export const TIPO_CAMBIO = {
+  pesosPorDolar: 1575,
+  fecha: '2026-11-17',
+  referencia: 'dólar oficial Banco Nación, vendedor',
+} as const;
+
+export type SectorOficial ='construccion' | 'servicios' | 'comercio' | 'industria' | 'agropecuario';
 
 /** Tope superior de ventas totales anuales (en pesos) de cada categoría. */
 export const TOPES_VENTAS: Record<SectorOficial, { micro: number; pequena: number; tramo1: number; tramo2: number }> = {

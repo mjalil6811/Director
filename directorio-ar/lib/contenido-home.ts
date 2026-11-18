@@ -2,7 +2,7 @@
 import { FASES, MODULOS_F1, TOTAL_MODULOS_F1, TOTAL_MIN_F1 } from './navegacion';
 import { PREGUNTAS_POR_MODULO, TOTAL_PREGUNTAS_F1 } from './conteo-diagnostico';
 import { TOTAL_HERRAMIENTAS_DISPONIBLES } from './herramientas';
-import { NORMA_PYME, VIGENCIA } from './pymes';
+import { NORMA_PYME, VIGENCIA, TIPO_CAMBIO_TEXTO } from './pymes';
 
 // ——— Tiempos y CTA (una sola fuente para toda la landing) ————————————————
 const M1 = MODULOS_F1[0];
@@ -93,7 +93,7 @@ export const FAQ = [
 export const METODOLOGIA = [
   {
     titulo: 'Tamaño de tu empresa: criterios oficiales PyME',
-    texto: `Ubicamos a tu empresa como micro, pequeña, mediana (tramo 1 o 2) o grande según su industria y sus ventas anuales promedio de los últimos 3 ejercicios, con los topes de la ${NORMA_PYME.nombreLargo} (vigente desde el ${VIGENCIA}). Además consideramos si tiene más de 50 empleados: ese corte es un criterio propio de Directorio AR, no de la norma. Si la empresa es más chica, te ofrecemos un diagnóstico abreviado.`,
+    texto: `Ubicamos a tu empresa como micro, pequeña, mediana (tramo 1 o 2) o grande según su industria y sus ventas anuales promedio de los últimos 3 ejercicios, con los topes de la ${NORMA_PYME.nombreLargo} (vigente desde el ${VIGENCIA}). Los topes son en pesos; en la pregunta los mostramos en dólares, al ${TIPO_CAMBIO_TEXTO}, solo como referencia. Además consideramos si tiene más de 50 empleados: ese corte es un criterio propio de Directorio AR, no de la norma. Si la empresa es más chica, te ofrecemos un diagnóstico abreviado.`,
   },
   {
     titulo: 'Resultado principal: necesidad y disposición',

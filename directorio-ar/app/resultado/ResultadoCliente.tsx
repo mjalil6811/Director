@@ -82,6 +82,8 @@ export default function ResultadoCliente({ mailHabilitado }: { mailHabilitado: b
     setM5(storage.getModulo5Resultado());
     setNombre(storage.getEmpresaNombre() ?? '');
     setReady(true);
+    // Al llegar desde otro módulo, Next deja la página desplazada la altura de los headers: el veredicto va arriba.
+    window.scrollTo({ top: 0 });
   }, [router]);
 
   async function handleGeneratePDF() {

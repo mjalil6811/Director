@@ -33,9 +33,12 @@ interface PreguntaProps {
   contenido?: React.ReactNode;
 }
 
-/** 2 columnas solo si hay 4 o más opciones y todas son cortas y sin detalle. */
+/** 2 columnas (tablet y desktop) si hay 4 o más opciones y todas entran: título ≤ 32 y detalle ≤ 24 caracteres. */
 function usarDosColumnas(opciones: string[]): boolean {
-  return opciones.length >= 4 && opciones.every(o => !o.includes(' — ') && o.length <= 32);
+  return opciones.length >= 4 && opciones.every(o => {
+    const [titulo, detalle = ''] = o.split(' — ');
+    return titulo.length <= 32 && detalle.length <= 24;
+  });
 }
 
 function esCampoDeTexto(el: EventTarget | null): boolean {

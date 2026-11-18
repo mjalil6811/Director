@@ -6,7 +6,7 @@
 // - Las aclaraciones explican cómo responder; no persuaden. La persuasión va en el resultado.
 //
 // La lógica de puntaje está en lib/modulo1.ts … lib/modulo5.ts.
-import { ROLES, INDUSTRIAS, OPCIONES_EMPLEADOS, NORMA_TOPES, type GrupoRol } from './pymes';
+import { ROLES, INDUSTRIAS, OPCIONES_EMPLEADOS, NORMA_TOPES, TIPO_CAMBIO_TEXTO, type GrupoRol } from './pymes';
 import type { PerfilKey } from './modulo3';
 
 /** Texto fijo, o una variante según quién responde (pregunta 1 del Módulo 1). */
@@ -80,7 +80,7 @@ export const PREGUNTAS_M1: PreguntaM1[] = [
     construct: 'categoria_ventas',
     dimension: 'tamano',
     texto: '¿Cuál fue la facturación anual promedio de los últimos 3 años?',
-    aclaracion: `Promedio de los últimos 3 ejercicios, sin IVA. Rangos según los topes oficiales PyME de tu industria (${NORMA_TOPES}).`,
+    aclaracion: `Promedio de los últimos 3 ejercicios, sin IVA, según los topes PyME de tu industria (${NORMA_TOPES}). Montos en dólares (M = millones) al ${TIPO_CAMBIO_TEXTO}.`,
     opciones: 'facturacion',
   },
   {

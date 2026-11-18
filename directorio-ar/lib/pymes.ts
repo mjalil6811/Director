@@ -1,8 +1,8 @@
 // Criterios oficiales de categorización PyME (Argentina) y perfil de quien responde.
 // Los topes y la norma vigente están en lib/topes-pyme.ts (único lugar a actualizar).
-import { NORMA_PYME, TOPES_VENTAS, type SectorOficial } from './topes-pyme';
+import { NORMA_PYME, TOPES_VENTAS, TIPO_CAMBIO, type SectorOficial } from './topes-pyme';
 
-export { NORMA_PYME, TOPES_VENTAS, type SectorOficial };
+export { NORMA_PYME, TOPES_VENTAS, TIPO_CAMBIO, type SectorOficial };
 
 export const VIGENCIA = NORMA_PYME.vigenteDesde.split('-').reverse().map(Number).join('/');
 export const NORMA_TOPES = `${NORMA_PYME.nombre}, vigente desde el ${VIGENCIA}`;
@@ -33,16 +33,24 @@ export const CATEGORIA_LABEL: Record<CategoriaPyme, string> = {
   desconocida: 'Sin datos de facturación',
 };
 
+const FECHA_TC = TIPO_CAMBIO.fecha.split('-').reverse().map(Number).join('/');
+/** "dólar oficial Banco Nación, vendedor, de $1.575 (17/11/2026)" */
+export const TIPO_CAMBIO_TEXTO = `${TIPO_CAMBIO.referencia}, de $${TIPO_CAMBIO.pesosPorDolar.toLocaleString('es-AR')} (${FECHA_TC})`;
+
 /**
- * Monto redondeado y fácil de leer:
- * - menos de 10.000 millones → "$2.300 millones" (redondeado a 100 millones)
- * - desde 10.000 millones    → "$18,7 mil millones" (un decimal)
+ * Tope en pesos expresado en dólares, redondeado y corto (M = millones):
+ * - menos de US$ 1 M → "US$ 240 mil" (a la decena de mil)
+ * - de 1 a 10 M      → "US$ 1,4 M" (un decimal)
+ * - desde 10 M       → "US$ 12 M" (entero)
  * Solo cambia cómo se MUESTRA el corte; la categoría sale del índice de la opción elegida.
  */
-function monto(pesos: number): string {
-  const m = pesos / 1_000_000;
-  if (m < 10_000) return `$${(Math.round(m / 100) * 100).toLocaleString('es-AR')} millones`;
-  return `$${(Math.round(m / 100) / 10).toLocaleString('es-AR', { maximumFractionDigits: 1 })} mil millones`;
+export function montoUsd(pesos: number): string {
+  const nb = ' '; // espacio que no se corta: "US$ 5,7 M" nunca queda partido en dos renglones
+  const usd = pesos / TIPO_CAMBIO.pesosPorDolar;
+  if (usd < 1_000_000) return `US$${nb}${Math.max(10, Math.round(usd / 10_000) * 10)}${nb}mil`;
+  const m = usd / 1_000_000;
+  if (m < 10) return `US$${nb}${(Math.round(m * 10) / 10).toLocaleString('es-AR', { maximumFractionDigits: 1 })}${nb}M`;
+  return `US$${nb}${Math.round(m).toLocaleString('es-AR')}${nb}M`;
 }
 
 /**
@@ -52,12 +60,12 @@ function monto(pesos: number): string {
 export function opcionesFacturacion(sector: SectorOficial): { texto: string; categoria: CategoriaPyme; puntaje: number | null }[] {
   const t = TOPES_VENTAS[sector];
   return [
-    { texto: `Hasta ${monto(t.micro)} — Microempresa`, categoria: 'micro', puntaje: 0 },
-    { texto: `De ${monto(t.micro)} a ${monto(t.pequena)} — Pequeña empresa`, categoria: 'pequena', puntaje: 1 },
-    { texto: `De ${monto(t.pequena)} a ${monto(t.tramo1)} — Mediana Tramo 1`, categoria: 'tramo1', puntaje: 2 },
-    { texto: `De ${monto(t.tramo1)} a ${monto(t.tramo2)} — Mediana Tramo 2`, categoria: 'tramo2', puntaje: 3 },
-    { texto: `Más de ${monto(t.tramo2)} — Gran empresa`, categoria: 'grande', puntaje: 3 },
-    { texto: 'No lo sé', categoria: 'desconocida', puntaje: null },
+    { texto: `Hasta ${montoUsd(t.micro)} — Microempresa`, categoria: 'micro', puntaje: 0 },
+    { texto: `De ${montoUsd(t.micro)} a ${montoUsd(t.pequena)} — Pequeña empresa`, categoria: 'pequena', puntaje: 1 },
+    { texto: `De ${montoUsd(t.pequena)} a ${montoUsd(t.tramo1)} — Mediana Tramo 1`, categoria: 'tramo1', puntaje: 2 },
+    { texto: `De ${montoUsd(t.tramo1)} a ${montoUsd(t.tramo2)} — Mediana Tramo 2`, categoria: 'tramo2', puntaje: 3 },
+    { texto: `Más de ${montoUsd(t.tramo2)} — Gran empresa`, categoria: 'grande', puntaje: 3 },
+    { texto: 'No lo sé — No suma ni resta', categoria: 'desconocida', puntaje: null },
   ];
 }
 
