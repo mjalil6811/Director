@@ -202,22 +202,36 @@ export default function Modulo3() {
     updated[current] = idx;
     setRespuestas(updated);
     storage.setModulo3Respuestas(updated);
-    // Avance automático a la siguiente pregunta
+    const from = current;
     if (current < TOTAL_PREGUNTAS_M3 - 1) {
-      const from = current;
+      // Avance automático a la siguiente pregunta
       setTimeout(() => setCurrent(c => (c === from ? c + 1 : c)), 280);
+      return;
     }
+    // Última pregunta: si está todo respondido, muestra solo los perfiles; si no, va a la primera pendiente.
+    const pendiente = updated.findIndex(v => v < 0);
+    setTimeout(() => {
+      if (pendiente >= 0) setCurrent(c => (c === from ? pendiente : c));
+      else finalizar(updated);
+    }, 280);
+  }
+
+  function finalizar(r: number[]) {
+    const res = calcularModulo3(r);
+    storage.setModulo3Resultado(res);
+    registrarModuloCompletado(3);
+    setResultado(res);
+    setStep('result');
+    window.scrollTo({ top: 0 });
   }
 
   function handleNext() {
     if (current < TOTAL_PREGUNTAS_M3 - 1) {
       setCurrent(current + 1);
     } else {
-      const res = calcularModulo3(respuestas);
-      storage.setModulo3Resultado(res);
-      registrarModuloCompletado(3);
-      setResultado(res);
-      setStep('result');
+      const pendiente = respuestas.findIndex(v => v < 0);
+      if (pendiente >= 0) setCurrent(pendiente);
+      else finalizar(respuestas);
     }
   }
 

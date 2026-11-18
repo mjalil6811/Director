@@ -1,9 +1,8 @@
 'use client';
 
 import { registrarModuloCompletado } from '../../../lib/analitica';
-import Pregunta, { IntroModulo, CierreModulo } from '../../../components/Pregunta';
-import type { Modulo2Resultado } from '../../../types';
-import { useEffect, useState } from 'react';
+import Pregunta, { IntroModulo } from '../../../components/Pregunta';
+import { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import ModuleLayout from '../../../components/ModuleLayout';
 import { SITUACIONES_M2, calcularModulo2 } from '../../../lib/modulo2';
@@ -15,7 +14,7 @@ export default function Modulo2() {
   const router = useRouter();
   const [current, setCurrent] = useState(0);
   const [respuestas, setRespuestas] = useState<number[]>(new Array(TOTAL).fill(-1));
-  const [cierre, setCierre] = useState<Modulo2Resultado | null>(null);
+  const finalizando = useRef(false);
 
   useEffect(() => {
     const saved = storage.getModulo2Respuestas();
@@ -33,44 +32,41 @@ export default function Modulo2() {
     updated[current] = idx;
     setRespuestas(updated);
     storage.setModulo2Respuestas(updated);
-    // Avance automático a la siguiente pregunta
+    const from = current;
     if (current < TOTAL - 1) {
-      const from = current;
+      // Avance automático a la siguiente pregunta
       setTimeout(() => setCurrent(c => (c === from ? c + 1 : c)), 280);
+      return;
     }
+    // Última pregunta: si está todo respondido, pasa solo al informe preliminar; si no, a la primera pendiente.
+    const pendiente = updated.findIndex(v => v < 0);
+    setTimeout(() => {
+      if (pendiente >= 0) setCurrent(c => (c === from ? pendiente : c));
+      else finalizar(updated);
+    }, 280);
+  }
+
+  /** Calcula y guarda el resultado del Módulo 2 y sigue directo al informe preliminar. */
+  function finalizar(r: number[]) {
+    if (finalizando.current) return;
+    finalizando.current = true;
+    storage.setModulo2Resultado(calcularModulo2(r));
+    registrarModuloCompletado(2);
+    router.push('/informe-preliminar');
   }
 
   function handleNext() {
     if (current < TOTAL - 1) {
       setCurrent(current + 1);
     } else {
-      // Calculate, save, and go to preliminary report
-      const res = calcularModulo2(respuestas);
-      storage.setModulo2Resultado(res);
-      registrarModuloCompletado(2);
-      setCierre(res);
+      const pendiente = respuestas.findIndex(v => v < 0);
+      if (pendiente >= 0) setCurrent(pendiente);
+      else finalizar(respuestas);
     }
   }
 
   function handlePrev() {
     if (current > 0) setCurrent(current - 1);
-  }
-
-  if (cierre) {
-    return (
-      <ModuleLayout moduleNumber={2}>
-        <CierreModulo
-          modulo={2}
-          titulo={cierre.perfil}
-          lineas={[
-            `${cierre.porcentaje ?? 0}% de las decisiones que repasaste están concentradas en una persona o no tienen un responsable claro.`,
-            'Siguiente: tu informe preliminar, con la ubicación de tu empresa en la matriz de necesidad y disposición.',
-          ]}
-          siguiente={{ label: 'Ver informe preliminar →', onClick: () => router.push('/informe-preliminar') }}
-          secundario={{ label: 'Revisar respuestas', onClick: () => { setCierre(null); setCurrent(0); } }}
-        />
-      </ModuleLayout>
-    );
   }
 
   const answeredCount = respuestas.filter(v => v >= 0).length;

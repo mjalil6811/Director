@@ -1,12 +1,11 @@
 'use client';
 
 import { trackEvent, registrarModuloCompletado } from '../../../lib/analitica';
-import Pregunta, { IntroModulo, CierreModulo } from '../../../components/Pregunta';
-import { useEffect, useState } from 'react';
+import Pregunta, { IntroModulo } from '../../../components/Pregunta';
+import { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import ModuleLayout from '../../../components/ModuleLayout';
 import { TOTAL_PREGUNTAS, IDX, calcularModulo1, resolverPregunta, perfilDeRespuestas } from '../../../lib/modulo1';
-import type { Modulo1Resultado } from '../../../types';
 import { CATEGORIA_LABEL, INDUSTRIAS } from '../../../lib/pymes';
 import { storage } from '../../../lib/storage';
 
@@ -14,7 +13,7 @@ export default function Modulo1() {
   const router = useRouter();
   const [current, setCurrent] = useState(0);
   const [respuestas, setRespuestas] = useState<number[]>(new Array(TOTAL_PREGUNTAS).fill(-1));
-  const [cierre, setCierre] = useState<Modulo1Resultado | null>(null);
+  const finalizando = useRef(false);
 
   useEffect(() => {
     const saved = storage.getModulo1Respuestas();
@@ -36,45 +35,41 @@ export default function Modulo1() {
     updated[current] = value;
     setRespuestas(updated);
     storage.setModulo1Respuestas(updated);
-    // Avance automático a la siguiente pregunta
+    const from = current;
     if (current < TOTAL_PREGUNTAS - 1) {
-      const from = current;
+      // Avance automático a la siguiente pregunta
       setTimeout(() => setCurrent(c => (c === from ? c + 1 : c)), 280);
+      return;
     }
+    // Última pregunta: si está todo respondido, pasa solo al Módulo 2; si no, vuelve a la primera pendiente.
+    const pendiente = updated.findIndex(v => v < 0);
+    setTimeout(() => {
+      if (pendiente >= 0) setCurrent(c => (c === from ? pendiente : c));
+      else finalizar(updated);
+    }, 280);
+  }
+
+  /** Calcula y guarda el resultado del Módulo 1 y sigue directo al Módulo 2. */
+  function finalizar(r: number[]) {
+    if (finalizando.current) return;
+    finalizando.current = true;
+    storage.setModulo1Resultado(calcularModulo1(r));
+    registrarModuloCompletado(1);
+    router.push('/modulo/2');
   }
 
   function handleNext() {
     if (current < TOTAL_PREGUNTAS - 1) {
       setCurrent(current + 1);
     } else {
-      // Calculate, save, and go directly to M2
-      const res = calcularModulo1(respuestas);
-      storage.setModulo1Resultado(res);
-      registrarModuloCompletado(1);
-      setCierre(res);
+      const pendiente = respuestas.findIndex(v => v < 0);
+      if (pendiente >= 0) setCurrent(pendiente);
+      else finalizar(respuestas);
     }
   }
 
   function handlePrev() {
     if (current > 0) setCurrent(current - 1);
-  }
-
-  if (cierre) {
-    const abreviado = cierre.perfil?.recorrido === 'abreviado';
-    return (
-      <ModuleLayout moduleNumber={1}>
-        <CierreModulo
-          modulo={1}
-          titulo={cierre.nivel}
-          lineas={[
-            `Necesidad detectada en este módulo: ${cierre.porcentaje ?? 0}/100.${abreviado ? ' Hacés el diagnóstico abreviado: falta solo el Módulo 2.' : ''}`,
-            'Siguiente: el mapa de decisiones (Módulo 2), para ver quién decide hoy cada tema importante.',
-          ]}
-          siguiente={{ label: 'Seguir con el Módulo 2 →', onClick: () => router.push('/modulo/2') }}
-          secundario={{ label: 'Revisar respuestas', onClick: () => { setCierre(null); setCurrent(0); } }}
-        />
-      </ModuleLayout>
-    );
   }
 
   const answeredCount = respuestas.filter(v => v >= 0).length;

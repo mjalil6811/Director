@@ -61,14 +61,22 @@ export default function Modulo5() {
     updated[current] = idx;
     setRespuestas(updated);
     storage.setModulo5Respuestas(updated);
+    const from = current;
     if (current < TOTAL_M5 - 1) {
-      const from = current;
       setTimeout(() => setCurrent(c => (c === from ? c + 1 : c)), 280);
+      return;
     }
+    // Última pregunta: si está todo respondido, muestra solo el acuerdo de trabajo; si no, va a la primera pendiente.
+    const pendiente = updated.findIndex(v => v < 0);
+    setTimeout(() => {
+      if (pendiente >= 0) setCurrent(c => (c === from ? pendiente : c));
+      else terminar(updated);
+    }, 280);
   }
 
-  function terminar() {
-    const res = calcularModulo5(valores(respuestas));
+  function terminar(r: number[] = respuestas) {
+    window.scrollTo({ top: 0 });
+    const res = calcularModulo5(valores(r));
     storage.setModulo5Resultado(res);
     registrarModuloCompletado(5);
     setResultado(res);
