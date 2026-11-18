@@ -2,7 +2,6 @@
 
 import PageHeader from '../../../components/PageHeader';
 import { useState, useEffect, useCallback } from 'react';
-import { useRouter } from 'next/navigation';
 import {
   ESTADO_META, PRIORIDAD_META, calcularEstado, calcularEstadisticas,
   diasHastaVencimiento, labelDias, importarTareasDeReuniones, generarId,
@@ -175,7 +174,6 @@ function TareaCard({ tarea, onEditar, onCambiarEstado, onEliminar }: {
 }
 
 export default function ModuloSeguimiento() {
-  const router = useRouter();
   const [tareas, setTareas] = useState<TareaGestion[]>([]);
   const [vista, setVista] = useState<'lista' | 'form'>('lista');
   const [editandoId, setEditandoId] = useState<string | null>(null);

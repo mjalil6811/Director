@@ -1,4 +1,4 @@
-import type { DimensionEvaluacion, EvaluacionCEO, EvaluacionDirector, RespuestaEvaluacion } from '../types/fase3';
+import type { DimensionEvaluacion, EvaluacionCEO, EvaluacionDirector } from '../types/fase3';
 
 import { generarId } from './storage-core';
 export { generarId };

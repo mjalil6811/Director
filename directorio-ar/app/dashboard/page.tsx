@@ -190,6 +190,9 @@ export default function IndicePreparacionPage() {
           <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-4">
             ¿Cómo estás frente a otras empresas?
           </p>
+          <p className="text-xs text-gray-500 -mt-2 mb-4 leading-relaxed">
+            Referencias: arquetipos de empresas argentinas definidos por Directorio AR a partir de criterios de gobierno corporativo. No es una muestra estadística.
+          </p>
           <RankedBars
             items={[
               ...BENCHMARKS.map(b => ({ key: b.key, label: b.label, value: b.score })),

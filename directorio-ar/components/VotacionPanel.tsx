@@ -4,8 +4,8 @@ import { useState, useEffect } from 'react';
 import {
   VOTO_META, MAYORIA_META,
   crearVotacion, abrirVotacion, cerrarVotacion,
-  registrarVoto, generarTextoVotacion, calcularResultado,
-  storageVotaciones, generarId,
+  registrarVoto, generarTextoVotacion,
+  storageVotaciones,
 } from '../lib/modulo-votacion';
 import type { Votacion, TipoVoto, TipoMayoria } from '../types/fase2';
 
@@ -206,7 +206,7 @@ function VotacionActiva({ votacion, directores, totalDirectores, onActualizar }:
 
 // ——— Tarjeta de votación cerrada ————————————————————————————————————————————
 
-function VotacionCerrada({ votacion, totalDirectores }: {
+function VotacionCerrada({ votacion }: {
   votacion: Votacion; totalDirectores: number;
 }) {
   const [expandida, setExpandida] = useState(false);

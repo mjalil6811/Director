@@ -1,5 +1,6 @@
 'use client';
 
+import { registrarModuloCompletado } from '../../../lib/analitica';
 import Pregunta, { IntroModulo } from '../../../components/Pregunta';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
@@ -41,6 +42,7 @@ export default function Modulo5() {
   function terminar() {
     const res = calcularModulo5(valores(respuestas));
     storage.setModulo5Resultado(res);
+    registrarModuloCompletado(5);
     setResultado(res);
   }
 

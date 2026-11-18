@@ -1,5 +1,6 @@
 'use client';
 
+import { trackEvent, registrarModuloCompletado } from '../../../lib/analitica';
 import Pregunta, { IntroModulo } from '../../../components/Pregunta';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
@@ -25,6 +26,7 @@ export default function Modulo1() {
   }, [router]);
 
   function handleSelect(value: number) {
+    if (respuestas.every(v => v < 0)) trackEvent('diagnostico_iniciado');
     const updated = [...respuestas];
     updated[current] = value;
     setRespuestas(updated);
@@ -43,6 +45,7 @@ export default function Modulo1() {
       // Calculate, save, and go directly to M2
       const res = calcularModulo1(respuestas);
       storage.setModulo1Resultado(res);
+      registrarModuloCompletado(1);
       router.push('/modulo/2');
     }
   }

@@ -1,5 +1,6 @@
 'use client';
 
+import { registrarModuloCompletado } from '../../../lib/analitica';
 import Pregunta, { IntroModulo } from '../../../components/Pregunta';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
@@ -44,6 +45,7 @@ export default function Modulo2() {
       // Calculate, save, and go to preliminary report
       const res = calcularModulo2(respuestas);
       storage.setModulo2Resultado(res);
+      registrarModuloCompletado(2);
       router.push('/informe-preliminar');
     }
   }

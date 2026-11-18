@@ -1,21 +1,38 @@
 // Textos de la home. Para cambiar un texto de la landing, editar acá (no en app/page.tsx).
-import { FASES } from './navegacion';
+import { FASES, MODULOS_F1, TOTAL_MODULOS_F1, TOTAL_PREGUNTAS_F1, TOTAL_MIN_F1 } from './navegacion';
+import { TOTAL_HERRAMIENTAS_DISPONIBLES } from './herramientas';
+import { NORMA_TOPES } from './pymes';
+
+// ——— Tiempos y CTA (una sola fuente para toda la landing) ————————————————
+const M1 = MODULOS_F1[0];
+export const TIEMPO_TOTAL = `~${TOTAL_MIN_F1} min`;
+export const TIEMPO_M1 = `${M1.preguntas} preguntas, ~${M1.min} min`;
+/** "Diagnóstico completo: ~8 min · Empezás por el Módulo 1 (10 preguntas, ~3 min)" */
+export const TIEMPO_RESUMEN = `Diagnóstico completo: ${TIEMPO_TOTAL} · Empezás por el Módulo 1 (${TIEMPO_M1})`;
+export const PREGUNTAS_RESUMEN = `${TOTAL_PREGUNTAS_F1} preguntas en ${TOTAL_MODULOS_F1} módulos`;
+
+export const CTA = 'Comenzar diagnóstico gratuito';
+/** Solo para el header en mobile, donde no entra el texto completo. */
+export const CTA_CORTO = 'Empezar gratis';
+
+export const AYUDA_NOMBRE = 'Opcional. Se usa solo para personalizar tu informe y se guarda en tu dispositivo.';
+export const AVISO_DATOS = 'Tus respuestas se guardan en este navegador. Si borrás los datos del navegador o cambiás de dispositivo, perdés el progreso. Podés exportar un respaldo en PDF o JSON.';
 
 export const STATS = [
-  { valor: '~8 min', label: 'Dura el diagnóstico' },
-  { valor: '35', label: 'Preguntas en 5 módulos' },
-  { valor: '12', label: 'Herramientas integradas' },
-  { valor: '100%', label: 'Gratuito y privado' },
+  { valor: TIEMPO_TOTAL, label: 'Dura el diagnóstico completo' },
+  { valor: String(TOTAL_PREGUNTAS_F1), label: `Preguntas en ${TOTAL_MODULOS_F1} módulos` },
+  { valor: String(TOTAL_HERRAMIENTAS_DISPONIBLES), label: 'Herramientas disponibles' },
+  { valor: '100%', label: 'Gratuito, sin registro' },
 ];
 
 export const PROCESO = [
   {
     paso: 'Diagnosticá',
     titulo: 'Descubrí si es momento de sumar un consejo asesor',
-    descripcion: 'Respondé 5 módulos cortos sobre cómo se decide hoy en tu empresa, qué perfiles te faltan, tu disposición al cambio y la relación con la gerencia.',
+    descripcion: `Respondé ${TOTAL_MODULOS_F1} módulos cortos (${TIEMPO_TOTAL} en total) sobre cómo se decide hoy en tu empresa, qué perfiles te faltan, tu disposición al cambio y la relación con la gerencia.`,
     color: '#534AB7',
     colorBg: '#EEEDFE',
-    items: ['Índice de preparación 0-100', 'Perfil en 5 dimensiones', 'Comparación con otras empresas', 'Recomendaciones a tu medida'],
+    items: ['Índice de preparación 0-100', 'Perfil en 5 dimensiones', 'Comparación con perfiles de referencia', 'Recomendaciones a tu medida'],
   },
   {
     paso: 'Constituí',
@@ -59,20 +76,46 @@ export const BENEFICIOS = [
 ];
 
 export const FAQ = [
-  { q: '¿Para qué tipo de empresa es esto?', a: 'Para PyMEs, empresas familiares y empresas medianas argentinas que quieren tomar mejores decisiones con el respaldo de un consejo asesor o directorio. No necesitás tener nada armado: la herramienta empieza por evaluar si es tu momento.' },
+  { q: '¿Para qué tipo de empresa es esto?', a: 'Para PyMEs, empresas familiares y empresas medianas argentinas que quieren tomar mejores decisiones con el respaldo de un consejo asesor. No necesitás tener nada armado: la herramienta empieza por evaluar si es tu momento.' },
+  { q: '¿Qué diferencia hay entre un consejo asesor y un directorio?', a: 'El directorio es el órgano legal que administra una sociedad anónima: lo elige la asamblea de accionistas y sus miembros tienen responsabilidad legal por lo que deciden. Un consejo asesor no es un órgano legal: es un grupo de personas con experiencia que se reúne con los dueños para orientar las decisiones importantes, pero no decide ni firma por la empresa. Es más flexible y suele ser el primer paso antes de un directorio profesional.' },
+  { q: '¿Quién debería responder?', a: 'Quien toma o comparte las decisiones importantes: el dueño, un socio, el fundador o el CEO. Al principio te preguntamos tu rol y adaptamos la forma de las preguntas. Si hay varios socios, es útil que cada uno lo haga por separado y después comparen los resultados.' },
+  { q: '¿Cuánto tiempo lleva? ¿Tengo que hacerlo todo de una vez?', a: `${TIEMPO_RESUMEN}. No hace falta hacerlo de una vez: cada módulo guarda tu progreso y podés retomar donde dejaste, desde el mismo navegador.` },
   { q: '¿Es gratis?', a: 'Sí, 100% gratuito. No hay planes pagos, ni límites de uso, ni funcionalidades bloqueadas.' },
-  { q: '¿Mis datos son privados?', a: 'Todo se guarda en el localStorage de tu navegador. No hay servidor, no hay base de datos, no hay registro. Tus datos no salen de tu dispositivo.' },
-  { q: '¿Necesito completar todo en una sesión?', a: 'No. Cada módulo guarda tu progreso automáticamente. Podés volver cuando quieras y retomar donde dejaste.' },
-  { q: '¿Qué es el Índice de preparación?', a: 'Es un puntaje de 0 a 100 que mide qué tan preparada está tu empresa para decidir con el respaldo de un consejo asesor o directorio. Integra 5 dimensiones: necesidad, decisiones, perfiles, disposición y dinámica. Sirve como referencia ante inversores, fondos y socios estratégicos.' },
+  { q: '¿Dónde se guardan mis respuestas?', a: 'En este navegador (localStorage). Tus respuestas no se envían a ningún servidor y no hace falta registrarse. Medimos visitas de forma anónima y sin cookies, sin incluir respuestas ni el nombre de tu empresa. Solo si pedís el informe por mail se envía tu mail y un resumen del resultado. El detalle está en la Política de privacidad.' },
+  { q: '¿Qué pasa si borro los datos del navegador?', a: 'Se borra tu progreso, porque solo existe en este navegador: nosotros no tenemos una copia. Lo mismo pasa si cambiás de dispositivo o usás una ventana privada. Para no perderlo, exportá un respaldo (JSON) desde la pantalla de resultados o desde tu progreso en esta página, y después lo importás donde quieras.' },
+  { q: '¿Cómo se calcula el resultado?', a: 'Cada módulo puntúa tus respuestas y el Índice de preparación las combina con pesos fijos. El tamaño de la empresa se ubica con los criterios oficiales PyME. La comparación es contra perfiles de referencia definidos por Directorio AR, no contra una muestra estadística. Lo explicamos en detalle en la sección "Cómo se calcula tu resultado".' },
+  { q: '¿Qué es el Índice de preparación?', a: 'Es un puntaje orientativo de 0 a 100 que resume qué tan preparada está tu empresa para decidir con el respaldo de un consejo asesor. Integra 5 dimensiones: complejidad, decisiones, perfiles, disposición al cambio y relación con la gerencia. Sirve para ordenar la conversación interna, no es una certificación.' },
+  { q: '¿Esto reemplaza a un asesor profesional?', a: 'No. Es una herramienta orientativa para ordenar ideas y empezar la conversación. No constituye asesoramiento legal, contable ni financiero. Para constituir un directorio, redactar estatutos o protocolos, consultá con profesionales (abogado, contador) que conozcan tu caso.' },
 ];
+
+// ——— Metodología ("Cómo se calcula tu resultado") ——————————————————————————
+export const METODOLOGIA = [
+  {
+    titulo: 'Tamaño de tu empresa: criterios oficiales PyME',
+    texto: `Ubicamos a tu empresa como micro, pequeña, mediana (tramo 1 o 2) o grande según su industria y sus ventas anuales promedio de los últimos 3 ejercicios, con los topes de la Resolución 1/2026 de la Secretaría de Industria, Comercio y de la Pequeña y Mediana Empresa (${NORMA_TOPES.replace(/^Res\. SICYPYME 1\/2026, /, '')}). Además consideramos si tiene más de 50 empleados: ese corte es un criterio propio de Directorio AR, no de la norma. Si la empresa es más chica, te ofrecemos un diagnóstico abreviado.`,
+  },
+  {
+    titulo: 'Índice de preparación (0 a 100)',
+    texto: 'Resume 5 dimensiones, cada una calculada en su módulo: complejidad de la empresa (15%), cómo se reparten las decisiones (25%), perfiles que necesitás (20%), disposición al cambio (20%) y reglas entre consejo y gerencia (20%). Si todavía no completaste un módulo, el índice se calcula solo con los que tenés. Las respuestas "No lo sé" no suman ni restan.',
+  },
+  {
+    titulo: 'Comparación con otras empresas',
+    texto: 'Compará tu perfil con arquetipos de empresas argentinas definidos por Directorio AR a partir de criterios de gobierno corporativo. No es una muestra estadística.',
+  },
+  {
+    titulo: 'Límites',
+    texto: 'El resultado es orientativo: depende de cómo respondas y de supuestos simplificados. No es una auditoría, una certificación ni asesoramiento legal, contable o financiero.',
+  },
+];
+
 
 // Lo que el usuario va a hacer, visible sin scroll
 export const RECORRIDO = [
   {
     fase: 1, verbo: FASES[0].verbo, color: FASES[0].color, bg: FASES[0].bg, href: FASES[0].href,
-    que: 'Respondés 35 preguntas en 5 módulos cortos, con los criterios oficiales PyME',
+    que: `Respondés ${PREGUNTAS_RESUMEN} cortos, con los criterios oficiales PyME`,
     obtenes: 'Índice de preparación, nivel de urgencia y los perfiles de asesores que te faltan',
-    tiempo: '~8 min',
+    tiempo: TIEMPO_TOTAL,
   },
   {
     fase: 2, verbo: FASES[1].verbo, color: FASES[1].color, bg: FASES[1].bg, href: FASES[1].href,

@@ -93,3 +93,24 @@ Todos los datos se guardan en `localStorage` del navegador. No hay servidor, bas
 ## Deploy
 
 El proyecto esta deployado en Vercel con deploy automatico desde la rama `main`.
+
+## Variables de entorno (Vercel → Settings → Environment Variables)
+
+| Variable | Para qué | Obligatoria |
+|---|---|---|
+| `NEXT_PUBLIC_SITE_URL` | URL pública (canonical, og:image, sitemap). Por defecto `https://director-rai8.vercel.app` | No |
+| `RESEND_API_KEY` | Envío del informe por mail (Resend) | Para el mail |
+| `MAIL_FROM` | Remitente verificado en Resend, p. ej. `Directorio AR <informe@tudominio.com.ar>` | Para el mail |
+| `MAIL_TO_LEADS` | Casilla que recibe una copia de cada pedido (y el reply-to) | No |
+
+Sin `RESEND_API_KEY` y `MAIL_FROM` el bloque "Recibí tu informe por mail" no se muestra y `/api/informe` responde 503.
+
+## Analítica
+
+Vercel Web Analytics (`<Analytics />` en `app/layout.tsx`): sin cookies. Activarla en Vercel → proyecto → Analytics.
+Los eventos personalizados pasan por `trackEvent()` en `lib/analitica.ts` (para cambiar de proveedor, editar solo `enviar()`).
+Nunca enviar respuestas, nombre de empresa ni mail en un evento.
+
+## Datos pendientes
+
+Buscar `TODO(matias)`: casi todo está en `lib/sitio.ts` (mail, titular, bio, LinkedIn, dominio).

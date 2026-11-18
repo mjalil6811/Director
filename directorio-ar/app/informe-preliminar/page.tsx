@@ -21,16 +21,17 @@ function DonutChart({ segments, centerText, centerLabel, size = 150 }: {
   const circ = 2 * Math.PI * r;
   const strokeW = size * 0.12;
   const total = segments.reduce((a, s) => a + s.value, 0) || 1;
-  let offset = 0;
+  const visibles = segments.filter(s => s.value > 0);
+  const dashes = visibles.map(s => (s.value / total) * circ);
+  const offsets = dashes.map((_, i) => dashes.slice(0, i).reduce((a, d) => a + d, 0));
 
   return (
     <div className="flex flex-col items-center">
       <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`}>
         <circle cx={cx} cy={cy} r={r} fill="none" stroke="#f3f4f6" strokeWidth={strokeW} />
-        {segments.filter(s => s.value > 0).map((s, i) => {
-          const dash = (s.value / total) * circ;
-          const currentOffset = offset;
-          offset += dash;
+        {visibles.map((s, i) => {
+          const dash = dashes[i];
+          const currentOffset = offsets[i];
           return (
             <circle key={i} cx={cx} cy={cy} r={r} fill="none" stroke={s.color} strokeWidth={strokeW}
               strokeDasharray={`${dash} ${circ - dash}`} strokeDashoffset={-currentOffset}
@@ -397,7 +398,7 @@ export default function InformePreliminar() {
           <div className="border border-gray-200 rounded-2xl bg-white p-6 text-center shadow-sm">
             <p className="text-sm text-gray-700 font-semibold mb-1">Tu diagnóstico abreviado está completo</p>
             <p className="text-sm text-gray-500 mb-4">
-              Guardamos tus respuestas en este dispositivo. Podés volver cuando la empresa crezca, o seguir ahora con el diagnóstico completo.
+              Guardamos tus respuestas en este navegador. Podés volver cuando la empresa crezca, o seguir ahora con el diagnóstico completo.
             </p>
             <div className="flex flex-col sm:flex-row gap-2">
               <button

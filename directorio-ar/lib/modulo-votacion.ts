@@ -1,6 +1,6 @@
 import type {
   Votacion, VotoDirector, TipoVoto, TipoMayoria,
-  ResultadoVotacion, EstadoVotacion,
+  ResultadoVotacion,
 } from '../types/fase2';
 import { generarId, getItem, setItem } from './storage-core';
 

@@ -8,9 +8,8 @@ import {
   calcularEvaluacion, generarInformeEvaluacion, generarId,
 } from '../../../lib/modulo12-evaluacion';
 import { storageFase3 } from '../../../lib/storage-fase3';
-import { storageFase2 } from '../../../lib/storage-fase2';
 import { storage } from '../../../lib/storage';
-import type { EvaluacionCEO, EvaluacionDirector, RespuestaEvaluacion } from '../../../types/fase3';
+import type { EvaluacionCEO } from '../../../types/fase3';
 
 const inp = "w-full px-3 py-2.5 rounded-xl border border-gray-200 bg-white text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-brand/30 focus:border-brand transition-all";
 

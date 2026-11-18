@@ -1,5 +1,5 @@
 import type {
-  PeriodoFinanciero, PresupuestoAnual, AlertaFinanciera, DashboardFinancieroResultado,
+  PeriodoFinanciero, PresupuestoAnual, AlertaFinanciera,
 } from '../types/fase3';
 
 import { generarId } from './storage-core';

@@ -2,10 +2,9 @@
 
 import PageHeader from '../../../components/PageHeader';
 import { useState, useEffect, useCallback } from 'react';
-import { useRouter } from 'next/navigation';
 import {
   MESES, periodoVacio, calcularDerivados, calcularKPIs,
-  calcularVariacion, generarAlertas, generarInformePreReunion, generarId,
+  calcularVariacion, generarAlertas, generarInformePreReunion,
 } from '../../../lib/modulo10-dashboard';
 import { storageFase3 } from '../../../lib/storage-fase3';
 import { storage } from '../../../lib/storage';
@@ -171,7 +170,6 @@ function PresupuestoForm({ presupuestoInicial, onGuardar, onCancelar }: {
 }
 
 export default function ModuloDashboard() {
-  const router = useRouter();
   const [vista, setVista] = useState<'panel' | 'carga' | 'presupuesto' | 'informe'>('panel');
   const [periodos, setPeriodos] = useState<PeriodoFinanciero[]>([]);
   const [presupuesto, setPresupuesto] = useState<PresupuestoAnual | null>(null);

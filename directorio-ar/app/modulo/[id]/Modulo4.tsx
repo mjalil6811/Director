@@ -1,5 +1,6 @@
 'use client';
 
+import { registrarModuloCompletado } from '../../../lib/analitica';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import ModuleLayout from '../../../components/ModuleLayout';
@@ -183,8 +184,10 @@ export default function Modulo4() {
       else nivel = "Todavia no — trabaja primero en estos puntos";
 
       const diag: Modulo4Diagnostico = { score: sum, porcentaje, nivel };
+      const primeraVez = !storage.getModulo4Diagnostico();
       setDiagResultado(diag);
       storage.setModulo4Diagnostico(diag);
+      if (primeraVez) registrarModuloCompletado(4);
     }
   }
 

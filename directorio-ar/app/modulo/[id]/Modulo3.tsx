@@ -1,5 +1,6 @@
 'use client';
 
+import { registrarModuloCompletado } from '../../../lib/analitica';
 import Pregunta, { IntroModulo } from '../../../components/Pregunta';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
@@ -31,7 +32,7 @@ function CompositionChart({ data }: { data: { key: PerfilKey; nombre: string; pc
     <div className="space-y-4">
       {/* Stacked horizontal bar */}
       <div className="w-full h-8 rounded-lg overflow-hidden flex">
-        {data.map(({ key, nombre, pct }) => {
+        {data.map(({ key, pct }) => {
           if (pct === 0) return null;
           return (
             <div
@@ -214,6 +215,7 @@ export default function Modulo3() {
     } else {
       const res = calcularModulo3(respuestas);
       storage.setModulo3Resultado(res);
+      registrarModuloCompletado(3);
       setResultado(res);
       setStep('result');
     }
