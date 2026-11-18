@@ -8,6 +8,10 @@ import { SITE_URL, SITIO } from "../lib/sitio";
 const inter = Inter({
   variable: "--font-inter",
   subsets: ["latin"],
+  display: "swap",
+  // Sin el ajuste automático de la fuente de respaldo Next no inyecta el <meta name="next-size-adjust"> vacío.
+  adjustFontFallback: false,
+  fallback: ["system-ui", "-apple-system", "Segoe UI", "Arial", "sans-serif"],
 });
 
 export const metadata: Metadata = {

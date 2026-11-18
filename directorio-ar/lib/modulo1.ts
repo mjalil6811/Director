@@ -1,170 +1,24 @@
 import type { Modulo1Resultado } from "../types";
-import {
-  ROLES, INDUSTRIAS, OPCIONES_EMPLEADOS, opcionesFacturacion, calcularPerfil, grupoDeRol,
-  CATEGORIA_LABEL, NORMA_TOPES, type GrupoRol, type SectorOficial, type PerfilEmpresa,
-} from "./pymes";
+import { INDUSTRIAS, opcionesFacturacion, calcularPerfil, grupoDeRol, CATEGORIA_LABEL, type SectorOficial, type PerfilEmpresa } from "./pymes";
+import { PREGUNTAS_M1 as PREGUNTAS, DIMENSIONES_M1, IDX, OBJETIVOS, texto as txt, type DimensionKey, type ObjetivoKey } from "./preguntas";
 
-// ─── Tipos ─────────────────────────────────────────────────────────────────────
-
-/** Texto fijo, o una variante por grupo de quien responde. */
-type Texto = string | Record<GrupoRol, string>;
-type OpcionDef = { texto: Texto; puntaje: number | null };
-
-type PreguntaDef = {
-  id: string;
-  /** Dimensión que puntúa, o null si es una pregunta de perfil (no suma puntaje). */
-  dimension: DimensionKey | null;
-  texto: Texto;
-  aclaracion: Texto;
-  /** Opciones fijas, o 'facturacion' (dependen de la industria elegida). */
-  opciones: OpcionDef[] | 'facturacion';
-};
-
-export type DimensionKey = "tamano" | "propiedad" | "gobierno" | "decisiones" | "disponibilidad";
-
-export const DIMENSIONES_M1: { key: DimensionKey; nombre: string }[] = [
-  { key: "tamano", nombre: "Tamaño y complejidad" },
-  { key: "propiedad", nombre: "Estructura de propiedad" },
-  { key: "gobierno", nombre: "Cómo se decide hoy" },
-  { key: "decisiones", nombre: "Toma de decisiones" },
-  { key: "disponibilidad", nombre: "Recursos para el directorio" },
-];
+export { DIMENSIONES_M1, IDX, type DimensionKey } from "./preguntas";
 
 /** Pregunta lista para mostrar, ya adaptada a quien responde y a su industria. */
 export type PreguntaResuelta = { id: string; texto: string; aclaracion: string; opciones: { texto: string; puntaje: number | null }[] };
 
-// ─── Preguntas ─────────────────────────────────────────────────────────────────
-// Índices fijos: 0 rol · 1 industria · 2 facturación · 3 empleados · 4 propiedad · 5 sucesión
-//                6 decisiones estratégicas · 7 separación dueño/gerencia · 8 reuniones · 9 presupuesto
+export const TOTAL_PREGUNTAS = PREGUNTAS.length;
 
-export const IDX = { rol: 0, industria: 1, facturacion: 2, empleados: 3 } as const;
-
-const PREGUNTAS: PreguntaDef[] = [
-  {
-    id: "rol",
-    dimension: null,
-    texto: "¿Quién está respondiendo este diagnóstico?",
-    aclaracion: "Adaptamos las preguntas siguientes a tu rol en la empresa.",
-    opciones: ROLES.map(r => ({ texto: r.label, puntaje: null })),
-  },
-  {
-    id: "industria",
-    dimension: null,
-    texto: "¿A qué industria pertenece la empresa?",
-    aclaracion: "Elegí la actividad principal. Define los topes de facturación oficiales que usamos en la próxima pregunta.",
-    opciones: INDUSTRIAS.map(i => ({ texto: `${i.label} — ${i.ejemplos}`, puntaje: null })),
-  },
-  {
-    id: "facturacion",
-    dimension: "tamano",
-    texto: "¿Cuál fue la facturación anual promedio de los últimos 3 años?",
-    aclaracion: `Promedio de los últimos 3 ejercicios, sin IVA. Rangos según los topes oficiales PyME de tu industria (${NORMA_TOPES}).`,
-    opciones: "facturacion",
-  },
-  {
-    id: "empleados",
-    dimension: "tamano",
-    texto: "¿Cuántas personas trabajan en la empresa?",
-    aclaracion: "Incluí empleados en relación de dependencia y colaboradores estables.",
-    opciones: OPCIONES_EMPLEADOS.map(o => ({ texto: o.texto, puntaje: o.puntaje })),
-  },
-  {
-    id: "propiedad",
-    dimension: "propiedad",
-    texto: "¿Cómo está distribuida la propiedad de la empresa?",
-    aclaracion: "La composición accionaria es uno de los factores que más define la necesidad de un directorio.",
-    opciones: [
-      { texto: "Un solo dueño, sin socios", puntaje: 1 },
-      { texto: "Dos o tres socios fundadores", puntaje: 2 },
-      { texto: "Familia ampliada o segunda generación involucrada", puntaje: 3 },
-      { texto: "Múltiples socios, incluyendo inversores o fondos", puntaje: 3 },
-    ],
-  },
-  {
-    id: "sucesion",
-    dimension: "propiedad",
-    texto: "¿Existe o existirá en los próximos 3 años algún proceso de sucesión o cambio de control?",
-    aclaracion: "Venta parcial, incorporación de socios, traspaso generacional, ingreso de inversores.",
-    opciones: [
-      { texto: "No está previsto ningún cambio", puntaje: 1 },
-      { texto: "Hay conversaciones pero nada concreto", puntaje: 2 },
-      { texto: "Está en proceso o muy próximo", puntaje: 3 },
-      { texto: "Ya ocurrió y hay tensiones no resueltas", puntaje: 3 },
-    ],
-  },
-  {
-    id: "decisiones",
-    dimension: "gobierno",
-    texto: "¿Cómo se toman hoy las decisiones estratégicas importantes?",
-    aclaracion: {
-      propietario: "Si una sola persona decide todo lo estratégico, la empresa está a un error de distancia de una crisis.",
-      gestor: "Pensá en las últimas decisiones relevantes: inversiones, endeudamiento, nuevos mercados.",
-      familiar: "Pensá en las últimas decisiones relevantes: inversiones, endeudamiento, nuevos mercados.",
-    },
-    opciones: [
-      { texto: { propietario: "Las tomo yo (o el socio principal) solo, sin consulta ni contrapeso", gestor: "Las define el dueño solo; yo ejecuto", familiar: "Las toma quien gestiona, sin consultar al resto de los dueños" }, puntaje: 3 },
-      { texto: { propietario: "Se discuten entre socios de manera informal, sin registro", gestor: "Los dueños deciden entre ellos de manera informal y me lo comunican", familiar: "Se conversan en familia, de manera informal" }, puntaje: 2 },
-      { texto: { propietario: "Hay reuniones periódicas, pero sin estructura formal", gestor: "Las propongo y las validamos en reuniones, sin estructura formal", familiar: "Hay reuniones de socios periódicas, pero sin estructura formal" }, puntaje: 1 },
-      { texto: { propietario: "Existe un directorio o consejo, aunque sea informal", gestor: "Las aprueba un directorio o consejo con el que trabajo formalmente", familiar: "Existe un directorio o consejo donde los dueños participan formalmente" }, puntaje: 0 },
-    ],
-  },
-  {
-    id: "separacion",
-    dimension: "gobierno",
-    texto: {
-      propietario: "¿Qué tan separado está hoy tu rol de dueño del de gestión?",
-      gestor: "¿Qué autonomía real tenés frente a los dueños?",
-      familiar: "Los dueños que gestionan, ¿separan su rol de dueño del de gerente?",
-    },
-    aclaracion: {
-      propietario: "Cuando el dueño es también el gerente, nadie le dice que no. El directorio rompe esa concentración y protege el patrimonio de todos.",
-      gestor: "Si los dueños intervienen en todo, el cargo de gerente es solo nominal. El directorio ordena qué decide cada uno.",
-      familiar: "Cuando quien gestiona actúa como único dueño, el resto de los accionistas pierde visibilidad. El directorio la recupera.",
-    },
-    opciones: [
-      { texto: { propietario: "Opero el día a día completamente: no hay separación", gestor: "Ninguna: los dueños deciden incluso lo operativo", familiar: "No: manejan el día a día como si la empresa fuera solo suya" }, puntaje: 3 },
-      { texto: { propietario: "Hay gerentes, pero decido todo yo: la separación es cosmética", gestor: "Poca: tengo el cargo, pero los dueños deciden casi todo", familiar: "Hay gerentes, pero los dueños que gestionan deciden todo" }, puntaje: 2 },
-      { texto: { propietario: "Hay gerentes con algo de autonomía real", gestor: "Bastante en lo operativo; lo estratégico lo deciden los dueños", familiar: "Hay gerentes con algo de autonomía real" }, puntaje: 1 },
-      { texto: { propietario: "La gerencia opera con independencia clara de los dueños", gestor: "Plena, dentro de un presupuesto y objetivos acordados", familiar: "La gerencia opera con independencia clara de la propiedad" }, puntaje: 0 },
-    ],
-  },
-  {
-    id: "reuniones",
-    dimension: "decisiones",
-    texto: "¿Con qué frecuencia los socios o líderes se reúnen formalmente para revisar el rumbo del negocio?",
-    aclaracion: "Si nadie se junta a pensar el futuro, nadie lo está haciendo. El directorio fuerza esa conversación.",
-    opciones: [
-      { texto: "Casi nunca, o solo cuando hay una crisis", puntaje: 3 },
-      { texto: "Una o dos veces al año, sin agenda estructurada", puntaje: 2 },
-      { texto: "Trimestralmente, con algún orden pero sin formato fijo", puntaje: 1 },
-      { texto: "Mensual o bimestralmente, con agenda y seguimiento de acuerdos", puntaje: 0 },
-    ],
-  },
-  {
-    id: "presupuesto",
-    dimension: "disponibilidad",
-    texto: {
-      propietario: "¿Estarías dispuesto a destinar un presupuesto real al funcionamiento del directorio?",
-      gestor: "¿Los dueños estarían dispuestos a destinar un presupuesto real al funcionamiento del directorio?",
-      familiar: "¿Los dueños estarían dispuestos a destinar un presupuesto real al funcionamiento del directorio?",
-    },
-    aclaracion: "Incluye honorarios de directores independientes, lugar de reunión y materiales.",
-    opciones: [
-      { texto: "No está en el presupuesto y sería difícil incorporarlo", puntaje: 0 },
-      { texto: "Podría destinarse algo pequeño como primera instancia", puntaje: 1 },
-      { texto: "Sí, si el valor aportado lo justifica claramente", puntaje: 2 },
-      { texto: "Ya está contemplado o no sería un obstáculo", puntaje: 3 },
-    ],
-  },
-];
-
-export const TOTAL_PREGUNTAS = PREGUNTAS.length; // 10
+/** Recomendación según lo que la persona espera lograr con el consejo (no afecta el puntaje). */
+const RECO_OBJETIVO: Record<ObjetivoKey, string> = {
+  ordenar: "Buscás ordenar cómo se decide: el primer paso es acordar qué decisiones pasan por el consejo y cuáles quedan en manos de la gerencia.",
+  conflictos: "Buscás resolver diferencias entre socios: un consejo con al menos un integrante independiente ofrece un espacio neutral para tratarlas, con reglas acordadas de antemano.",
+  sucesion: "Buscás preparar la sucesión: el consejo puede acompañar el traspaso con un plan por etapas y criterios acordados para elegir y evaluar a quien suceda.",
+  financiamiento: "Buscás acceder a crédito o inversión: información financiera ordenada y decisiones registradas en actas facilitan la conversación con bancos e inversores.",
+  profesionalizar: "Buscás profesionalizar la gestión: conviene empezar por un tablero de indicadores y una reunión mensual de seguimiento con la gerencia.",
+};
 
 // ─── Resolución por contexto ───────────────────────────────────────────────────
-
-function txt(t: Texto, grupo: GrupoRol): string {
-  return typeof t === "string" ? t : t[grupo];
-}
 
 function sectorDe(respuestas: number[]): SectorOficial {
   return INDUSTRIAS[respuestas[IDX.industria]]?.sector ?? "servicios";
@@ -222,20 +76,25 @@ export function calcularModulo1(respuestas: number[]): Modulo1Resultado {
     .filter(d => acc[d.key].max > 0)
     .map(d => ({ key: d.key, nombre: d.nombre, score: acc[d.key].score, max: acc[d.key].max, porcentaje: Math.round((acc[d.key].score / acc[d.key].max) * 100) }));
 
-  const scoreTotal = scoresDim.reduce((a, d) => a + d.score, 0);
-  const maxTotal = scoresDim.reduce((a, d) => a + d.max, 0);
+  // El porcentaje mide NECESIDAD: el presupuesto (disposición) se muestra como dimensión pero no suma acá.
+  // Va al eje de Disposición (lib/ejes.ts).
+  const deNecesidad = scoresDim.filter(d => d.key !== "disponibilidad");
+  const scoreTotal = deNecesidad.reduce((a, d) => a + d.score, 0);
+  const maxTotal = deNecesidad.reduce((a, d) => a + d.max, 0);
   const porcentaje = maxTotal > 0 ? Math.round((scoreTotal / maxTotal) * 100) : 0;
   const nivel = NIVELES[calcularNivel(porcentaje)].label;
   const perfil = perfilDeRespuestas(respuestas) ?? undefined;
 
   const get = (key: DimensionKey) => scoresDim.find(s => s.key === key)?.porcentaje;
   const recs: string[] = [];
+  const objetivo = OBJETIVOS[respuestas[IDX.objetivo]]?.key;
+  if (objetivo) recs.push(RECO_OBJETIVO[objetivo]);
   if (perfil && (perfil.categoria === "tramo2" || perfil.categoria === "grande"))
     recs.push(`Por facturación tu empresa es ${CATEGORIA_LABEL[perfil.categoria]}: a esta escala, decidir sin un consejo asesor o directorio expone el patrimonio de todos los socios.`);
   if ((get("propiedad") ?? 0) >= 60)
-    recs.push("La estructura de propiedad es compleja: formalizar quién decide qué, y en qué calidad, es prioritario antes de armar el consejo.");
+    recs.push("La propiedad es compleja o hay temas abiertos entre socios: formalizar quién decide qué, y en qué calidad, es prioritario antes de armar el consejo.");
   if ((get("gobierno") ?? 0) >= 60)
-    recs.push("Las decisiones hoy están muy concentradas. Sumar un consejo asesor es urgente para tener un contrapeso real en las decisiones estratégicas.");
+    recs.push("Las decisiones y la operación dependen mucho de pocas personas. Un consejo asesor aporta un contrapeso real en lo estratégico y reduce ese riesgo.");
   if ((get("decisiones") ?? 0) >= 60)
     recs.push("No hay un espacio regular para pensar el rumbo del negocio. Un consejo con agenda fija lo resuelve.");
   if ((get("disponibilidad") ?? 100) <= 33)
@@ -250,5 +109,6 @@ export function calcularModulo1(respuestas: number[]): Modulo1Resultado {
     scoresPorDimension: scoresDim.map(d => ({ nombre: d.nombre, score: d.score, max: d.max, porcentaje: d.porcentaje, key: d.key })),
     recomendaciones: recs,
     perfil,
+    objetivo,
   };
 }

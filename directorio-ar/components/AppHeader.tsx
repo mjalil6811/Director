@@ -74,6 +74,7 @@ export default function AppHeader() {
         <div className="flex items-center gap-1 shrink-0">
           <Link
             href="/"
+            aria-label="Inicio"
             className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium text-gray-600 hover:text-brand hover:bg-brand-50 transition-colors"
           >
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>

@@ -5,8 +5,19 @@
   --foreground: #1A1D26;
 }
 
-/* Tokens de marca: usar bg-brand, text-brand-dark, border-brand-100, bg-surface, etc. */
+/*
+ * Tokens de diseño.
+ * - Color de marca: bg-brand, text-brand-dark, border-brand-100, bg-surface…
+ * - Radios: rounded-control (botones, opciones, inputs) y rounded-card (tarjetas).
+ * - Tipografía: text-pregunta para el enunciado de cada pregunta.
+ * - Texto secundario: mínimo text-gray-500 sobre blanco (contraste AA ≥ 4,5:1); nunca gray-400 o más claro.
+ * - Zonas táctiles: min-h-12 (48 px) en opciones, min-h-11 (44 px) en botones secundarios.
+ */
 @theme {
+  --radius-control: 0.75rem;
+  --radius-card: 1rem;
+  --text-pregunta: 1.25rem;
+  --text-pregunta--line-height: 1.4;
   --color-brand: #534AB7;
   --color-brand-dark: #3C3489;
   --color-brand-light: #7C6FDB;

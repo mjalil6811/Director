@@ -2,7 +2,10 @@
 // están guardadas (no cambia ninguna clave ni su formato).
 
 export const PREFIJO = 'directorio_ar:';
-export const SCHEMA_VERSION = 1;
+import { ESQUEMA_ACTUAL, aplicarMigraciones } from './migraciones';
+
+/** Versión del formato de los datos. Un respaldo de una versión anterior se migra al importarlo. */
+export const SCHEMA_VERSION = ESQUEMA_ACTUAL;
 const APP = 'directorio-ar';
 
 export interface Respaldo {
@@ -87,4 +90,5 @@ export function validarRespaldo(texto: string): ResultadoValidacion {
 export function restaurarRespaldo(r: Respaldo): void {
   for (const k of clavesGuardadas()) localStorage.removeItem(k);
   for (const [k, v] of Object.entries(r.datos)) localStorage.setItem(k, v);
+  aplicarMigraciones();
 }

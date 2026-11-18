@@ -1,80 +1,8 @@
 import type { Modulo2Resultado } from "../types";
+import { SITUACIONES_M2 } from "./preguntas";
 
-export type SituacionM2 = {
-  texto: string;
-  aclaracion: string;
-  opciones: { label: string; tipo: 'concentrada' | 'parcial' | 'delegada' | 'gris' }[];
-  beneficioDirectorio: string;
-};
+export { SITUACIONES_M2, type SituacionM2, type DecisionM2 } from "./preguntas";
 
-export const SITUACIONES_M2: SituacionM2[] = [
-  {
-    texto: "El banco ofrece una línea de crédito importante. ¿Quién decide si se toma?",
-    aclaracion: "Endeudarse afecta el patrimonio de todos los socios.",
-    opciones: [
-      { label: "El dueño solo, sin consultar", tipo: "concentrada" },
-      { label: "El dueño con el CFO o contador", tipo: "parcial" },
-      { label: "Se analiza formalmente con datos antes de decidir", tipo: "delegada" },
-      { label: "No hay un proceso claro, depende del momento", tipo: "gris" },
-    ],
-    beneficioDirectorio: "Esta es una decisión donde el directorio debe liderar (modo 'take charge'): evalúa el endeudamiento con análisis independiente, hace las preguntas correctas antes de opinar y protege el patrimonio de todos los socios — no solo del que firma.",
-  },
-  {
-    texto: "Dos socios no se ponen de acuerdo sobre expandir a otra provincia. ¿Qué pasa?",
-    aclaracion: "Es una decisión estratégica con impacto en la operación y el capital.",
-    opciones: [
-      { label: "El socio con más poder decide", tipo: "concentrada" },
-      { label: "Negocian entre ellos hasta que uno cede", tipo: "parcial" },
-      { label: "Se analizan los números y se decide con criterio objetivo", tipo: "delegada" },
-      { label: "Se posterga indefinidamente sin resolución", tipo: "gris" },
-    ],
-    beneficioDirectorio: "El directorio actúa como socio estratégico (modo 'partner'): facilita el debate con datos, practica la indagación antes que la recomendación, y funciona como árbitro institucional entre socios — sin que gane el que tiene más poder.",
-  },
-  {
-    texto: "Hay que definir cuánto cobra el CEO o dueño-gerente este año. ¿Cómo se decide?",
-    aclaracion: "Si el CEO fija su propio sueldo, hay un conflicto de interés evidente.",
-    opciones: [
-      { label: "El dueño fija su propio sueldo", tipo: "concentrada" },
-      { label: "Se conversa informalmente con los socios", tipo: "parcial" },
-      { label: "Hay un criterio formal basado en resultados y mercado", tipo: "delegada" },
-      { label: "No se revisa nunca, siempre fue igual", tipo: "gris" },
-    ],
-    beneficioDirectorio: "La compensación del CEO es una decisión donde el directorio debe liderar ('take charge'). Es una de las funciones más importantes del directorio como equipo: elimina el conflicto de interés y alinea incentivos con resultados reales.",
-  },
-  {
-    texto: "Los resultados del trimestre fueron malos. ¿Qué pasa?",
-    aclaracion: "La cadena de rendición de cuentas define qué tan sana es la forma de decidir.",
-    opciones: [
-      { label: "El dueño lo absorbe solo y ajusta sobre la marcha", tipo: "concentrada" },
-      { label: "Se comenta con el equipo pero no hay rendición de cuentas formal", tipo: "parcial" },
-      { label: "La gerencia presenta un informe y explica las causas", tipo: "delegada" },
-      { label: "Nadie rinde cuentas formalmente", tipo: "gris" },
-    ],
-    beneficioDirectorio: "El directorio instala disciplina de rendición de cuentas como socio estratégico: la gerencia presenta, el directorio indaga antes de juzgar, pregunta 'por qué' antes de decir 'qué hacer', y los socios se informan con transparencia.",
-  },
-  {
-    texto: "Un hijo del dueño quiere entrar a trabajar en la empresa. ¿Cómo se decide?",
-    aclaracion: "Mezclar familia y empresa sin reglas claras genera conflictos que pueden destruir ambas.",
-    opciones: [
-      { label: "El dueño lo incorpora directamente", tipo: "concentrada" },
-      { label: "Se habla en familia y se comunica a la empresa", tipo: "parcial" },
-      { label: "Hay una política de ingreso de familiares con criterios claros", tipo: "delegada" },
-      { label: "Genera incomodidad y nadie quiere tomar la decisión", tipo: "gris" },
-    ],
-    beneficioDirectorio: "El directorio lidera esta conversación difícil ('take charge'): establece reglas de juego objetivas para familiares. La diversidad de perspectivas del directorio como equipo genera políticas que protegen tanto a la empresa como a la familia.",
-  },
-  {
-    texto: "Cerró bien el año. ¿Cómo se decide cuánto se reparte entre socios?",
-    aclaracion: "La distribución de utilidades es un derecho de los accionistas.",
-    opciones: [
-      { label: "El dueño mayoritario decide cuánto y cuándo", tipo: "concentrada" },
-      { label: "Se conversa entre socios informalmente", tipo: "parcial" },
-      { label: "Hay una política de dividendos aprobada y se respeta", tipo: "delegada" },
-      { label: "Genera conflicto cada vez, no hay reglas claras", tipo: "gris" },
-    ],
-    beneficioDirectorio: "El directorio lidera la recomendación de dividendos ('take charge') equilibrando reinversión y retorno. Como equipo diverso, aporta perspectivas que ningún socio individual tiene. Los socios aprueban en asamblea con información completa y reglas claras.",
-  },
-];
 
 // ─── Scoring ────────────────────────────────────────────────────────────────
 

@@ -60,7 +60,7 @@ function FormVotacion({ reunionId, onCrear, onCancelar }: {
                 </div>
                 <div>
                   <p className={`text-sm font-semibold ${tipoMayoria === tipo ? 'text-brand-dark' : 'text-gray-700'}`}>{MAYORIA_META[tipo].label}</p>
-                  <p className="text-xs text-gray-400 mt-0.5">{MAYORIA_META[tipo].descripcion}</p>
+                  <p className="text-xs text-gray-500 mt-0.5">{MAYORIA_META[tipo].descripcion}</p>
                 </div>
               </div>
             </button>
@@ -125,7 +125,7 @@ function VotacionActiva({ votacion, directores, totalDirectores, onActualizar }:
             <span className="text-xs font-semibold text-green-700 uppercase tracking-wide">Votación abierta</span>
           </div>
           <p className="text-sm font-semibold text-gray-900">{votacion.titulo}</p>
-          {votacion.descripcion && <p className="text-xs text-gray-400 mt-0.5 leading-relaxed">{votacion.descripcion}</p>}
+          {votacion.descripcion && <p className="text-xs text-gray-500 mt-0.5 leading-relaxed">{votacion.descripcion}</p>}
         </div>
       </div>
 
@@ -146,7 +146,7 @@ function VotacionActiva({ votacion, directores, totalDirectores, onActualizar }:
         <div className="flex-1 h-1.5 bg-gray-100 rounded-full overflow-hidden">
           <div className="h-full bg-brand rounded-full transition-all" style={{ width: `${pct}%` }} />
         </div>
-        <span className="text-xs text-gray-400 shrink-0">{votosRegistrados}/{totalDirectores} votos</span>
+        <span className="text-xs text-gray-500 shrink-0">{votosRegistrados}/{totalDirectores} votos</span>
       </div>
 
       <div className="space-y-2 mb-4">
@@ -170,7 +170,7 @@ function VotacionActiva({ votacion, directores, totalDirectores, onActualizar }:
                     {VOTO_META[votoExistente.voto].icono} {VOTO_META[votoExistente.voto].label}
                   </span>
                 ) : (
-                  <span className="text-xs text-gray-400">Sin votar</span>
+                  <span className="text-xs text-gray-500">Sin votar</span>
                 )}
               </button>
 
@@ -227,12 +227,12 @@ function VotacionCerrada({ votacion }: {
             <span className={`text-xs font-bold uppercase tracking-wide px-2 py-0.5 rounded-full ${r.aprobada ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
               {r.aprobada ? '✓ Aprobada' : '✗ Rechazada'}
             </span>
-            <span className="text-xs text-gray-400">{MAYORIA_META[votacion.tipoMayoria].label}</span>
+            <span className="text-xs text-gray-500">{MAYORIA_META[votacion.tipoMayoria].label}</span>
           </div>
           <p className="text-sm font-semibold text-gray-900">{votacion.titulo}</p>
           <p className={`text-xs mt-1 ${r.aprobada ? 'text-green-700' : 'text-red-700'}`}>{r.resumen}</p>
         </div>
-        <button onClick={() => setExpandida(!expandida)} className="text-gray-400 hover:text-gray-600 ml-3 shrink-0">
+        <button onClick={() => setExpandida(!expandida)} className="text-gray-500 hover:text-gray-600 ml-3 shrink-0">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <path d={expandida ? 'M18 15l-6-6-6 6' : 'M6 9l6 6 6-6'} />
           </svg>
@@ -261,7 +261,7 @@ function VotacionCerrada({ votacion }: {
               <div key={v.directorNombre} className="flex items-center justify-between text-xs py-1">
                 <span className="text-gray-600">{v.directorNombre}</span>
                 <div className="flex items-center gap-2">
-                  {v.comentario && <span className="text-gray-400 italic">&quot;{v.comentario}&quot;</span>}
+                  {v.comentario && <span className="text-gray-500 italic">&quot;{v.comentario}&quot;</span>}
                   <span className="font-bold px-2 py-0.5 rounded-full"
                     style={{ background: VOTO_META[v.voto].bg, color: VOTO_META[v.voto].color }}>
                     {VOTO_META[v.voto].icono} {VOTO_META[v.voto].label}
@@ -325,7 +325,7 @@ export default function VotacionPanel({ reunionId, directores, totalDirectores }
       <div className="flex items-center justify-between mb-4">
         <div>
           <p className="text-xs font-bold text-gray-500 uppercase tracking-wide">Votaciones</p>
-          <p className="text-xs text-gray-400 mt-0.5">{votaciones.length} en esta reunión</p>
+          <p className="text-xs text-gray-500 mt-0.5">{votaciones.length} en esta reunión</p>
         </div>
         <button onClick={() => setMostrarForm(true)}
           className="px-3 py-1.5 rounded-lg bg-brand hover:bg-brand-dark text-white text-xs font-semibold transition-colors">
@@ -338,14 +338,14 @@ export default function VotacionPanel({ reunionId, directores, totalDirectores }
       )}
 
       {votaciones.length === 0 && !mostrarForm && (
-        <div className="text-center py-8 text-gray-400">
+        <div className="text-center py-8 text-gray-500">
           <div className="w-10 h-10 rounded-xl bg-gray-100 flex items-center justify-center mx-auto mb-3">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
               <polyline points="9 11 12 14 22 4" /><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11" />
             </svg>
           </div>
           <p className="text-xs font-medium text-gray-500">Sin votaciones en esta reunión</p>
-          <p className="text-xs text-gray-400 mt-1">Creá una para registrar decisiones formales</p>
+          <p className="text-xs text-gray-500 mt-1">Creá una para registrar decisiones formales</p>
         </div>
       )}
 
@@ -360,7 +360,7 @@ export default function VotacionPanel({ reunionId, directores, totalDirectores }
             <div>
               <span className="text-xs bg-gray-100 text-gray-500 px-2 py-0.5 rounded-full font-medium">Pendiente</span>
               <p className="text-sm font-semibold text-gray-900 mt-1">{v.titulo}</p>
-              <p className="text-xs text-gray-400 mt-0.5">{MAYORIA_META[v.tipoMayoria].label}</p>
+              <p className="text-xs text-gray-500 mt-0.5">{MAYORIA_META[v.tipoMayoria].label}</p>
             </div>
             <button onClick={() => abrir(v)}
               className="px-3 py-2 rounded-xl bg-brand hover:bg-brand-dark text-white text-xs font-semibold transition-colors">
@@ -375,7 +375,7 @@ export default function VotacionPanel({ reunionId, directores, totalDirectores }
           {pendientes.length + abiertas.length > 0 && (
             <div className="border-t border-gray-100 my-4" />
           )}
-          <p className="text-xs text-gray-400 font-medium mb-2">Votaciones cerradas ({cerradas.length})</p>
+          <p className="text-xs text-gray-500 font-medium mb-2">Votaciones cerradas ({cerradas.length})</p>
           {cerradas.map(v => (
             <VotacionCerrada key={v.id} votacion={v} totalDirectores={totalDirectores} />
           ))}

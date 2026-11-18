@@ -7,6 +7,7 @@ import ModuleLayout from '../../../components/ModuleLayout';
 import { storage } from '../../../lib/storage';
 import type { Modulo4Diagnostico } from '../../../types';
 import type { GrupoRol } from '../../../lib/pymes';
+import { DIAG_PREGUNTAS, TOTAL_DIAG } from '../../../lib/preguntas';
 
 type Tab = 'frecuencia' | 'decisiones' | 'relacion' | 'autoevaluacion';
 
@@ -20,7 +21,7 @@ function Accordion({ title, children }: { title: string; children: React.ReactNo
       >
         <span className="text-sm font-semibold text-gray-900">{title}</span>
         <svg
-          className={`w-4 h-4 text-gray-400 transition-transform ${open ? 'rotate-180' : ''}`}
+          className={`w-4 h-4 text-gray-500 transition-transform ${open ? 'rotate-180' : ''}`}
           viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"
         >
           <path d="M6 9l6 6 6-6" />
@@ -44,7 +45,7 @@ function AgendaBlock({ number, title, time, content, nota }: { number: number; t
       <div className="flex-1">
         <div className="flex items-center justify-between mb-0.5">
           <span className="text-sm font-semibold text-gray-900">{title}</span>
-          <span className="text-xs text-gray-400 shrink-0 ml-2">{time}</span>
+          <span className="text-xs text-gray-500 shrink-0 ml-2">{time}</span>
         </div>
         <p className="text-xs text-gray-600 leading-relaxed">{content}</p>
         {nota && (
@@ -110,34 +111,6 @@ const PROTOCOLO = [
   { number: 7, title: "Mapa de modos de intervención", detail: "Definir para cada tipo de decisión si el directorio lidera, acompaña o se mantiene al margen. Revisarlo cada semestre." },
 ];
 
-// Autoevaluación "¿Estás listo?": misma intención, formulada según quién responde (pregunta 1 del Módulo 1).
-const DIAG_PREGUNTAS: Record<GrupoRol, string[]> = {
-  propietario: [
-    "¿Estarías dispuesto a presentar resultados formalmente ante un directorio?",
-    "¿Podrías separar quién preside el directorio de quién gerencia la empresa?",
-    "¿La empresa podría enviar información financiera completa antes de cada reunión?",
-    "¿Aceptarías que el directorio cuestione tus decisiones?",
-    "¿Aceptarías una evaluación anual de tu desempeño por parte del directorio?",
-    "¿Podrías reservar 2 horas por mes, sin postergarlas, para reunirte con el directorio?",
-  ],
-  gestor: [
-    "¿Estarías dispuesto a rendir cuentas formalmente ante un directorio?",
-    "¿Los dueños aceptarían que la presidencia del directorio y la gerencia estén separadas?",
-    "¿La empresa podría enviar información financiera completa antes de cada reunión?",
-    "¿Los dueños aceptarían que el directorio cuestione sus decisiones (y las tuyas)?",
-    "¿Aceptarías una evaluación anual de tu desempeño por parte del directorio?",
-    "¿Los dueños podrían reservar 2 horas por mes, sin postergarlas, para reunirse con el directorio?",
-  ],
-  familiar: [
-    "¿Quien gestiona estaría dispuesto a presentar resultados formalmente ante un directorio?",
-    "¿Existe o podría existir una separación real entre quién preside el directorio y quién gerencia?",
-    "¿La empresa podría enviar información financiera completa antes de cada reunión?",
-    "¿Hay disposición a que el directorio cuestione a quien gestiona?",
-    "¿Se aceptaría una evaluación anual del desempeño del CEO por parte del directorio?",
-    "¿Los dueños podrían reservar 2 horas por mes, sin postergarlas, para reunirse con el directorio?",
-  ],
-};
-const TOTAL_DIAG = DIAG_PREGUNTAS.propietario.length;
 
 export default function Modulo4() {
   const router = useRouter();
@@ -179,9 +152,9 @@ export default function Modulo4() {
       const sum = answered.reduce<number>((s, v) => s + (v ?? 0), 0);
       const porcentaje = Math.round((sum / TOTAL_DIAG) * 100);
       let nivel: string;
-      if (porcentaje >= 80) nivel = "Estas listo para dar el paso";
+      if (porcentaje >= 80) nivel = "Estás listo para dar el paso";
       else if (porcentaje >= 50) nivel = "Casi listo — hay cosas por resolver";
-      else nivel = "Todavia no — trabaja primero en estos puntos";
+      else nivel = "Todavía no: trabajá primero en estos puntos";
 
       const diag: Modulo4Diagnostico = { score: sum, porcentaje, nivel };
       const primeraVez = !storage.getModulo4Diagnostico();
@@ -255,7 +228,7 @@ export default function Modulo4() {
               A mayor complejidad y necesidad de ordenar las decisiones, mayor es la frecuencia recomendada de reuniones del directorio.
             </p>
           </div>
-          <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Tipos de reuniones</p>
+          <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Tipos de reuniones</p>
           <Accordion title="Reunión ordinaria">
             <div className="mt-2 space-y-0.5">
               <AgendaBlock number={1} title="Apertura y quórum" time="10 min"
@@ -358,14 +331,14 @@ export default function Modulo4() {
       {/* Tab: Cómo funciona en la práctica */}
       {tab === 'relacion' && (
         <div className="space-y-4">
-          <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Cómo funciona en la práctica</p>
+          <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Cómo funciona en la práctica</p>
           <p className="text-sm text-gray-500 mb-2">Las 7 situaciones más comunes en la relación directorio-gerencia y cómo resolverlas.</p>
           <div className="space-y-3">
             {PRACTICA_ITEMS.map((item, i) => (
               <details key={i} className="border border-gray-200 rounded-xl bg-white overflow-hidden">
                 <summary className="px-4 py-3.5 flex items-center justify-between cursor-pointer hover:bg-gray-50 select-none">
                   <span className="text-sm font-semibold text-gray-900">{item.titulo}</span>
-                  <svg className="w-4 h-4 text-gray-400 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <svg className="w-4 h-4 text-gray-500 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                     <path d="M6 9l6 6 6-6" />
                   </svg>
                 </summary>
@@ -387,7 +360,7 @@ export default function Modulo4() {
             ))}
           </div>
 
-          <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mt-6">Protocolo de convivencia</p>
+          <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mt-6">Protocolo de convivencia</p>
           <div className="space-y-2">
             {PROTOCOLO.map(item => (
               <div key={item.number} className="border border-gray-200 rounded-xl bg-white p-4 flex items-start gap-3">
@@ -416,24 +389,24 @@ export default function Modulo4() {
             let readyBg: string;
             let readyDesc: string;
             if (pct >= 80) {
-              readyLabel = "Estas listo";
+              readyLabel = "Estás listo";
               readyColor = "text-green-700";
               readyBg = "bg-green-100";
-              readyDesc = "Tu empresa tiene la disposicion necesaria para implementar un directorio formal. Las condiciones estan dadas para dar el paso.";
+              readyDesc = "Tu empresa tiene la disposición necesaria para implementar un directorio formal. Las condiciones están dadas para dar el paso.";
             } else if (pct >= 50) {
               readyLabel = `Casi listo — hay ${noCount + parcialCount} punto${noCount + parcialCount !== 1 ? 's' : ''} por resolver`;
               readyColor = "text-yellow-700";
               readyBg = "bg-yellow-100";
-              readyDesc = "Hay buena base pero algunos aspectos necesitan trabajo previo. Resolvellos antes de formalizar el directorio.";
+              readyDesc = "Hay buena base, pero algunos aspectos necesitan trabajo previo. Resolvelos antes de formalizar el directorio.";
             } else {
-              readyLabel = "Todavia no — trabaja primero en estos puntos";
+              readyLabel = "Todavía no: trabajá primero en estos puntos";
               readyColor = "text-red-700";
               readyBg = "bg-red-100";
               readyDesc = "La disposición a decidir con un directorio todavía es baja. Antes de armarlo, conviene trabajar la apertura a otras miradas.";
             }
             return (
               <div className={`border-2 rounded-xl p-5 ${pct >= 80 ? 'border-green-300' : pct >= 50 ? 'border-yellow-300' : 'border-red-300'}`}>
-                <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">Resultado</p>
+                <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Resultado</p>
                 <div className={`inline-flex items-center px-3 py-1.5 rounded-full text-sm font-semibold mb-3 ${readyBg} ${readyColor}`}>
                   {readyLabel}
                 </div>
@@ -442,6 +415,10 @@ export default function Modulo4() {
                 </div>
                 <p className="text-xs text-gray-500 mt-2 mb-3">{pct}% — {diagAnswered} de {TOTAL_DIAG} respondidas</p>
                 <p className="text-sm text-gray-700 leading-relaxed">{readyDesc}</p>
+                <div className="mt-4 pt-3 border-t border-gray-200 flex flex-col sm:flex-row sm:items-center gap-2 justify-between">
+                  <p className="text-xs font-semibold text-emerald-800">Módulo 4 completo. Siguiente: cómo van a trabajar consejo y gerencia.</p>
+                  <button onClick={() => router.push('/modulo/5')} className="min-h-11 px-4 rounded-xl text-sm font-semibold bg-brand hover:bg-brand-dark text-white">Seguir con el Módulo 5 →</button>
+                </div>
               </div>
             );
           })()}
@@ -449,8 +426,8 @@ export default function Modulo4() {
           <div className="space-y-3">
             {DIAG_PREGUNTAS[grupo].map((pregunta, idx) => (
               <div key={idx} className="border border-gray-200 rounded-xl bg-white p-4">
-                <p className="text-sm text-gray-800 mb-3 leading-snug">{idx + 1}. {pregunta}</p>
-                <div className="flex gap-2">
+                <p id={`m4-p${idx}`} className="text-sm sm:text-[15px] font-medium text-gray-900 mb-3 leading-snug">{idx + 1}. {pregunta}</p>
+                <div className="flex gap-2" role="radiogroup" aria-labelledby={`m4-p${idx}`}>
                   {[
                     { label: "Sí", value: 1 as const },
                     { label: "Parcial", value: 0.5 as const },
@@ -458,13 +435,16 @@ export default function Modulo4() {
                   ].map(opt => (
                     <button
                       key={opt.label}
+                      type="button"
+                      role="radio"
+                      aria-checked={diagRespuestas[idx] === opt.value}
                       onClick={() => handleDiagSelect(idx, opt.value)}
-                      className={`flex-1 py-2 text-xs font-semibold rounded-xl border transition-colors
+                      className={`flex-1 min-h-12 text-sm font-semibold rounded-xl border-2 transition-colors
                         ${diagRespuestas[idx] === opt.value
-                          ? opt.value === 1 ? 'bg-green-500 border-green-500 text-white'
-                            : opt.value === 0.5 ? 'bg-yellow-400 border-yellow-400 text-white'
-                            : 'bg-red-500 border-red-500 text-white'
-                          : 'border-gray-200 text-gray-600 hover:bg-gray-50'}`}
+                          ? opt.value === 1 ? 'bg-emerald-700 border-emerald-700 text-white'
+                            : opt.value === 0.5 ? 'bg-amber-200 border-amber-500 text-gray-900'
+                            : 'bg-red-700 border-red-700 text-white'
+                          : 'border-gray-200 text-gray-800 hover:bg-gray-50'}`}
                     >
                       {opt.label}
                     </button>

@@ -58,6 +58,13 @@ types/                        Tipos TypeScript
   fase3.ts                    Tipos Fase 3 (M10-M12)
 ```
 
+## Diagnóstico: preguntas, resultado y datos guardados
+
+- **Preguntas:** todas están en `lib/preguntas.ts`, cada una con su `construct`. `npm test` falla si dos preguntas comparten constructo (además prueba la migración y el cálculo de los ejes).
+- **Resultado principal:** `lib/ejes.ts` calcula Necesidad y Disposición (0–100) y ubica a la empresa en una matriz 2×2. El Índice de preparación (`lib/indice.ts`) queda como dato complementario.
+- **Topes PyME:** `lib/topes-pyme.ts` (norma, vigencia y montos; actualizar una vez por año).
+- **Datos guardados:** si cambia el formato de lo que se guarda en localStorage, sumar un paso en `lib/migraciones.ts` (las claves no se cambian). Los respaldos JSON usan la misma versión de esquema.
+
 ## Convenciones
 
 - **Navegacion:** para agregar o renombrar una herramienta, editar solo `lib/navegacion.ts`. El header, el menu, la home y los modulos se actualizan solos.
@@ -113,4 +120,4 @@ Nunca enviar respuestas, nombre de empresa ni mail en un evento.
 
 ## Datos pendientes
 
-Buscar `TODO(matias)`: casi todo está en `lib/sitio.ts` (mail, titular, bio, LinkedIn, dominio).
+Buscar `TODO(matias)`: casi todo está en `lib/sitio.ts` (mail, titular, dominio).

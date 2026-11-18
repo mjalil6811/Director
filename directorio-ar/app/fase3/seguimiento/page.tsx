@@ -42,7 +42,7 @@ function FormTarea({ tareaInicial, onGuardar, onCancelar }: {
   return (
     <div>
       <h3 className="text-base font-semibold text-gray-900 mb-1">{tareaInicial ? 'Editar tarea' : 'Nueva tarea'}</h3>
-      <p className="text-xs text-gray-400 mb-5">Define que hay que hacer, quien es responsable y cuando vence.</p>
+      <p className="text-xs text-gray-500 mb-5">Define que hay que hacer, quien es responsable y cuando vence.</p>
 
       <div className="mb-3">
         <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1">Descripcion *</label>
@@ -127,7 +127,7 @@ function TareaCard({ tarea, onEditar, onCambiarEstado, onEliminar }: {
       <div className="flex items-start justify-between gap-2 mb-2">
         <div className="flex-1">
           <p className="text-sm font-semibold text-gray-900 leading-snug">{tarea.descripcion}</p>
-          <p className="text-xs text-gray-400 mt-0.5">{tarea.responsable}</p>
+          <p className="text-xs text-gray-500 mt-0.5">{tarea.responsable}</p>
         </div>
         <span className="text-[10px] font-bold px-2 py-0.5 rounded-full shrink-0" style={{ background: meta.bg, color: meta.color }}>
           {meta.label}
@@ -142,7 +142,7 @@ function TareaCard({ tarea, onEditar, onCambiarEstado, onEliminar }: {
           <span className="text-[10px] font-medium" style={{ color: diasInfo.color }}>{diasInfo.texto}</span>
         )}
         {tarea.origenReunionNumero && (
-          <span className="text-[10px] text-gray-400">Reunion #{tarea.origenReunionNumero}</span>
+          <span className="text-[10px] text-gray-500">Reunion #{tarea.origenReunionNumero}</span>
         )}
       </div>
 
@@ -154,7 +154,7 @@ function TareaCard({ tarea, onEditar, onCambiarEstado, onEliminar }: {
         </div>
       )}
 
-      {tarea.notas && <p className="text-xs text-gray-400 mb-2 leading-relaxed">{tarea.notas}</p>}
+      {tarea.notas && <p className="text-xs text-gray-500 mb-2 leading-relaxed">{tarea.notas}</p>}
 
       <div className="flex items-center gap-1 pt-2 border-t border-gray-50">
         {estadoReal !== 'completada' && (
@@ -260,19 +260,19 @@ export default function ModuloSeguimiento() {
             <div className="grid grid-cols-4 gap-2 mb-5">
               <div className="bg-white rounded-xl border border-gray-100 p-3 text-center shadow-sm">
                 <p className="text-lg font-bold text-gray-900">{stats.cumplimientoPorcentaje}%</p>
-                <p className="text-[10px] text-gray-400 font-semibold uppercase">Cumplimiento</p>
+                <p className="text-[10px] text-gray-500 font-semibold uppercase">Cumplimiento</p>
               </div>
               <div className="bg-white rounded-xl border border-gray-100 p-3 text-center shadow-sm">
                 <p className="text-lg font-bold text-gray-900">{stats.tareasAbiertas}</p>
-                <p className="text-[10px] text-gray-400 font-semibold uppercase">Abiertas</p>
+                <p className="text-[10px] text-gray-500 font-semibold uppercase">Abiertas</p>
               </div>
               <div className="bg-white rounded-xl border border-gray-100 p-3 text-center shadow-sm">
                 <p className="text-lg font-bold text-red-500">{stats.tareasVencidas}</p>
-                <p className="text-[10px] text-gray-400 font-semibold uppercase">Vencidas</p>
+                <p className="text-[10px] text-gray-500 font-semibold uppercase">Vencidas</p>
               </div>
               <div className="bg-white rounded-xl border border-gray-100 p-3 text-center shadow-sm">
                 <p className="text-lg font-bold text-green-600">{stats.completadasEsteMes}</p>
-                <p className="text-[10px] text-gray-400 font-semibold uppercase">Este mes</p>
+                <p className="text-[10px] text-gray-500 font-semibold uppercase">Este mes</p>
               </div>
             </div>
 
@@ -325,7 +325,7 @@ export default function ModuloSeguimiento() {
                   <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#534AB7" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 11l3 3L22 4" /><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11" /></svg>
                 </div>
                 <h3 className="text-base font-semibold text-gray-900 mb-1">Sin tareas</h3>
-                <p className="text-xs text-gray-400 mb-4">{tareas.length === 0 ? 'Crea tu primera tarea o importa desde reuniones.' : 'No hay tareas con los filtros seleccionados.'}</p>
+                <p className="text-xs text-gray-500 mb-4">{tareas.length === 0 ? 'Crea tu primera tarea o importa desde reuniones.' : 'No hay tareas con los filtros seleccionados.'}</p>
                 <button onClick={() => setVista('form')} className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-brand to-brand-light text-white text-sm font-semibold hover:shadow-lg transition-all">
                   Crear tarea
                 </button>

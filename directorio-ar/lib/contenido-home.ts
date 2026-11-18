@@ -1,13 +1,14 @@
 // Textos de la home. Para cambiar un texto de la landing, editar acá (no en app/page.tsx).
-import { FASES, MODULOS_F1, TOTAL_MODULOS_F1, TOTAL_PREGUNTAS_F1, TOTAL_MIN_F1 } from './navegacion';
+import { FASES, MODULOS_F1, TOTAL_MODULOS_F1, TOTAL_MIN_F1 } from './navegacion';
+import { PREGUNTAS_POR_MODULO, TOTAL_PREGUNTAS_F1 } from './conteo-diagnostico';
 import { TOTAL_HERRAMIENTAS_DISPONIBLES } from './herramientas';
-import { NORMA_TOPES } from './pymes';
+import { NORMA_PYME, VIGENCIA } from './pymes';
 
 // ——— Tiempos y CTA (una sola fuente para toda la landing) ————————————————
 const M1 = MODULOS_F1[0];
 export const TIEMPO_TOTAL = `~${TOTAL_MIN_F1} min`;
-export const TIEMPO_M1 = `${M1.preguntas} preguntas, ~${M1.min} min`;
-/** "Diagnóstico completo: ~8 min · Empezás por el Módulo 1 (10 preguntas, ~3 min)" */
+export const TIEMPO_M1 = `${PREGUNTAS_POR_MODULO[1]} preguntas, ~${M1.min} min`;
+/** p. ej. "Diagnóstico completo: ~9 min · Empezás por el Módulo 1 (13 preguntas, ~4 min)" */
 export const TIEMPO_RESUMEN = `Diagnóstico completo: ${TIEMPO_TOTAL} · Empezás por el Módulo 1 (${TIEMPO_M1})`;
 export const PREGUNTAS_RESUMEN = `${TOTAL_PREGUNTAS_F1} preguntas en ${TOTAL_MODULOS_F1} módulos`;
 
@@ -83,8 +84,8 @@ export const FAQ = [
   { q: '¿Es gratis?', a: 'Sí, 100% gratuito. No hay planes pagos, ni límites de uso, ni funcionalidades bloqueadas.' },
   { q: '¿Dónde se guardan mis respuestas?', a: 'En este navegador (localStorage). Tus respuestas no se envían a ningún servidor y no hace falta registrarse. Medimos visitas de forma anónima y sin cookies, sin incluir respuestas ni el nombre de tu empresa. Solo si pedís el informe por mail se envía tu mail y un resumen del resultado. El detalle está en la Política de privacidad.' },
   { q: '¿Qué pasa si borro los datos del navegador?', a: 'Se borra tu progreso, porque solo existe en este navegador: nosotros no tenemos una copia. Lo mismo pasa si cambiás de dispositivo o usás una ventana privada. Para no perderlo, exportá un respaldo (JSON) desde la pantalla de resultados o desde tu progreso en esta página, y después lo importás donde quieras.' },
-  { q: '¿Cómo se calcula el resultado?', a: 'Cada módulo puntúa tus respuestas y el Índice de preparación las combina con pesos fijos. El tamaño de la empresa se ubica con los criterios oficiales PyME. La comparación es contra perfiles de referencia definidos por Directorio AR, no contra una muestra estadística. Lo explicamos en detalle en la sección "Cómo se calcula tu resultado".' },
-  { q: '¿Qué es el Índice de preparación?', a: 'Es un puntaje orientativo de 0 a 100 que resume qué tan preparada está tu empresa para decidir con el respaldo de un consejo asesor. Integra 5 dimensiones: complejidad, decisiones, perfiles, disposición al cambio y relación con la gerencia. Sirve para ordenar la conversación interna, no es una certificación.' },
+  { q: '¿Cómo se calcula el resultado?', a: 'Cada módulo puntúa tus respuestas. Con eso calculamos dos ejes, necesidad y disposición, que ubican a tu empresa en una de cuatro situaciones con un próximo paso concreto. El Índice de preparación los complementa con un puntaje único. El tamaño de la empresa se ubica con los criterios oficiales PyME. La comparación es contra perfiles de referencia definidos por Directorio AR, no contra una muestra estadística. Lo explicamos en detalle en la sección "Cómo se calcula tu resultado".' },
+  { q: '¿Qué es el Índice de preparación?', a: 'Es un puntaje orientativo de 0 a 100 que resume qué tan preparada está tu empresa para decidir con el respaldo de un consejo asesor. Integra 5 dimensiones: complejidad, decisiones, perfiles, disposición al cambio y relación con la gerencia. Es un dato complementario: el resultado principal es la matriz de necesidad y disposición. Sirve para ordenar la conversación interna, no es una certificación.' },
   { q: '¿Esto reemplaza a un asesor profesional?', a: 'No. Es una herramienta orientativa para ordenar ideas y empezar la conversación. No constituye asesoramiento legal, contable ni financiero. Para constituir un directorio, redactar estatutos o protocolos, consultá con profesionales (abogado, contador) que conozcan tu caso.' },
 ];
 
@@ -92,7 +93,11 @@ export const FAQ = [
 export const METODOLOGIA = [
   {
     titulo: 'Tamaño de tu empresa: criterios oficiales PyME',
-    texto: `Ubicamos a tu empresa como micro, pequeña, mediana (tramo 1 o 2) o grande según su industria y sus ventas anuales promedio de los últimos 3 ejercicios, con los topes de la Resolución 1/2026 de la Secretaría de Industria, Comercio y de la Pequeña y Mediana Empresa (${NORMA_TOPES.replace(/^Res\. SICYPYME 1\/2026, /, '')}). Además consideramos si tiene más de 50 empleados: ese corte es un criterio propio de Directorio AR, no de la norma. Si la empresa es más chica, te ofrecemos un diagnóstico abreviado.`,
+    texto: `Ubicamos a tu empresa como micro, pequeña, mediana (tramo 1 o 2) o grande según su industria y sus ventas anuales promedio de los últimos 3 ejercicios, con los topes de la ${NORMA_PYME.nombreLargo} (vigente desde el ${VIGENCIA}). Además consideramos si tiene más de 50 empleados: ese corte es un criterio propio de Directorio AR, no de la norma. Si la empresa es más chica, te ofrecemos un diagnóstico abreviado.`,
+  },
+  {
+    titulo: 'Resultado principal: necesidad y disposición',
+    texto: 'Tu resultado se ubica en una matriz de dos ejes, cada uno de 0 a 100. Necesidad: cuánto necesita tu empresa un consejo (Módulo 1 sin la pregunta de presupuesto 50%, concentración de decisiones del Módulo 2 30%, perfiles que faltan del Módulo 3 20%). Disposición: cuánta voluntad hay de trabajar con él (Módulo 4 50%, acuerdo con la gerencia del Módulo 5 30%, presupuesto 20%). Con un corte en 50 quedan cuatro situaciones (momento de armarlo, necesidad sin acuerdo, preparación anticipada o todavía no), cada una con un próximo paso. Si falta un módulo, el eje se calcula con los que tenés.',
   },
   {
     titulo: 'Índice de preparación (0 a 100)',

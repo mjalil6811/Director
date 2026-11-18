@@ -67,7 +67,7 @@ function SelectorOpciones({ opciones, valor, onChange }: {
             </div>
             <div>
               <p className={`text-sm font-semibold ${valor === op.valor ? 'text-brand-dark' : 'text-gray-800'}`}>{op.texto}</p>
-              <p className="text-xs text-gray-400 mt-0.5 leading-relaxed">{op.ayuda}</p>
+              <p className="text-xs text-gray-500 mt-0.5 leading-relaxed">{op.ayuda}</p>
             </div>
           </div>
         </button>
@@ -136,7 +136,7 @@ export default function ModuloActaConstitutiva() {
           <div className="flex items-center gap-1.5">
           {PASOS.map((p, i) => (
             <div key={i} className="flex items-center gap-1.5">
-              <div className={`flex items-center justify-center w-6 h-6 rounded-full text-[10px] font-bold transition-all ${i < paso ? 'bg-brand text-white' : i === paso ? 'bg-brand text-white ring-2 ring-brand/30' : 'bg-gray-100 text-gray-400'}`}>
+              <div className={`flex items-center justify-center w-6 h-6 rounded-full text-[10px] font-bold transition-all ${i < paso ? 'bg-brand text-white' : i === paso ? 'bg-brand text-white ring-2 ring-brand/30' : 'bg-gray-100 text-gray-500'}`}>
                 {i < paso ? '✓' : i + 1}
               </div>
               {i < PASOS.length - 1 && <div className={`w-6 h-0.5 ${i < paso ? 'bg-brand' : 'bg-gray-200'}`} />}
@@ -149,7 +149,7 @@ export default function ModuloActaConstitutiva() {
       <main className="max-w-xl mx-auto px-4 py-8">
         <div className="mb-6">
           <h2 className="text-base font-semibold text-gray-900">Paso {paso + 1} de 3 — {PASOS[paso]}</h2>
-          <p className="text-xs text-gray-400 mt-1">
+          <p className="text-xs text-gray-500 mt-1">
             {paso === 0 && 'Los datos básicos de tu empresa para el encabezado del acta.'}
             {paso === 1 && 'Las personas que van a integrar el directorio y su cargo.'}
             {paso === 2 && 'Cómo va a funcionar el directorio: reuniones, quórum y decisiones.'}
@@ -199,7 +199,7 @@ export default function ModuloActaConstitutiva() {
                       <button key={cargo} type="button" onClick={() => updateDirector(i, 'cargo', cargo)}
                         className={`text-left px-3 py-2 rounded-xl border text-sm transition-all ${d.cargo === cargo ? 'border-brand bg-brand-50/60 text-brand-dark font-semibold' : 'border-gray-200 bg-white text-gray-700 hover:border-gray-300'}`}>
                         <span className="font-medium">{cargo}</span>
-                        <span className="text-xs text-gray-400 ml-2">— {ayuda}</span>
+                        <span className="text-xs text-gray-500 ml-2">— {ayuda}</span>
                       </button>
                     ))}
                   </div>

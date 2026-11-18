@@ -1,51 +1,43 @@
-'use client';
-
-import { ScoreGauge, GovernanceRadar } from './charts';
-import { REFERENCIA_RADAR } from '../lib/indice';
+import MatrizEjes from './MatrizEjes';
+import { CUADRANTES, cuadranteDe, type Ejes } from '../lib/ejes';
 
 // Datos FICTICIOS, solo para mostrar cómo se ve un informe. No corresponden a ninguna empresa real.
+const NECESIDAD = 68;
+const DISPOSICION = 42;
+const EJES: Ejes = { necesidad: NECESIDAD, disposicion: DISPOSICION, cuadrante: cuadranteDe(NECESIDAD, DISPOSICION), disposicionPreliminar: false };
+
 const EJEMPLO = {
   empresa: 'Empresa ejemplo S.A.',
   perfil: 'Mediana tramo 1 · Industria · 120 empleados',
-  indice: 54,
-  nivel: 'Intermedio',
-  dimensiones: [
-    { label: 'Complejidad', score: 70 },
-    { label: 'Decisiones', score: 35 },
-    { label: 'Perfiles', score: 60 },
-    { label: 'Disposición', score: 67 },
-    { label: 'Gerencia', score: 50 },
-  ],
   lectura: [
     'Las decisiones de inversión y precios dependen casi solo del dueño: es el punto más urgente.',
-    'Conviene sumar primero un asesor financiero independiente.',
-    'Hay disposición al cambio: se puede arrancar con reuniones bimestrales.',
+    'El primer perfil a sumar es un asesor financiero independiente.',
   ],
 };
 
-export default function EjemploInforme() {
+/** `compacto`: versión para el hero (sin la lista de lectura). */
+export default function EjemploInforme({ compacto = false }: { compacto?: boolean }) {
+  const c = CUADRANTES[EJES.cuadrante!];
   return (
-    <figure className="relative bg-white border border-gray-200 rounded-2xl shadow-sm overflow-hidden" aria-label="Ejemplo ilustrativo de informe con datos ficticios">
+    <figure className="relative bg-white border border-gray-200 rounded-2xl shadow-sm overflow-hidden m-0" aria-label="Ejemplo ilustrativo de informe con datos ficticios">
       <div className="bg-amber-50 border-b border-amber-200 px-4 py-2 text-xs font-semibold text-amber-900">
         Ejemplo ilustrativo con datos ficticios
       </div>
       <div className="p-5">
-        <div className="flex items-center gap-4">
-          <div className="w-36 shrink-0"><ScoreGauge value={EJEMPLO.indice} color="#534AB7" /></div>
-          <div className="min-w-0">
-            <p className="text-base font-bold text-gray-900">Índice {EJEMPLO.indice}/100 · {EJEMPLO.nivel}</p>
-            <p className="text-xs text-gray-600 mt-0.5">{EJEMPLO.empresa}</p>
-            <p className="text-xs text-gray-500">{EJEMPLO.perfil}</p>
-          </div>
-        </div>
-        <div className="min-w-0 mt-2">
-          <GovernanceRadar data={EJEMPLO.dimensiones} referencia={REFERENCIA_RADAR.valor} referenciaLabel={`Referencia: ${REFERENCIA_RADAR.label.toLowerCase()}`} />
+        <p className="text-xs text-gray-600">{EJEMPLO.empresa} · {EJEMPLO.perfil}</p>
+        <p className="text-lg font-bold mt-1" style={{ color: c.color }}>{c.titulo}</p>
+        <p className="text-sm text-gray-700 leading-relaxed mt-0.5">{c.resumen}</p>
+        <div className={compacto ? 'mt-3' : 'mt-4'}>
+          <MatrizEjes ejes={EJES} compacta />
         </div>
       </div>
       <figcaption className="border-t border-gray-100 px-5 py-4">
-        <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Lectura del resultado</p>
+        <p className="text-xs font-semibold text-gray-600 uppercase tracking-wider mb-2">Lectura del resultado</p>
         <ul className="space-y-1.5">
-          {EJEMPLO.lectura.map(t => (
+          <li className="text-sm text-gray-900 leading-relaxed flex gap-2">
+            <span className="text-brand" aria-hidden>→</span><span><strong>Próximo paso:</strong> {c.proximoPaso}</span>
+          </li>
+          {!compacto && EJEMPLO.lectura.map(t => (
             <li key={t} className="text-sm text-gray-700 leading-relaxed flex gap-2">
               <span className="text-brand" aria-hidden>•</span>{t}
             </li>

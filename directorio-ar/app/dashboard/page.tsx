@@ -6,6 +6,8 @@ import { useRouter } from 'next/navigation';
 import { storage } from '../../lib/storage';
 import { ScoreGauge, GovernanceRadar, RankedBars } from '../../components/charts';
 import { calcularIndicePreparacion, ETIQUETA_CORTA, BENCHMARKS, REFERENCIA_RADAR } from '../../lib/indice';
+import { calcularEjes, CUADRANTES } from '../../lib/ejes';
+import MatrizEjes from '../../components/MatrizEjes';
 import type {
   Modulo1Resultado,
   Modulo2Resultado,
@@ -53,11 +55,13 @@ export default function IndicePreparacionPage() {
 
   if (!ready) return (
     <div className="min-h-screen flex items-center justify-center bg-surface">
-      <div className="text-gray-400 text-sm">Calculando índice...</div>
+      <div className="text-gray-500 text-sm">Calculando índice...</div>
     </div>
   );
 
   const gs = calcularIndicePreparacion(m1, m2, m3, m4diag, m5);
+  const ejes = calcularEjes(m1, m2, m3, m4diag, m5);
+  const cuadrante = ejes.cuadrante ? CUADRANTES[ejes.cuadrante] : null;
   const fecha = new Date().toLocaleDateString('es-AR', { year: 'numeric', month: 'long', day: 'numeric' });
 
   // Próximos pasos personalizados
@@ -76,7 +80,7 @@ export default function IndicePreparacionPage() {
         titulo="Índice de preparación"
         onBack={() => router.back()}
         right={<>
-{nombre && <span className="text-xs text-gray-400 font-medium">{nombre}</span>}
+{nombre && <span className="text-xs text-gray-500 font-medium">{nombre}</span>}
         </>}
       />
 
@@ -104,7 +108,7 @@ export default function IndicePreparacionPage() {
             <span>·</span>
             <span>{gs.etiqueta}</span>
           </div>
-          <p className="text-xs text-gray-400 mt-2">{fecha} · {gs.completadas}/5 módulos completados</p>
+          <p className="text-xs text-gray-500 mt-2">{fecha} · {gs.completadas}/5 módulos completados</p>
           {pendientes.length > 0 && (
             <p className="text-xs text-gray-600 mt-3 bg-white/70 rounded-lg px-3 py-2 inline-block">
               Índice parcial: calculado con {gs.completadas} de 5 dimensiones.{' '}
@@ -115,12 +119,25 @@ export default function IndicePreparacionPage() {
           )}
         </div>
 
+        {/* Resultado principal: matriz Necesidad × Disposición */}
+        {cuadrante && (
+          <section className="bg-white border border-gray-200 rounded-2xl p-5 grid sm:grid-cols-[1fr_minmax(0,16rem)] gap-5 items-center">
+            <div>
+              <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Necesidad × disposición</p>
+              <p className="text-lg font-bold mt-1" style={{ color: cuadrante.color }}>{cuadrante.titulo}</p>
+              <p className="text-sm text-gray-700 leading-relaxed mt-1">{cuadrante.resumen}</p>
+              <p className="text-sm text-gray-900 leading-relaxed mt-3"><strong>Próximo paso:</strong> {cuadrante.proximoPaso}</p>
+            </div>
+            <MatrizEjes ejes={ejes} compacta />
+          </section>
+        )}
+
         {/* Radar chart */}
         <div className="bg-white border border-gray-200 rounded-2xl p-6 shadow-sm">
-          <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-4 text-center">
+          <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-4 text-center">
             Perfil de tu empresa
           </p>
-          <p className="text-xs text-gray-400 text-center -mt-3 mb-2">Tu empresa en cada dimensión (0–100) vs. una empresa mediana con directorio</p>
+          <p className="text-xs text-gray-500 text-center -mt-3 mb-2">Tu empresa en cada dimensión (0–100) vs. una empresa mediana con directorio</p>
           {dimsConDatos.length >= 3 ? (
             <GovernanceRadar
               data={dimsConDatos.map(d => ({ label: ETIQUETA_CORTA[d.id] ?? d.label, score: d.score }))}
@@ -130,7 +147,7 @@ export default function IndicePreparacionPage() {
           ) : (
             <div className="py-10 text-center">
               <p className="text-sm text-gray-500">El perfil se dibuja con al menos 3 dimensiones evaluadas.</p>
-              <p className="text-xs text-gray-400 mt-1">Llevás {dimsConDatos.length} de 5. Te faltan: {pendientes.map(d => ETIQUETA_CORTA[d.id]).join(', ')}.</p>
+              <p className="text-xs text-gray-500 mt-1">Llevás {dimsConDatos.length} de 5. Te faltan: {pendientes.map(d => ETIQUETA_CORTA[d.id]).join(', ')}.</p>
             </div>
           )}
         </div>
@@ -138,7 +155,7 @@ export default function IndicePreparacionPage() {
         {/* 5 dimensions */}
         <div className="bg-white border border-gray-200 rounded-2xl overflow-hidden shadow-sm">
           <div className="px-5 pt-5 pb-3 border-b border-gray-100">
-            <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Las 5 dimensiones</p>
+            <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Las 5 dimensiones</p>
           </div>
           <div className="divide-y divide-gray-100">
             {gs.dimensiones.map(d => {
@@ -149,7 +166,7 @@ export default function IndicePreparacionPage() {
                       <span className="text-base">{d.icono}</span>
                       <div>
                         <p className="text-sm font-semibold text-gray-900">{d.label}</p>
-                        <p className="text-xs text-gray-400">{d.fuente} · sin datos todavía</p>
+                        <p className="text-xs text-gray-500">{d.fuente} · sin datos todavía</p>
                       </div>
                     </div>
                     <button
@@ -169,7 +186,7 @@ export default function IndicePreparacionPage() {
                       <span className="text-base">{d.icono}</span>
                       <div>
                         <p className="text-sm font-semibold text-gray-900">{d.label}</p>
-                        <p className="text-xs text-gray-400">{d.fuente}</p>
+                        <p className="text-xs text-gray-500">{d.fuente}</p>
                       </div>
                     </div>
                     <div className="text-right shrink-0">
@@ -187,7 +204,7 @@ export default function IndicePreparacionPage() {
 
         {/* Benchmark */}
         <div className="bg-white border border-gray-200 rounded-2xl p-5 shadow-sm">
-          <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-4">
+          <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-4">
             ¿Cómo estás frente a otras empresas?
           </p>
           <p className="text-xs text-gray-500 -mt-2 mb-4 leading-relaxed">
@@ -206,7 +223,7 @@ export default function IndicePreparacionPage() {
         {weakDims.length > 0 && (
           <div className="bg-white border border-gray-200 rounded-2xl overflow-hidden shadow-sm">
             <div className="px-5 pt-5 pb-3 border-b border-gray-100">
-              <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider">
+              <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider">
                 Dónde mejorar primero
               </p>
             </div>
@@ -279,8 +296,8 @@ export default function IndicePreparacionPage() {
         {/* Fase 2: Constitución del directorio */}
         <div className="bg-white border border-gray-200 rounded-2xl overflow-hidden shadow-sm">
           <div className="px-5 pt-5 pb-3 border-b border-gray-100">
-            <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Fase 2 — Constitución del directorio</p>
-            <p className="text-xs text-gray-400 mt-1">Herramientas para pasar del diagnóstico a la acción.</p>
+            <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Fase 2 — Constitución del directorio</p>
+            <p className="text-xs text-gray-500 mt-1">Herramientas para pasar del diagnóstico a la acción.</p>
           </div>
           <div className="p-4 space-y-2">
             {[
@@ -296,7 +313,7 @@ export default function IndicePreparacionPage() {
                 <span className="text-xl">{item.icon}</span>
                 <div className="flex-1 min-w-0">
                   <p className="text-sm font-semibold text-gray-900">{item.label}</p>
-                  <p className="text-xs text-gray-400 truncate">{item.desc}</p>
+                  <p className="text-xs text-gray-500 truncate">{item.desc}</p>
                 </div>
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#9CA3AF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                   <path d="M9 18l6-6-6-6" />

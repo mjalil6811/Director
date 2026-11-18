@@ -6,9 +6,11 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { storage } from '../../lib/storage';
 import { calcularIndicePreparacion } from '../../lib/indice';
+import { calcularEjes, CUADRANTES } from '../../lib/ejes';
+import MatrizEjes from '../../components/MatrizEjes';
 import { PERFILES, type PerfilKey } from '../../lib/modulo3';
 import { CATEGORIA_LABEL, INDUSTRIAS } from '../../lib/pymes';
-import { ScoreGauge, StatusDonut, RankedBars, VIZ } from '../../components/charts';
+import { BarraEspectro, StatusDonut, RankedBars, VIZ } from '../../components/charts';
 import { trackEvent } from '../../lib/analitica';
 import RespaldoDatos from '../../components/RespaldoDatos';
 import InformePorMail from '../../components/InformePorMail';
@@ -35,16 +37,16 @@ function lecturaDisposicion(pct: number) {
   return { label: 'Todavía no', color: VIZ.bad, texto: 'La disposición es baja. Antes de un consejo formal, conviene empezar con reuniones periódicas y uno o dos asesores de confianza.' };
 }
 
-// ——— Cuadrante ————————————————————————————————————————————————————————————————
+// ——— Sección por módulo ————————————————————————————————————————————————————————————————
 
-function Cuadrante({ n, titulo, fuente, children }: { n: number; titulo: string; fuente: string; children: React.ReactNode }) {
+function Seccion({ n, titulo, fuente, children }: { n: number; titulo: string; fuente: string; children: React.ReactNode }) {
   return (
     <section className="bg-white border border-gray-200 rounded-2xl shadow-sm p-5 flex flex-col">
       <header className="flex items-center gap-2.5 mb-4">
         <span className="w-7 h-7 rounded-lg bg-brand text-white text-xs font-bold flex items-center justify-center shrink-0">{n}</span>
         <div className="min-w-0">
           <h2 className="text-sm font-bold text-gray-900 leading-tight">{titulo}</h2>
-          <p className="text-[11px] text-gray-400">{fuente}</p>
+          <p className="text-[11px] text-gray-500">{fuente}</p>
         </div>
       </header>
       <div className="flex-1 flex flex-col gap-4">{children}</div>
@@ -87,7 +89,12 @@ export default function ResultadoCliente({ mailHabilitado }: { mailHabilitado: b
     try {
       const { generatePDF } = await import('../../components/PDFReport');
       const fecha = new Date().toLocaleDateString('es-AR', { year: 'numeric', month: 'long', day: 'numeric' });
-      const blob = await generatePDF({ empresa: nombre, m1, m2, m3, m4frecuencia: m4freq, m4diagnostico: m4diag, fecha });
+      const e = calcularEjes(m1, m2, m3, m4diag, m5);
+      const c = e.cuadrante ? CUADRANTES[e.cuadrante] : null;
+      const ejesPdf = c && e.necesidad !== null && e.disposicion !== null
+        ? { titulo: c.titulo, resumen: c.resumen, proximoPaso: c.proximoPaso, necesidad: e.necesidad, disposicion: e.disposicion, color: c.color }
+        : undefined;
+      const blob = await generatePDF({ empresa: nombre, m1, m2, m3, m4frecuencia: m4freq, m4diagnostico: m4diag, fecha, ejes: ejesPdf });
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
@@ -106,7 +113,7 @@ export default function ResultadoCliente({ mailHabilitado }: { mailHabilitado: b
   }
 
   if (!ready || !m1 || !m2 || !m3) {
-    return <div className="min-h-screen flex items-center justify-center bg-surface text-gray-400 text-sm">Cargando...</div>;
+    return <div className="min-h-screen flex items-center justify-center bg-surface text-gray-500 text-sm">Cargando...</div>;
   }
 
   // ——— Datos derivados ——————————————————————————————————————————————————————
@@ -131,6 +138,8 @@ export default function ResultadoCliente({ mailHabilitado }: { mailHabilitado: b
   const freqText = m4freq ?? 'Trimestral';
 
   const indice = calcularIndicePreparacion(m1, m2, m3, m4diag, m5);
+  const ejes = calcularEjes(m1, m2, m3, m4diag, m5);
+  const veredicto = ejes.cuadrante ? CUADRANTES[ejes.cuadrante] : null;
   const fecha = new Date().toLocaleDateString('es-AR', { year: 'numeric', month: 'long', day: 'numeric' });
 
   const proximosPasos = [
@@ -143,6 +152,9 @@ export default function ResultadoCliente({ mailHabilitado }: { mailHabilitado: b
   const resumenMail = {
     empresa: nombre.slice(0, 120) || undefined,
     indice: { total: indice.total, nivel: indice.nivel.slice(0, 40) },
+    ejes: veredicto && ejes.necesidad !== null && ejes.disposicion !== null
+      ? { necesidad: ejes.necesidad, disposicion: ejes.disposicion, cuadrante: veredicto.titulo, proximoPaso: veredicto.proximoPaso }
+      : undefined,
     dimensiones: indice.dimensiones.filter(d => d.tieneDatos).map(d => ({ label: d.label.slice(0, 60), score: Math.round(d.score) })),
     recomendaciones: [
       necesidad.label + ': ' + necesidad.texto,
@@ -156,43 +168,65 @@ export default function ResultadoCliente({ mailHabilitado }: { mailHabilitado: b
       <PageHeader
         titulo="Resultado final"
         backHref="/dashboard"
-        right={nombre ? <span className="text-xs text-gray-400 font-medium">{nombre}</span> : undefined}
+        right={nombre ? <span className="text-xs text-gray-500 font-medium">{nombre}</span> : undefined}
       />
 
       <main className="flex-1 px-4 py-6 max-w-5xl mx-auto w-full space-y-4">
 
-        {/* Resumen + acciones */}
-        <div className="bg-white border border-gray-200 rounded-2xl shadow-sm p-5 flex flex-col md:flex-row md:items-center gap-4">
-          <div className="flex items-center gap-4 flex-1 min-w-0">
-            <div className="w-16 h-16 rounded-2xl flex flex-col items-center justify-center shrink-0" style={{ backgroundColor: indice.colorBg }}>
-              <span className="text-2xl font-bold tabular-nums leading-none" style={{ color: indice.color }}>{indice.total}</span>
-              <span className="text-[10px] text-gray-500">de 100</span>
-            </div>
-            <div className="min-w-0">
-              <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Diagnóstico {nombre ? `· ${nombre}` : ''}</p>
-              <p className="text-base font-bold text-gray-900">Índice de preparación: {indice.nivel}</p>
-              <p className="text-xs text-gray-500">
-                {perfil ? `${CATEGORIA_LABEL[perfil.categoria]} · ${industria} · ` : ''}{fecha}
-              </p>
-            </div>
-          </div>
-          <div className="flex flex-wrap gap-2 print:hidden">
-            <Link href="/informe-asesor" className="px-4 py-2.5 rounded-xl text-sm font-semibold bg-brand hover:bg-brand-dark text-white">
-              Informe para el asesor →
-            </Link>
-            <button onClick={handleGeneratePDF} disabled={pdfLoading} className="px-4 py-2.5 rounded-xl text-sm font-semibold border border-gray-200 text-gray-700 hover:bg-gray-50">
-              {pdfLoading ? 'Generando PDF…' : 'Descargar PDF'}
-            </button>
-          </div>
-        </div>
+        {/* Veredicto principal: matriz Necesidad × Disposición */}
+        <section aria-labelledby="veredicto" className="bg-white border border-gray-200 rounded-2xl shadow-sm p-5 sm:p-6 grid md:grid-cols-[1fr_minmax(0,20rem)] gap-6 items-center">
+          <div className="min-w-0">
+            <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider">
+              Diagnóstico{nombre ? ` · ${nombre}` : ''}
+            </p>
+            <h1 id="veredicto" className="text-2xl font-bold tracking-tight mt-1" style={{ color: veredicto?.color }}>
+              {veredicto?.titulo ?? 'Resultado'}
+            </h1>
+            {veredicto && <p className="text-sm text-gray-700 leading-relaxed mt-1">{veredicto.resumen}</p>}
 
-        {/* 4 cuadrantes */}
+            {veredicto && (
+              <div className="mt-4 rounded-xl border-l-4 px-4 py-3" style={{ borderColor: veredicto.color, backgroundColor: veredicto.bg }}>
+                <p className="text-xs font-semibold uppercase tracking-wider text-gray-700">Tu próximo paso</p>
+                <p className="text-sm text-gray-900 leading-relaxed mt-0.5">{veredicto.proximoPaso}</p>
+              </div>
+            )}
+
+            <p className="text-xs text-gray-600 mt-4">
+              {perfil ? `${CATEGORIA_LABEL[perfil.categoria]} · ${industria} · ` : ''}{fecha}
+              {' · '}Índice de preparación: <strong className="tabular-nums">{indice.total}</strong>/100 ({indice.nivel.toLowerCase()})
+            </p>
+
+            <div className="flex flex-wrap gap-2 mt-4 print:hidden">
+              <button onClick={handleGeneratePDF} disabled={pdfLoading} className="px-4 py-2.5 rounded-xl text-sm font-semibold bg-brand hover:bg-brand-dark text-white">
+                {pdfLoading ? 'Generando PDF…' : 'Descargar PDF'}
+              </button>
+              <Link href="/informe-asesor" className="px-4 py-2.5 rounded-xl text-sm font-semibold border border-gray-300 text-gray-800 hover:bg-gray-50">
+                Informe para el asesor
+              </Link>
+            </div>
+          </div>
+          <MatrizEjes ejes={ejes} />
+        </section>
+
+        {/* Detalle por módulo (4 secciones) */}
         <div className="grid md:grid-cols-2 gap-4">
 
           {/* 1 — Necesidad y urgencia */}
-          <Cuadrante n={1} titulo="Necesidad y urgencia" fuente="Módulo 1">
-            <div className="flex items-center gap-4">
-              <div className="w-40 shrink-0"><ScoreGauge value={m1Pct} color={necesidad.color} thresholds={[30, 55, 75]} /></div>
+          <Seccion n={1} titulo="Necesidad y urgencia" fuente="Módulo 1">
+            <div className="space-y-3">
+              <div>
+                <p className="text-sm font-semibold text-gray-900 mb-2">Necesidad en este módulo: <span className="tabular-nums">{m1Pct}</span>/100</p>
+                <BarraEspectro
+                  value={m1Pct}
+                  label="Necesidad del Módulo 1"
+                  tramos={[
+                    { hasta: 30, nombre: 'Prematuro', color: '#9CA3AF' },
+                    { hasta: 55, nombre: 'Señales tempranas', color: '#D97706' },
+                    { hasta: 75, nombre: 'Transición', color: '#534AB7' },
+                    { hasta: 101, nombre: 'Urgente', color: '#B42318' },
+                  ]}
+                />
+              </div>
               <div>
                 <span className="inline-block text-xs font-semibold px-2.5 py-1 rounded-full mb-2" style={{ color: necesidad.color, backgroundColor: `${necesidad.color}14` }}>
                   {necesidad.label}
@@ -207,10 +241,10 @@ export default function ResultadoCliente({ mailHabilitado }: { mailHabilitado: b
                 ))}
               </ul>
             )}
-          </Cuadrante>
+          </Seccion>
 
           {/* 2 — Cómo se decide hoy */}
-          <Cuadrante n={2} titulo="Cómo se decide hoy" fuente="Módulo 2 · mapa de decisiones">
+          <Seccion n={2} titulo="Cómo se decide hoy" fuente="Módulo 2 · mapa de decisiones">
             <StatusDonut
               centerLabel="decisiones"
               items={[
@@ -223,28 +257,28 @@ export default function ResultadoCliente({ mailHabilitado }: { mailHabilitado: b
             <p className="text-sm text-gray-700 leading-relaxed border-t border-gray-100 pt-3">
               <strong className="text-gray-900">{m2Pct}% de concentración.</strong> {lecturaDecisiones(m2Pct)}
             </p>
-          </Cuadrante>
+          </Seccion>
 
           {/* 3 — Perfiles a sumar */}
-          <Cuadrante n={3} titulo="Perfiles a sumar al consejo" fuente="Módulo 3">
+          <Seccion n={3} titulo="Perfiles a sumar al consejo" fuente="Módulo 3">
             <RankedBars items={perfilesPct} highlightKey={top?.perfil} unit="%" />
             <p className="text-sm text-gray-700 leading-relaxed border-t border-gray-100 pt-3">
               El primer perfil a sumar es un <strong className="text-gray-900">{topNombre}</strong>
               {top?.urgencia ? <> (urgencia: {top.urgencia.toLowerCase()})</> : null}.{' '}
               {top ? PERFILES[top.perfil as PerfilKey]?.descripcion.split('.')[0] + '.' : ''}
             </p>
-          </Cuadrante>
+          </Seccion>
 
           {/* 4 — Disposición y próximos pasos */}
-          <Cuadrante n={4} titulo="Disposición y próximos pasos" fuente="Módulo 4">
+          <Seccion n={4} titulo="Disposición y hoja de ruta" fuente="Módulo 4">
             <div className="grid grid-cols-2 gap-3">
               <div className="rounded-xl border border-gray-100 p-3">
-                <p className="text-[11px] text-gray-400 uppercase tracking-wider font-semibold">Disposición</p>
+                <p className="text-[11px] text-gray-500 uppercase tracking-wider font-semibold">Disposición</p>
                 <p className="text-2xl font-bold tabular-nums" style={{ color: disposicion.color }}>{m4diag ? `${diagPct}%` : '—'}</p>
                 <p className="text-xs font-semibold" style={{ color: disposicion.color }}>{m4diag ? disposicion.label : 'Sin datos'}</p>
               </div>
               <div className="rounded-xl border border-gray-100 p-3">
-                <p className="text-[11px] text-gray-400 uppercase tracking-wider font-semibold">Reuniones</p>
+                <p className="text-[11px] text-gray-500 uppercase tracking-wider font-semibold">Reuniones</p>
                 <p className="text-sm font-bold text-brand mt-1 leading-snug">{freqText}</p>
               </div>
             </div>
@@ -260,14 +294,14 @@ export default function ResultadoCliente({ mailHabilitado }: { mailHabilitado: b
                 </li>
               ))}
             </ol>
-          </Cuadrante>
+          </Seccion>
         </div>
 
         {/* Primeros 100 días */}
         <div className="border-l-4 border-brand bg-white border border-gray-200 rounded-2xl p-5">
           <p className="text-xs font-semibold text-brand uppercase tracking-wider mb-2">Los primeros 100 días</p>
           <p className="text-sm text-gray-700 leading-relaxed">
-            {m1Pct >= 55
+            {(ejes.necesidad ?? m1Pct) >= 50
               ? 'Después de armar el consejo, enfocate en tres cosas: (1) definir qué decisiones lidera el consejo, cuáles acompaña y de cuáles se mantiene al margen; (2) acordar qué información entrega la gerencia antes de cada reunión; y (3) construir confianza en el grupo, con al menos una sesión para conocerse y alinear expectativas.'
               : 'Todavía no es momento de un consejo formal, pero podés construir las bases: separar decisiones estratégicas de operativas, instalar reuniones periódicas de rendición de cuentas y sumar una o dos personas de confianza con experiencia que te den otra mirada.'}
           </p>

@@ -27,7 +27,7 @@ function SeleccionTipo({ onSelect }: { onSelect: (t: TipoProtocolo) => void }) {
   return (
     <div>
       <h2 className="text-base font-semibold text-gray-900 mb-1">¿Cómo es tu empresa?</h2>
-      <p className="text-sm text-gray-400 mb-6">Esto determina qué situaciones vas a resolver en el protocolo.</p>
+      <p className="text-sm text-gray-500 mb-6">Esto determina qué situaciones vas a resolver en el protocolo.</p>
       <div className="space-y-3">
         {tipos.map(t => (
           <button key={t.tipo} onClick={() => onSelect(t.tipo)}
@@ -35,7 +35,7 @@ function SeleccionTipo({ onSelect }: { onSelect: (t: TipoProtocolo) => void }) {
             <div className="flex items-start justify-between">
               <div>
                 <p className="font-semibold text-gray-900 text-sm group-hover:text-brand transition-colors">{t.titulo}</p>
-                <p className="text-xs text-gray-400 mt-1 leading-relaxed max-w-xs">{t.desc}</p>
+                <p className="text-xs text-gray-500 mt-1 leading-relaxed max-w-xs">{t.desc}</p>
               </div>
               <span className="text-xs bg-gray-100 text-gray-500 px-2.5 py-1 rounded-full font-medium shrink-0 ml-3">{t.tag}</span>
             </div>
@@ -159,7 +159,7 @@ export default function ModuloProtocolo() {
         onBack={() => { if (mostrarResultado) setMostrarResultado(false); else if (tipo) setTipo(null); else router.push('/'); }}
         right={<>
 {tipo && !mostrarResultado && (
-          <span className="text-xs text-gray-400">{respondidos}/{escenarios.length} situaciones</span>
+          <span className="text-xs text-gray-500">{respondidos}/{escenarios.length} situaciones</span>
         )}
         </>}
       />
@@ -204,12 +204,12 @@ export default function ModuloProtocolo() {
                       <div className="flex items-start gap-2 mb-2">
                         {esc.obligatorio
                           ? <span className="text-xs bg-red-50 text-red-500 px-2 py-0.5 rounded-full font-medium shrink-0">Obligatorio</span>
-                          : <span className="text-xs bg-gray-100 text-gray-400 px-2 py-0.5 rounded-full font-medium shrink-0">Opcional</span>
+                          : <span className="text-xs bg-gray-100 text-gray-500 px-2 py-0.5 rounded-full font-medium shrink-0">Opcional</span>
                         }
-                        <span className="text-xs text-gray-400">{CATEGORIAS_ESCENARIO[esc.categoria].label}</span>
+                        <span className="text-xs text-gray-500">{CATEGORIAS_ESCENARIO[esc.categoria].label}</span>
                       </div>
                       <p className="text-sm font-semibold text-gray-900 mb-1">{esc.pregunta}</p>
-                      <p className="text-xs text-gray-400 leading-relaxed mb-4">{esc.contexto}</p>
+                      <p className="text-xs text-gray-500 leading-relaxed mb-4">{esc.contexto}</p>
 
                       <div className="space-y-2">
                         {esc.opciones.map(op => {

@@ -1,5 +1,9 @@
 import type { Modulo1Resultado, Modulo2Resultado, Modulo3Resultado, Modulo4Diagnostico, Modulo5Resultado } from "../types";
 import { getItem, setItem, removeItem } from './storage-core';
+import { aplicarMigraciones } from './migraciones';
+
+// Antes de cualquier lectura: lleva los datos guardados con versiones anteriores al esquema actual.
+aplicarMigraciones();
 
 const KEYS = {
   modulo1Respuestas: "directorio_ar:modulo1:respuestas_v2", // v2: rol, industria y facturación PyME (nov 2026)
@@ -12,6 +16,7 @@ const KEYS = {
   modulo4Diagnostico: "directorio_ar:modulo4:diagnostico",
   modulo5Respuestas: "directorio_ar:modulo5:respuestas_v2", // v2: índice de opción por tema (nov 2026)
   modulo5Resultado: "directorio_ar:modulo5:resultado",
+  modulo5Decisiones: "directorio_ar:modulo5:decisiones", // decisiones que pasan por el consejo (precargadas del M2)
   empresaNombre: "directorio_ar:empresa:nombre",
 } as const;
 
@@ -40,6 +45,9 @@ export const storage = {
   setModulo5Respuestas: (v: number[]) => setItem(KEYS.modulo5Respuestas, v),
   getModulo5Resultado: () => getItem<Modulo5Resultado>(KEYS.modulo5Resultado),
   setModulo5Resultado: (v: Modulo5Resultado) => setItem(KEYS.modulo5Resultado, v),
+
+  getModulo5Decisiones: () => getItem<string[]>(KEYS.modulo5Decisiones),
+  setModulo5Decisiones: (v: string[]) => setItem(KEYS.modulo5Decisiones, v),
 
   getEmpresaNombre: () => getItem<string>(KEYS.empresaNombre),
   setEmpresaNombre: (v: string) => setItem(KEYS.empresaNombre, v),

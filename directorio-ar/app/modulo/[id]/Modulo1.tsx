@@ -1,11 +1,12 @@
 'use client';
 
 import { trackEvent, registrarModuloCompletado } from '../../../lib/analitica';
-import Pregunta, { IntroModulo } from '../../../components/Pregunta';
+import Pregunta, { IntroModulo, CierreModulo } from '../../../components/Pregunta';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import ModuleLayout from '../../../components/ModuleLayout';
 import { TOTAL_PREGUNTAS, IDX, calcularModulo1, resolverPregunta, perfilDeRespuestas } from '../../../lib/modulo1';
+import type { Modulo1Resultado } from '../../../types';
 import { CATEGORIA_LABEL, INDUSTRIAS } from '../../../lib/pymes';
 import { storage } from '../../../lib/storage';
 
@@ -13,14 +14,18 @@ export default function Modulo1() {
   const router = useRouter();
   const [current, setCurrent] = useState(0);
   const [respuestas, setRespuestas] = useState<number[]>(new Array(TOTAL_PREGUNTAS).fill(-1));
+  const [cierre, setCierre] = useState<Modulo1Resultado | null>(null);
 
   useEffect(() => {
     const saved = storage.getModulo1Respuestas();
     if (saved && saved.length === TOTAL_PREGUNTAS) {
       setRespuestas(saved);
-      // If already completed, go straight to M2
+      // Ya completo: directo al M2. Si quedan preguntas sin responder (p. ej. agregadas en una versión
+      // nueva), retomar en la primera pendiente.
       if (saved.every(v => v >= 0) && storage.getModulo1Resultado()) {
         router.push('/modulo/2');
+      } else if (saved.some(v => v >= 0)) {
+        setCurrent(Math.max(0, saved.findIndex(v => v < 0)));
       }
     }
   }, [router]);
@@ -46,12 +51,30 @@ export default function Modulo1() {
       const res = calcularModulo1(respuestas);
       storage.setModulo1Resultado(res);
       registrarModuloCompletado(1);
-      router.push('/modulo/2');
+      setCierre(res);
     }
   }
 
   function handlePrev() {
     if (current > 0) setCurrent(current - 1);
+  }
+
+  if (cierre) {
+    const abreviado = cierre.perfil?.recorrido === 'abreviado';
+    return (
+      <ModuleLayout moduleNumber={1}>
+        <CierreModulo
+          modulo={1}
+          titulo={cierre.nivel}
+          lineas={[
+            `Necesidad detectada en este módulo: ${cierre.porcentaje ?? 0}/100.${abreviado ? ' Hacés el diagnóstico abreviado: falta solo el Módulo 2.' : ''}`,
+            'Siguiente: el mapa de decisiones (Módulo 2), para ver quién decide hoy cada tema importante.',
+          ]}
+          siguiente={{ label: 'Seguir con el Módulo 2 →', onClick: () => router.push('/modulo/2') }}
+          secundario={{ label: 'Revisar respuestas', onClick: () => { setCierre(null); setCurrent(0); } }}
+        />
+      </ModuleLayout>
+    );
   }
 
   const answeredCount = respuestas.filter(v => v >= 0).length;
@@ -62,6 +85,7 @@ export default function Modulo1() {
   return (
     <ModuleLayout moduleNumber={1}>
       <Pregunta
+        modulo={1}
         numero={current + 1}
         total={TOTAL_PREGUNTAS}
         respondidas={answeredCount}

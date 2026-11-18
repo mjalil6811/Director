@@ -58,7 +58,7 @@ export default function InformePorMail({ resumen }: { resumen: Resumen }) {
     <form onSubmit={enviar} noValidate className="relative bg-white border border-gray-200 rounded-2xl p-5 print:hidden" aria-labelledby={`${id}-titulo`}>
       <h2 id={`${id}-titulo`} className="text-base font-bold text-gray-900">Recibí tu informe por mail</h2>
       <p className="text-xs text-gray-600 mt-1 mb-4 leading-relaxed">
-        Opcional. Te mandamos un resumen (índice, puntaje por dimensión y recomendaciones). No enviamos tus respuestas una por una.
+        Opcional. Te mandamos un resumen (resultado, próximo paso, puntaje por dimensión y recomendaciones). No enviamos tus respuestas una por una.
       </p>
 
       <div className="flex flex-col sm:flex-row gap-2">

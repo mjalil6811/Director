@@ -213,7 +213,7 @@ export function StatusDonut({ items, centerLabel }: {
         </ResponsiveContainer>
         <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
           <span className="text-2xl font-bold text-gray-900 tabular-nums">{total}</span>
-          <span className="text-[10px] text-gray-400">{centerLabel}</span>
+          <span className="text-[10px] text-gray-500">{centerLabel}</span>
         </div>
       </div>
       <ul className="flex-1 space-y-1.5">
@@ -224,11 +224,41 @@ export function StatusDonut({ items, centerLabel }: {
               {i.label}
             </span>
             <span className="font-semibold text-gray-900 tabular-nums">
-              {i.value} <span className="text-gray-400 font-normal">· {total ? Math.round((i.value / total) * 100) : 0}%</span>
+              {i.value} <span className="text-gray-500 font-normal">· {total ? Math.round((i.value / total) * 100) : 0}%</span>
             </span>
           </li>
         ))}
       </ul>
+    </div>
+  );
+}
+
+/**
+ * Barra de espectro: dónde cae un valor 0–100 entre tramos con nombre.
+ * Más clara que un velocímetro para leer "en qué tramo estoy".
+ */
+export function BarraEspectro({ value, tramos, label }: {
+  value: number;
+  /** Tramos de izquierda a derecha: hasta (exclusivo) y nombre. El último debería llegar a 101. */
+  tramos: { hasta: number; nombre: string; color: string }[];
+  label: string;
+}) {
+  const v = Math.max(0, Math.min(100, value));
+  const actual = tramos.find(t => v < t.hasta) ?? tramos[tramos.length - 1];
+  const segmentos = tramos.map((t, i) => ({ ...t, ancho: Math.min(100, t.hasta) - (i === 0 ? 0 : Math.min(100, tramos[i - 1].hasta)) }));
+  return (
+    <div role="img" aria-label={`${label}: ${v} de 100, tramo ${actual.nombre}.`}>
+      <div className="relative">
+        <div className="flex h-2.5 rounded-full overflow-hidden">
+          {segmentos.map(t => <div key={t.nombre} style={{ width: `${t.ancho}%`, backgroundColor: t.color }} />)}
+        </div>
+        <span className="absolute top-1/2 w-4 h-4 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-white shadow" style={{ left: `${Math.min(v, 98)}%`, backgroundColor: actual.color }} aria-hidden />
+      </div>
+      <div className="flex mt-2 text-[11px] text-gray-600" aria-hidden>
+        {segmentos.map(t => (
+          <span key={t.nombre} style={{ width: `${t.ancho}%` }} className={`leading-tight pr-1 ${t.nombre === actual.nombre ? 'font-semibold text-gray-900' : ''}`}>{t.nombre}</span>
+        ))}
+      </div>
     </div>
   );
 }

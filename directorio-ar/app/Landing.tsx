@@ -7,12 +7,12 @@ import { storage } from '../lib/storage';
 import { progresoF1 } from '../lib/progreso';
 import { FASES, MODULOS_F1 } from '../lib/navegacion';
 import {
-  STATS, PROCESO, BENEFICIOS, FAQ, RECORRIDO,
+  STATS, PROCESO, BENEFICIOS, FAQ,
   CTA, CTA_CORTO, TIEMPO_TOTAL, TIEMPO_RESUMEN, PREGUNTAS_RESUMEN, AYUDA_NOMBRE, AVISO_DATOS,
   METODOLOGIA,
 } from '../lib/contenido-home';
 import { HERRAMIENTAS, TOTAL_HERRAMIENTAS_DISPONIBLES } from '../lib/herramientas';
-import { SITIO, FLAGS, TESTIMONIOS, mailto } from '../lib/sitio';
+import { SITIO, mailto } from '../lib/sitio';
 import { trackEvent } from '../lib/analitica';
 import SiteFooter from '../components/SiteFooter';
 import EjemploInforme from '../components/EjemploInforme';
@@ -134,16 +134,12 @@ export default function Landing() {
                 Mi diagnóstico
               </Link>
             )}
+            {/* CTA fijo de mobile (el header es sticky). En desktop el CTA aparece solo en hero, medio y cierre. */}
             <button
               onClick={() => handleStart('header')}
-              className="px-4 py-2 bg-brand hover:bg-brand-dark text-white text-xs font-semibold rounded-lg"
+              className="sm:hidden px-4 py-2 bg-brand hover:bg-brand-dark text-white text-xs font-semibold rounded-lg"
             >
-              {completadosFase1 > 0 ? 'Continuar' : (
-                <>
-                  <span className="sm:hidden">{CTA_CORTO}</span>
-                  <span className="hidden sm:inline">{CTA}</span>
-                </>
-              )}
+              {completadosFase1 > 0 ? 'Continuar' : CTA_CORTO}
             </button>
             <button
               type="button"
@@ -216,7 +212,7 @@ export default function Landing() {
               <div className="w-full sm:w-auto">
               <label htmlFor="nombre-empresa" className="sr-only">Nombre de tu empresa (opcional)</label>
               <div className="relative">
-                <div className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" aria-hidden>
+                <div className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500" aria-hidden>
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                     <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" /><polyline points="9 22 9 12 15 12 15 22" />
                   </svg>
@@ -249,7 +245,7 @@ export default function Landing() {
                   ? <>Completaste el diagnóstico abreviado. Vas a ver tu <strong className="font-semibold text-gray-900">informe</strong>, y desde ahí podés seguir con el completo.</>
                   : <>Ya completaste el diagnóstico. Vas a ver tu <strong className="font-semibold text-gray-900">resultado final</strong> y el siguiente paso: armar tu consejo asesor.</>
                 : completadosFase1 > 0
-                ? <>Próximo paso: <strong className="font-semibold text-gray-900">Módulo {siguiente} · {MODULOS_F1[siguiente - 1]?.titulo}</strong> <span className="text-gray-400">(~{MODULOS_F1[siguiente - 1]?.min} min)</span></>
+                ? <>Próximo paso: <strong className="font-semibold text-gray-900">Módulo {siguiente} · {MODULOS_F1[siguiente - 1]?.titulo}</strong> <span className="text-gray-500">(~{MODULOS_F1[siguiente - 1]?.min} min)</span></>
                 : <>{TIEMPO_RESUMEN}</>}
             </p>
             <p className="text-xs text-gray-500 leading-relaxed max-w-xl mx-auto lg:mx-0">{AVISO_DATOS}</p>
@@ -261,50 +257,14 @@ export default function Landing() {
                     <div key={m.n} title={`Módulo ${m.n} · ${m.titulo}`} className={`flex-1 h-1.5 rounded-full ${m.n < siguiente ? 'bg-brand' : m.n === siguiente ? 'bg-brand/35' : 'bg-gray-200'}`} />
                   ))}
                 </div>
-                <p className="text-[11px] text-gray-400 mt-1.5 text-left">{completadosFase1} de {totalF1} módulos completados{abreviado ? ' · diagnóstico abreviado' : ''}</p>
+                <p className="text-[11px] text-gray-500 mt-1.5 text-left">{completadosFase1} de {totalF1} módulos completados{abreviado ? ' · diagnóstico abreviado' : ''}</p>
               </div>
             )}
           </div>
 
-          {/* Columna derecha: qué vas a hacer */}
-          <div className="bg-white border border-gray-200 rounded-2xl shadow-xl shadow-gray-200/60 p-5 sm:p-6 text-left">
-            <div className="flex items-center justify-between mb-4">
-              <p className="text-sm font-bold text-gray-900">Qué vas a hacer</p>
-              <span className="text-[11px] text-gray-400">3 etapas</span>
-            </div>
-            <ol className="space-y-3">
-              {RECORRIDO.map(r => {
-                const done = r.fase === 1 && terminado;
-                const enCurso = r.fase === 1 && completadosFase1 > 0 && !terminado;
-                return (
-                  <li key={r.fase}>
-                    <button
-                      onClick={() => (r.fase === 1 ? handleStart('recorrido') : router.push(r.href))}
-                      className="w-full flex gap-3 p-3 rounded-xl border border-gray-100 hover:border-gray-300 hover:bg-gray-50/60 transition-colors text-left group"
-                    >
-                      <div className="w-9 h-9 rounded-xl flex items-center justify-center text-sm font-bold text-white shrink-0" style={{ backgroundColor: r.color }}>
-                        {done ? '✓' : r.fase}
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-2 mb-0.5 flex-wrap">
-                          <span className="text-sm font-bold" style={{ color: r.color }}>{r.verbo}</span>
-                          <span className="text-[11px] font-medium px-1.5 py-0.5 rounded-md" style={{ color: r.color, backgroundColor: r.bg }}>{r.tiempo}</span>
-                          {enCurso && <span className="text-[11px] font-semibold text-gray-500">· {completadosFase1}/{totalF1} hecho</span>}
-                          {r.fase === 1 && completadosFase1 === 0 && <span className="text-[11px] font-semibold text-gray-500">· Empezás acá</span>}
-                        </div>
-                        <p className="text-[13px] text-gray-700 leading-snug">{r.que}</p>
-                        <p className="text-xs text-gray-400 leading-snug mt-1">
-                          <span className="font-semibold text-gray-500">Obtenés:</span> {r.obtenes}
-                        </p>
-                      </div>
-                      <svg className="self-center shrink-0 text-gray-300 group-hover:text-gray-500 transition-colors" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
-                        <path d="M9 18l6-6-6-6" />
-                      </svg>
-                    </button>
-                  </li>
-                );
-              })}
-            </ol>
+          {/* Columna derecha: vista previa del informe (datos ficticios) */}
+          <div className="w-full max-w-md mx-auto lg:max-w-none">
+            <EjemploInforme compacto />
           </div>
         </div>
       </section>
@@ -426,41 +386,39 @@ export default function Landing() {
         </div>
       </section>
 
-      {/* ——— Ejemplo + metodología ——— */}
+      {/* ——— Metodología ——— */}
       <section id="metodologia" className="scroll-mt-20 px-4 py-16 bg-surface border-y border-gray-100">
-        <div className="max-w-5xl mx-auto">
-          <div className="text-center mb-10">
-            <p className="text-xs font-semibold text-brand uppercase tracking-wider mb-2">Resultado</p>
-            <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 tracking-tight">Qué vas a recibir y cómo se calcula</h2>
+        <div className="max-w-3xl mx-auto">
+          <div className="text-center mb-8">
+            <p className="text-xs font-semibold text-brand uppercase tracking-wider mb-2">Metodología</p>
+            <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 tracking-tight">Cómo se calcula tu resultado</h2>
+            <p className="text-sm text-gray-600 mt-2">Tocá cada punto para ver el detalle.</p>
           </div>
-          <div className="grid lg:grid-cols-[1.1fr_1fr] gap-6 items-start">
-            <EjemploInforme />
-            <div className="bg-white border border-gray-200 rounded-2xl p-5">
-              <h3 className="text-base font-bold text-gray-900 mb-1">Cómo se calcula tu resultado</h3>
-              <p className="text-xs text-gray-500 mb-2">Tocá cada punto para ver el detalle.</p>
-              {METODOLOGIA.map(m => <FAQItem key={m.titulo} q={m.titulo} a={m.texto} />)}
-            </div>
+          <div className="bg-white border border-gray-200 rounded-2xl p-5">
+            {METODOLOGIA.map(m => <FAQItem key={m.titulo} q={m.titulo} a={m.texto} />)}
           </div>
         </div>
       </section>
 
       {/* ——— Beneficios ——— */}
-      <section className="px-4 py-16">
+      <section className="px-4 py-12">
         <div className="max-w-5xl mx-auto">
-          <div className="text-center mb-10">
+          <div className="text-center mb-8">
             <p className="text-xs font-semibold text-brand uppercase tracking-wider mb-2">Por qué Directorio AR</p>
             <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 tracking-tight">
               Una herramienta pensada para tu empresa
             </h2>
           </div>
-          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-3">
             {BENEFICIOS.map(b => (
-              <div key={b.titulo} className="bg-white rounded-2xl border border-gray-200 p-5 hover:shadow-md transition-shadow">
-                <div className="w-10 h-10 rounded-xl bg-brand-50 flex items-center justify-center text-brand mb-3">
+              <div key={b.titulo} className="bg-white rounded-2xl border border-gray-200 p-4 flex gap-3 items-start">
+                <div className="w-9 h-9 rounded-xl bg-brand-50 flex items-center justify-center text-brand shrink-0" aria-hidden>
                   {ICONOS[b.icono]}
                 </div>
-                <h3 className="text-sm font-bold text-gray-900 mb-1">{b.titulo}</h3>
-                <p className="text-xs text-gray-500 leading-relaxed">{b.descripcion}</p>
+                <div className="min-w-0">
+                  <h3 className="text-sm font-bold text-gray-900">{b.titulo}</h3>
+                  <p className="text-xs text-gray-600 leading-relaxed mt-0.5">{b.descripcion}</p>
+                </div>
               </div>
             ))}
           </div>
@@ -471,7 +429,7 @@ export default function Landing() {
       {completadosFase1 > 0 && (
         <section className="px-4 py-10 border-t border-gray-100">
           <div className="max-w-3xl mx-auto">
-            <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-4 text-center">Tu progreso</p>
+            <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-4 text-center">Tu progreso</p>
             <div className="bg-white border border-gray-200 rounded-2xl p-5 shadow-sm">
               <div className="flex items-center justify-between mb-3">
                 <span className="text-sm font-semibold text-gray-900">Fase 1 — Diagnóstico</span>
@@ -507,50 +465,6 @@ export default function Landing() {
           </div>
         </section>
       )}
-
-      {/* ——— Quién está detrás ——— */}
-      <section id="quien" className="scroll-mt-20 px-4 py-16 bg-surface border-y border-gray-100">
-        <div className="max-w-3xl mx-auto">
-          <p className="text-xs font-semibold text-brand uppercase tracking-wider mb-4 text-center">Quién está detrás</p>
-          <div className="bg-white border border-gray-200 rounded-2xl p-6 flex flex-col sm:flex-row gap-5 items-center sm:items-start text-center sm:text-left">
-            {SITIO.autor.foto ? (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img src={SITIO.autor.foto} alt={SITIO.autor.nombre} width={80} height={80} className="w-20 h-20 rounded-full object-cover shrink-0" />
-            ) : (
-              <div className="w-20 h-20 rounded-full bg-brand-50 text-brand text-2xl font-bold flex items-center justify-center shrink-0" aria-hidden>
-                {SITIO.autor.nombre.split(' ').map(p => p[0]).join('')}
-              </div>
-            )}
-            <div>
-              <p className="text-lg font-bold text-gray-900">{SITIO.autor.nombre}</p>
-              {SITIO.autor.bio ? (
-                <p className="text-sm text-gray-600 leading-relaxed mt-1">{SITIO.autor.bio}</p>
-              ) : (
-                // TODO(matias): completar SITIO.autor.bio en lib/sitio.ts
-                <p className="text-sm text-amber-900 bg-amber-50 border border-dashed border-amber-300 rounded-lg px-3 py-2 mt-2">Bio profesional pendiente.</p>
-              )}
-              {SITIO.autor.linkedin ? (
-                <a href={SITIO.autor.linkedin} target="_blank" rel="noopener noreferrer" className="inline-block mt-3 text-sm font-semibold text-brand hover:underline">Ver perfil en LinkedIn →</a>
-              ) : (
-                // TODO(matias): completar SITIO.autor.linkedin en lib/sitio.ts
-                <span className="inline-block mt-3 text-xs text-amber-900 bg-amber-50 border border-dashed border-amber-300 rounded px-2 py-0.5">LinkedIn pendiente</span>
-              )}
-            </div>
-          </div>
-
-          {/* Testimonios: apagados hasta tener testimonios reales y autorizados (FLAGS.testimonios). */}
-          {FLAGS.testimonios && TESTIMONIOS.length > 0 && (
-            <div className="grid sm:grid-cols-2 gap-4 mt-6">
-              {TESTIMONIOS.map(t => (
-                <blockquote key={t.nombre} className="bg-white border border-gray-200 rounded-2xl p-5">
-                  <p className="text-sm text-gray-700 leading-relaxed">“{t.texto}”</p>
-                  <footer className="text-xs text-gray-500 mt-3">{t.nombre} · {t.cargo}, {t.empresa}</footer>
-                </blockquote>
-              ))}
-            </div>
-          )}
-        </div>
-      </section>
 
       {/* ——— FAQ ——— */}
       <section id="faq" className="scroll-mt-20 px-4 py-16">

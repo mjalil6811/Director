@@ -59,7 +59,7 @@ export default function PrivacidadPage() {
       <h2>4. Si pedís el informe por mail (opcional)</h2>
       <p>
         Solo si lo pedís expresamente y aceptás esta política, enviamos a nuestro servidor: tu dirección de mail, el nombre de
-        tu empresa (si lo cargaste) y un resumen del resultado (Índice de preparación, puntaje por dimensión y recomendaciones).
+        tu empresa (si lo cargaste) y un resumen del resultado (ubicación en la matriz de necesidad y disposición, Índice de preparación, puntaje por dimensión y recomendaciones).
         No enviamos tus respuestas una por una.
       </p>
       <ul>

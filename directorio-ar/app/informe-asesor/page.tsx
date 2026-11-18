@@ -5,6 +5,7 @@ import PageHeader from '../../components/PageHeader';
 import { useEffect, useState } from 'react';
 import { storage } from '../../lib/storage';
 import { calcularIndicePreparacion } from '../../lib/indice';
+import { calcularEjes, CUADRANTES } from '../../lib/ejes';
 import { generarInformeAsesor, type InformeAsesor } from '../../lib/informe-asesor';
 
 function Seccion({ titulo, children, className = '' }: { titulo: string; children: React.ReactNode; className?: string }) {
@@ -27,7 +28,12 @@ export default function InformeAsesorPage() {
     const m4diag = storage.getModulo4Diagnostico();
     const pendientes = [!m1 && 1, !m2 && 2, !m3 && 3].filter(Boolean) as number[];
     if (!m1 || !m2 || !m3) { setFaltan(pendientes); return; }
-    const indice = calcularIndicePreparacion(m1, m2, m3, m4diag, storage.getModulo5Resultado()).total;
+    const m5 = storage.getModulo5Resultado();
+    const indice = calcularIndicePreparacion(m1, m2, m3, m4diag, m5).total;
+    const ej = calcularEjes(m1, m2, m3, m4diag, m5);
+    const ejes = ej.cuadrante && ej.necesidad !== null && ej.disposicion !== null
+      ? { cuadrante: CUADRANTES[ej.cuadrante].titulo, necesidad: ej.necesidad, disposicion: ej.disposicion }
+      : undefined;
     setInforme(generarInformeAsesor({
       empresa: storage.getEmpresaNombre() ?? '',
       m1, m2, m3, m4diag,
@@ -35,6 +41,7 @@ export default function InformeAsesorPage() {
       respuestasM1: storage.getModulo1Respuestas(),
       respuestasM3: storage.getModulo3Respuestas(),
       indice,
+      ejes,
     }));
   }, []);
 
@@ -48,7 +55,7 @@ export default function InformeAsesorPage() {
               <p className="text-sm text-gray-700 mb-2">Para generar el informe hacen falta los módulos {faltan.join(', ')} del diagnóstico.</p>
               <Link href={`/modulo/${faltan[0]}`} className="inline-block mt-3 px-5 py-2.5 rounded-xl bg-brand text-white text-sm font-semibold">Completar Módulo {faltan[0]} →</Link>
             </>
-          ) : <p className="text-sm text-gray-400">Preparando informe…</p>}
+          ) : <p className="text-sm text-gray-500">Preparando informe…</p>}
         </main>
       </div>
     );
@@ -177,7 +184,7 @@ export default function InformeAsesorPage() {
           </Seccion>
         </div>
 
-        <p className="text-[11px] text-gray-400 text-center pt-2">
+        <p className="text-[11px] text-gray-500 text-center pt-2">
           Informe orientativo generado a partir de las respuestas del diagnóstico. No reemplaza el asesoramiento legal o contable.
         </p>
       </main>

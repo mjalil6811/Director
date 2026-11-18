@@ -33,14 +33,14 @@ function KpiCard({ label, valor, variacion, prefix, serie, color, invertir }: {
   const bueno = variacion ? (invertir ? !variacion.positivo : variacion.positivo) : true;
   return (
     <div className="bg-white rounded-2xl border border-gray-100 p-4 shadow-sm flex flex-col">
-      <p className="text-[11px] font-semibold text-gray-400 uppercase tracking-wide mb-1">{label}</p>
+      <p className="text-[11px] font-semibold text-gray-500 uppercase tracking-wide mb-1">{label}</p>
       <p className="text-xl font-bold text-gray-900 tabular-nums">{prefix}{typeof valor === 'number' ? valor.toLocaleString('es-AR') : valor}</p>
       {variacion ? (
         <p className={`text-xs font-semibold mt-1 ${bueno ? 'text-green-700' : 'text-red-600'}`}>
-          {variacion.positivo ? '▲' : '▼'} {Math.abs(variacion.valor)}% <span className="font-normal text-gray-400">vs. mes ant.</span>
+          {variacion.positivo ? '▲' : '▼'} {Math.abs(variacion.valor)}% <span className="font-normal text-gray-500">vs. mes ant.</span>
         </p>
       ) : (
-        <p className="text-xs text-gray-300 mt-1">—</p>
+        <p className="text-xs text-gray-500 mt-1">—</p>
       )}
       {serie && serie.length >= 2 && <div className="mt-2"><Sparkline values={serie} color={color} /></div>}
     </div>
@@ -88,7 +88,7 @@ function CargaDatos({ periodoInicial, onGuardar, onCancelar }: {
   return (
     <div>
       <h3 className="text-base font-semibold text-gray-900 mb-1">Carga de datos — {MESES[p.mes - 1]} {p.anio}</h3>
-      <p className="text-xs text-gray-400 mb-5">Ingresá los datos financieros del período. El EBITDA se calcula automáticamente.</p>
+      <p className="text-xs text-gray-500 mb-5">Ingresá los datos financieros del período. El EBITDA se calcula automáticamente.</p>
 
       <div className="grid grid-cols-2 gap-3 mb-4">
         <div className="col-span-1">
@@ -147,7 +147,7 @@ function PresupuestoForm({ presupuestoInicial, onGuardar, onCancelar }: {
   return (
     <div>
       <h3 className="text-base font-semibold text-gray-900 mb-1">Presupuesto anual</h3>
-      <p className="text-xs text-gray-400 mb-5">Carga el presupuesto del ano para comparar contra la ejecucion real.</p>
+      <p className="text-xs text-gray-500 mb-5">Carga el presupuesto del ano para comparar contra la ejecucion real.</p>
 
       <div className="mb-4">
         <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1">Ano</label>
@@ -265,7 +265,7 @@ export default function ModuloDashboard() {
                   <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#534AB7" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="1" x2="12" y2="23" /><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" /></svg>
                 </div>
                 <h3 className="text-base font-semibold text-gray-900 mb-1">Sin datos financieros</h3>
-                <p className="text-xs text-gray-400 mb-4">Carga tu primer periodo para ver el dashboard.</p>
+                <p className="text-xs text-gray-500 mb-4">Carga tu primer periodo para ver el dashboard.</p>
                 <button onClick={() => setVista('carga')} className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-brand to-brand-light text-white text-sm font-semibold hover:shadow-lg transition-all">
                   Cargar primer periodo
                 </button>
@@ -311,7 +311,7 @@ export default function ModuloDashboard() {
                   <>
                     <div className="bg-white rounded-2xl border border-gray-100 p-4 shadow-sm mb-5">
                       <p className="text-sm font-semibold text-gray-900">Ventas y EBITDA</p>
-                      <p className="text-xs text-gray-400 mb-3">Evolución mensual{presupuesto ? ' · línea punteada: ventas mensuales presupuestadas' : ''}</p>
+                      <p className="text-xs text-gray-500 mb-3">Evolución mensual{presupuesto ? ' · línea punteada: ventas mensuales presupuestadas' : ''}</p>
                       <TrendChart
                         data={periodos.map(p => ({ periodo: `${MESES[p.mes - 1]} ${String(p.anio).slice(2)}`, ventas: p.ventas, ebitda: p.ebitda }))}
                         series={[{ key: 'ventas', label: 'Ventas', color: VIZ.s1 }, { key: 'ebitda', label: 'EBITDA', color: VIZ.s2 }]}
@@ -321,7 +321,7 @@ export default function ModuloDashboard() {
                     </div>
                     <div className="bg-white rounded-2xl border border-gray-100 p-4 shadow-sm mb-5">
                       <p className="text-sm font-semibold text-gray-900">Márgenes</p>
-                      <p className="text-xs text-gray-400 mb-3">Como % de las ventas de cada mes</p>
+                      <p className="text-xs text-gray-500 mb-3">Como % de las ventas de cada mes</p>
                       <TrendChart
                         data={periodos.map((p, i) => ({ periodo: `${MESES[p.mes - 1]} ${String(p.anio).slice(2)}`, ...serieMargenes[i] }))}
                         series={[
@@ -342,7 +342,7 @@ export default function ModuloDashboard() {
                 {/* Barras */}
                 {ultimo && kpis && (
                   <div className="bg-white rounded-2xl border border-gray-100 p-4 shadow-sm mb-5">
-                    <p className="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-3">Indicadores operativos</p>
+                    <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3">Indicadores operativos</p>
                     <MiniBar label="Margen EBITDA" valor={kpis.margenEbitda} max={100} color="#534AB7" />
                     <MiniBar label={`Dias de cobranza: ${kpis.rotacionCobrar}`} valor={kpis.rotacionCobrar} max={90} color={kpis.rotacionCobrar > 60 ? '#DC2626' : '#0F6E56'} />
                     <MiniBar label={`Dias de pago: ${kpis.rotacionPagar}`} valor={kpis.rotacionPagar} max={90} color="#854F0B" />
@@ -364,7 +364,7 @@ export default function ModuloDashboard() {
                 {/* Lista periodos */}
                 <div className="mb-4">
                   <div className="flex items-center justify-between mb-2">
-                    <p className="text-xs font-semibold text-gray-400 uppercase tracking-wide">Periodos cargados ({periodos.length})</p>
+                    <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Periodos cargados ({periodos.length})</p>
                     <button onClick={() => { setEditandoId(null); setVista('carga'); }} className="text-xs font-semibold text-brand hover:underline">+ Nuevo periodo</button>
                   </div>
                   <div className="space-y-2">
@@ -372,7 +372,7 @@ export default function ModuloDashboard() {
                       <div key={p.id} className="bg-white rounded-xl border border-gray-100 p-3 flex items-center justify-between">
                         <div>
                           <p className="text-sm font-semibold text-gray-900">{MESES[p.mes - 1]} {p.anio}</p>
-                          <p className="text-xs text-gray-400">Ventas: {fmtMoney(p.ventas)} | EBITDA: {fmtMoney(p.ebitda)}</p>
+                          <p className="text-xs text-gray-500">Ventas: {fmtMoney(p.ventas)} | EBITDA: {fmtMoney(p.ebitda)}</p>
                         </div>
                         <div className="flex gap-1">
                           <button onClick={() => { setEditandoId(p.id); setVista('carga'); }} className="text-xs px-2 py-1 rounded-lg border border-gray-200 text-gray-500 hover:bg-gray-50">Editar</button>

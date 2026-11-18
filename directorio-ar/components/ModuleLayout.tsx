@@ -51,7 +51,7 @@ export default function ModuleLayout({ moduleNumber, title, subtitle, children }
                 className="flex-1 group"
               >
                 <div className={`h-1.5 rounded-full transition-colors ${done || here ? 'bg-brand' : 'bg-gray-200 group-hover:bg-gray-300'} ${here ? 'opacity-100' : done ? 'opacity-60' : ''}`} />
-                <span className={`hidden sm:block mt-1 text-[10px] ${here ? 'text-brand font-semibold' : 'text-gray-400'}`}>{MODULOS_F1[i]?.corto}</span>
+                <span className={`hidden sm:block mt-1 text-[10px] ${here ? 'text-brand font-semibold' : 'text-gray-500'}`}>{MODULOS_F1[i]?.corto}</span>
               </Link>
             );
           })}

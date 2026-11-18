@@ -1,4 +1,7 @@
 import type { Modulo3Resultado } from "../types";
+import { PREGUNTAS_M3 } from "./preguntas";
+
+export { PREGUNTAS_M3 } from "./preguntas";
 
 // ─── Profile types ─────────────────────────────────────────────────────────────
 
@@ -140,101 +143,6 @@ export const PERFILES: Record<PerfilKey, PerfilDirectorio> = {
 };
 
 // ─── Questions ─────────────────────────────────────────────────────────────────
-
-type PesosRespuesta = Partial<Record<PerfilKey, number>>;
-type OpcionM3 = { texto: string; pesos: PesosRespuesta };
-type PreguntaM3 = { numero: number; dimension: string; texto: string; aclaracion: string; opciones: [OpcionM3, OpcionM3, OpcionM3, OpcionM3] };
-
-export const PREGUNTAS_M3: PreguntaM3[] = [
-  {
-    numero: 1, dimension: "Estrategia",
-    texto: "¿La empresa tiene una estrategia a 3-5 años documentada y compartida?",
-    aclaracion: "La existencia de una estrategia formal indica madurez organizacional.",
-    opciones: [
-      { texto: "No existe nada formal ni documentado", pesos: { estratega: 3 } },
-      { texto: "Hay ideas compartidas pero nada escrito", pesos: { estratega: 2, operaciones: 1 } },
-      { texto: "Existe un documento pero no se actualiza ni se sigue", pesos: { estratega: 2 } },
-      { texto: "Hay un plan estratégico vigente con revisión periódica", pesos: { operaciones: 1 } },
-    ],
-  },
-  {
-    numero: 2, dimension: "Propiedad",
-    texto: "¿La estructura de propiedad está formalizada en estatutos y acuerdos de socios?",
-    aclaracion: "Tener la propiedad escrita formalmente en estatutos es distinto a que 'todos saben quién es dueño de qué'.",
-    opciones: [
-      { texto: "No hay estatutos actualizados ni acuerdo de socios", pesos: { financiero: 2, operaciones: 1 } },
-      { texto: "Hay estatutos básicos pero desactualizados", pesos: { financiero: 2 } },
-      { texto: "Los estatutos están al día pero no hay acuerdo de socios", pesos: { financiero: 1, estratega: 1 } },
-      { texto: "Estatutos actualizados y acuerdo de socios vigente", pesos: { estratega: 1 } },
-    ],
-  },
-  {
-    numero: 3, dimension: "Finanzas",
-    texto: "¿Cuál es la situación financiera actual de la empresa?",
-    aclaracion: "El nivel de deuda define la urgencia del perfil financiero.",
-    opciones: [
-      { texto: "Sin deuda estructural, operamos con capital propio",           pesos: { operaciones: 1 } },
-      { texto: "Créditos bancarios habituales de corto plazo",                 pesos: { financiero: 2 } },
-      { texto: "Deuda de mediano o largo plazo activa o planificada",          pesos: { financiero: 3 } },
-      { texto: "Obligaciones negociables, fondos o deuda estructurada",        pesos: { financiero: 3, estratega: 1 } },
-    ],
-  },
-  {
-    numero: 4, dimension: "Finanzas",
-    texto: "¿La empresa ha tenido o tiene dificultades financieras significativas?",
-    aclaracion: "Las crisis financieras exigen perfiles muy específicos en la mesa de decisiones.",
-    opciones: [
-      { texto: "No, la situación financiera siempre fue estable",              pesos: {} },
-      { texto: "Tuvimos tensiones puntuales ya superadas",                     pesos: { financiero: 1 } },
-      { texto: "Hay problemas activos que impactan la operación",              pesos: { financiero: 3, operaciones: 1 } },
-      { texto: "Estamos en reestructuración o proceso concursal",              pesos: { financiero: 3, estratega: 1 } },
-    ],
-  },
-  {
-    numero: 5, dimension: "Mercado",
-    texto: "¿La empresa exporta o tiene planes serios de expansión internacional?",
-    aclaracion: "La internacionalización exige un perfil que el mercado local raramente provee.",
-    opciones: [
-      { texto: "No, operamos exclusivamente en Argentina",                     pesos: { comercial: 1 } },
-      { texto: "Exportaciones menores o esporádicas",                          pesos: { comercial: 2 } },
-      { texto: "Exportación activa o expansión regional en curso",             pesos: { comercial: 3, estratega: 2 } },
-      { texto: "Internacionalización como eje estratégico central",            pesos: { estratega: 3, comercial: 3 } },
-    ],
-  },
-  {
-    numero: 6, dimension: "Estrategia",
-    texto: "¿Cuál es el principal desafío de la empresa para los próximos 3 años?",
-    aclaracion: "Elegí el que más te preocupa hoy. Define qué experiencia conviene sumar primero al consejo.",
-    opciones: [
-      { texto: "Crecer en ventas o llegar a nuevos clientes y mercados",          pesos: { comercial: 3, estratega: 1 } },
-      { texto: "Ordenar las finanzas, el endeudamiento o conseguir financiamiento", pesos: { financiero: 3, estratega: 1 } },
-      { texto: "Ganar eficiencia y ordenar la operación para poder escalar",      pesos: { operaciones: 3, estratega: 1 } },
-      { texto: "Redefinir el rumbo: nuevos negocios, sucesión o reinvención",     pesos: { estratega: 3, financiero: 1 } },
-    ]
-  },
-  {
-    numero: 7, dimension: "Comercial",
-    texto: "¿Cómo llegan hoy los nuevos clientes a la empresa?",
-    aclaracion: "La dependencia comercial del dueño es uno de los riesgos más subestimados en PyMEs argentinas.",
-    opciones: [
-      { texto: "Por el dueño y sus contactos personales exclusivamente",       pesos: { comercial: 3 } },
-      { texto: "Por boca a boca sin acción comercial activa",                  pesos: { comercial: 2 } },
-      { texto: "Hay un equipo comercial pero sin estrategia clara",            pesos: { comercial: 2, estratega: 1 } },
-      { texto: "Tenemos canales y procesos comerciales bien definidos",        pesos: { estratega: 1 } },
-    ],
-  },
-  {
-    numero: 8, dimension: "Operaciones",
-    texto: "¿La empresa tiene procesos documentados y sistemas de gestión implementados?",
-    aclaracion: "La informalidad operativa es el principal freno al crecimiento en PyMEs argentinas.",
-    opciones: [
-      { texto: "Todo está en la cabeza de las personas clave",                         pesos: { operaciones: 3 } },
-      { texto: "Hay algo documentado pero muy informal",                               pesos: { operaciones: 2 } },
-      { texto: "Procesos documentados pero no siempre respetados",                     pesos: { operaciones: 1 } },
-      { texto: "Sistemas y procesos funcionando con métricas de seguimiento",          pesos: { estratega: 1 } },
-    ],
-  },
-];
 
 // ─── Calculator ────────────────────────────────────────────────────────────────
 

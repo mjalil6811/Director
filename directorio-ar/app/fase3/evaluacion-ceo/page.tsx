@@ -20,7 +20,7 @@ function EscalaSelector({ valor, onChange }: { valor: number; onChange: (v: numb
         <button
           key={n}
           onClick={() => onChange(n)}
-          className={`w-9 h-9 rounded-lg text-xs font-bold transition-all ${valor === n ? 'text-white shadow-md' : 'bg-gray-100 text-gray-400 hover:bg-gray-200'}`}
+          className={`w-9 h-9 rounded-lg text-xs font-bold transition-all ${valor === n ? 'text-white shadow-md' : 'bg-gray-100 text-gray-500 hover:bg-gray-200'}`}
           style={valor === n ? { backgroundColor: ESCALA_COLORES[n] } : {}}
           title={ESCALA_LABELS[n]}
         >
@@ -82,7 +82,7 @@ function FormDirector({ evaluacion, directorIdx, onActualizar, onVolver }: {
       <div className="flex items-center justify-between mb-4">
         <div>
           <h3 className="text-base font-semibold text-gray-900">Evaluacion de {director.directorNombre}</h3>
-          <p className="text-xs text-gray-400">Progreso: {progreso}% ({respondidas}/{totalPreguntas} preguntas)</p>
+          <p className="text-xs text-gray-500">Progreso: {progreso}% ({respondidas}/{totalPreguntas} preguntas)</p>
         </div>
         <button onClick={onVolver} className="text-xs font-semibold px-3 py-1.5 rounded-lg border border-gray-200 text-gray-600 hover:bg-gray-50 transition-all">Volver</button>
       </div>
@@ -95,7 +95,7 @@ function FormDirector({ evaluacion, directorIdx, onActualizar, onVolver }: {
         <div key={dim.id} className="mb-6">
           <div className="mb-3">
             <h4 className="text-sm font-semibold text-gray-900">{dim.nombre}</h4>
-            <p className="text-xs text-gray-400">{dim.descripcion}</p>
+            <p className="text-xs text-gray-500">{dim.descripcion}</p>
           </div>
           <div className="space-y-3">
             {dim.preguntas.map(preg => (
@@ -105,8 +105,8 @@ function FormDirector({ evaluacion, directorIdx, onActualizar, onVolver }: {
                   <div>
                     <EscalaSelector valor={getRespuesta(preg.id) as number} onChange={v => setRespuesta(preg.id, v)} />
                     <div className="flex justify-between mt-1">
-                      <span className="text-[10px] text-gray-400">Deficiente</span>
-                      <span className="text-[10px] text-gray-400">Excelente</span>
+                      <span className="text-[10px] text-gray-500">Deficiente</span>
+                      <span className="text-[10px] text-gray-500">Excelente</span>
                     </div>
                   </div>
                 )}
@@ -158,17 +158,17 @@ function Resultados({ evaluacion }: { evaluacion: EvaluacionCEO }) {
       <div className="flex items-center justify-between mb-4">
         <div>
           <h3 className="text-base font-semibold text-gray-900">Resultados de la evaluacion</h3>
-          <p className="text-xs text-gray-400">{completadas} de {total} evaluaciones completadas</p>
+          <p className="text-xs text-gray-500">{completadas} de {total} evaluaciones completadas</p>
         </div>
       </div>
 
       {/* Score promedio */}
       <div className="bg-white rounded-2xl border border-gray-100 p-5 shadow-sm mb-5 text-center">
-        <p className="text-[11px] font-semibold text-gray-400 uppercase tracking-wide mb-2">Score promedio</p>
+        <p className="text-[11px] font-semibold text-gray-500 uppercase tracking-wide mb-2">Score promedio</p>
         <p className="text-4xl font-bold" style={{ color: ESCALA_COLORES[Math.round(evaluacion.scorePromedio)] || '#534AB7' }}>
           {evaluacion.scorePromedio.toFixed(1)}
         </p>
-        <p className="text-xs text-gray-400 mt-1">de 5.0</p>
+        <p className="text-xs text-gray-500 mt-1">de 5.0</p>
         <div className="h-2 bg-gray-100 rounded-full overflow-hidden mt-3 mx-auto max-w-xs">
           <div className="h-full rounded-full transition-all duration-500" style={{ width: `${evaluacion.scorePromedio / 5 * 100}%`, backgroundColor: ESCALA_COLORES[Math.round(evaluacion.scorePromedio)] || '#534AB7' }} />
         </div>
@@ -177,7 +177,7 @@ function Resultados({ evaluacion }: { evaluacion: EvaluacionCEO }) {
       {/* Scores por dimension */}
       {evaluacion.scoresPorDimension.length > 0 && (
         <div className="bg-white rounded-2xl border border-gray-100 p-4 shadow-sm mb-5">
-          <p className="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-3">Por dimension</p>
+          <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3">Por dimension</p>
           <div className="space-y-3">
             {evaluacion.scoresPorDimension.map(d => (
               <div key={d.dimensionId}>
@@ -225,7 +225,7 @@ function Resultados({ evaluacion }: { evaluacion: EvaluacionCEO }) {
       ) : (
         <div>
           <div className="flex items-center justify-between mb-3">
-            <p className="text-xs font-semibold text-gray-400 uppercase tracking-wide">Informe de evaluacion</p>
+            <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Informe de evaluacion</p>
             <div className="flex gap-2">
               <button onClick={() => navigator.clipboard.writeText(informe)} className="text-xs px-3 py-1.5 rounded-lg border border-gray-200 hover:bg-gray-50 text-gray-600 font-medium">Copiar</button>
               <button onClick={() => setInforme('')} className="text-xs px-3 py-1.5 rounded-lg bg-gray-100 text-gray-600 font-medium hover:bg-gray-200">Cerrar</button>
@@ -338,7 +338,7 @@ export default function ModuloEvaluacionCEO() {
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#534AB7" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /><path d="M23 21v-2a4 4 0 0 0-3-3.87" /><path d="M16 3.13a4 4 0 0 1 0 7.75" /></svg>
               </div>
               <h3 className="text-base font-semibold text-gray-900 mb-1">Evaluacion del CEO</h3>
-              <p className="text-xs text-gray-400 leading-relaxed max-w-xs mx-auto">Cada director evalua al CEO en distintas dimensiones. Los resultados se consolidan en un informe confidencial.</p>
+              <p className="text-xs text-gray-500 leading-relaxed max-w-xs mx-auto">Cada director evalua al CEO en distintas dimensiones. Los resultados se consolidan en un informe confidencial.</p>
             </div>
 
             <div className="mb-4">
@@ -373,7 +373,7 @@ export default function ModuloEvaluacionCEO() {
           <div>
             <div className="mb-5">
               <h3 className="text-base font-semibold text-gray-900 mb-1">Evaluacion de {evaluacion.ceoNombre}</h3>
-              <p className="text-xs text-gray-400">Ano {evaluacion.anio} — {evaluacion.evaluaciones.filter(e => e.completada).length} de {evaluacion.evaluaciones.length} evaluaciones completadas</p>
+              <p className="text-xs text-gray-500">Ano {evaluacion.anio} — {evaluacion.evaluaciones.filter(e => e.completada).length} de {evaluacion.evaluaciones.length} evaluaciones completadas</p>
             </div>
 
             <div className="space-y-2 mb-5">
@@ -383,9 +383,9 @@ export default function ModuloEvaluacionCEO() {
                   <div className="flex items-center justify-between">
                     <div>
                       <p className="text-sm font-semibold text-gray-900">{ev.directorNombre}</p>
-                      <p className="text-xs text-gray-400 mt-0.5">{ev.completada ? `Completada el ${ev.fecha}` : 'Pendiente'}</p>
+                      <p className="text-xs text-gray-500 mt-0.5">{ev.completada ? `Completada el ${ev.fecha}` : 'Pendiente'}</p>
                     </div>
-                    <div className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold ${ev.completada ? 'bg-green-100 text-green-600' : 'bg-gray-100 text-gray-400'}`}>
+                    <div className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold ${ev.completada ? 'bg-green-100 text-green-600' : 'bg-gray-100 text-gray-500'}`}>
                       {ev.completada ? '\u2713' : (i + 1)}
                     </div>
                   </div>
@@ -404,7 +404,7 @@ export default function ModuloEvaluacionCEO() {
               </button>
             </div>
 
-            <button onClick={reiniciar} className="w-full mt-3 py-2 text-xs text-gray-400 hover:text-red-500 transition-all">
+            <button onClick={reiniciar} className="w-full mt-3 py-2 text-xs text-gray-500 hover:text-red-500 transition-all">
               Reiniciar proceso completo
             </button>
           </div>

@@ -1,5 +1,6 @@
 import { ImageResponse } from 'next/og';
 import { LogoMarca } from '../components/og/LogoMarca';
+import { TOTAL_MIN_F1 } from '../lib/navegacion';
 
 export const alt = 'Directorio AR — La nueva era de los directorios: asesores que suman y preparan tu empresa para el futuro';
 export const size = { width: 1200, height: 630 };
@@ -18,7 +19,7 @@ export default function OpengraphImage() {
           <div style={{ fontSize: 56, fontWeight: 700, color: '#534AB7', lineHeight: 1.1 }}>asesores que suman y preparan tu empresa para el futuro</div>
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 16, fontSize: 28, color: '#3C3489' }}>
-          <div style={{ display: 'flex', padding: '10px 22px', borderRadius: 999, background: '#534AB7', color: 'white', fontWeight: 700 }}>Diagnóstico gratuito · ~8 min</div>
+          <div style={{ display: 'flex', padding: '10px 22px', borderRadius: 999, background: '#534AB7', color: 'white', fontWeight: 700 }}>Diagnóstico gratuito · ~{TOTAL_MIN_F1} min</div>
           <div style={{ display: 'flex' }}>Para PyMEs argentinas</div>
         </div>
       </div>

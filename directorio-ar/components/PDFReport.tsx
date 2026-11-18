@@ -209,6 +209,8 @@ interface PDFReportData {
   m4frecuencia: string | null;
   m4diagnostico: Modulo4Diagnostico | null;
   fecha: string;
+  /** Veredicto principal: matriz Necesidad × Disposición. */
+  ejes?: { titulo: string; resumen: string; proximoPaso: string; necesidad: number; disposicion: number; color: string };
 }
 
 const PERFIL_LABELS: Record<string, string> = {
@@ -254,6 +256,15 @@ function PDFDocument({ data }: { data: PDFReportData }) {
             <Text style={styles.coverCompany}>{data.empresa}</Text>
           </>
         )}
+        {data.ejes && (
+          <View style={{ marginTop: 18, marginBottom: 14, padding: 14, borderRadius: 8, backgroundColor: '#F5F4FE' }}>
+            <Text style={{ fontSize: 9, color: '#555', marginBottom: 4 }}>RESULTADO</Text>
+            <Text style={{ fontSize: 18, fontWeight: 'bold', color: data.ejes.color, marginBottom: 4 }}>{data.ejes.titulo}</Text>
+            <Text style={{ fontSize: 10, color: '#333', marginBottom: 6 }}>Necesidad {data.ejes.necesidad}/100 · Disposición {data.ejes.disposicion}/100</Text>
+            <Text style={{ fontSize: 10, color: '#333', marginBottom: 8, lineHeight: 1.4 }}>{data.ejes.resumen}</Text>
+            <Text style={{ fontSize: 10, color: '#111', lineHeight: 1.4 }}>Tu próximo paso: {data.ejes.proximoPaso}</Text>
+          </View>
+        )}
         <Text style={styles.coverDate}>Fecha de generación: {data.fecha}</Text>
         <View style={{ flex: 1 }} />
         <Text style={styles.coverFooter}>Desarrollado para el contexto empresarial argentino</Text>
@@ -265,7 +276,7 @@ function PDFDocument({ data }: { data: PDFReportData }) {
           <Text style={styles.sectionHeader}>Módulo 1 — ¿Te conviene un consejo asesor?</Text>
           <View style={styles.card}>
             <View style={styles.row}>
-              <Text style={styles.label}>Puntuación:</Text>
+              <Text style={styles.label}>Necesidad (sin presupuesto):</Text>
               <Text style={styles.value}>{data.m1.porcentaje}%</Text>
             </View>
             <View style={styles.row}>

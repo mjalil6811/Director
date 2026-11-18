@@ -11,6 +11,8 @@ export interface Modulo1Resultado extends ModuloResultado {
   recomendaciones: string[];
   /** Quién responde, industria y categoría PyME. Ausente en resultados guardados con la versión anterior. */
   perfil?: PerfilEmpresa;
+  /** Qué espera lograr con el consejo (no puntúa). Ausente en resultados anteriores a nov 2026. */
+  objetivo?: 'ordenar' | 'conflictos' | 'sucesion' | 'financiamiento' | 'profesionalizar';
 }
 
 export interface Modulo2Resultado extends ModuloResultado {

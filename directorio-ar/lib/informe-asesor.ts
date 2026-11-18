@@ -4,6 +4,7 @@ import type { Modulo1Resultado, Modulo2Resultado, Modulo3Resultado, Modulo4Diagn
 import { PERFILES, type PerfilKey } from './modulo3';
 import { CATEGORIA_LABEL, INDUSTRIAS, ROLES } from './pymes';
 import { IDX } from './modulo1';
+import { OBJETIVOS } from './preguntas';
 
 export type Entradas = {
   empresa: string;
@@ -16,6 +17,8 @@ export type Entradas = {
   respuestasM1: number[] | null;
   respuestasM3: number[] | null;
   indice: number;
+  /** Veredicto de la matriz Necesidad × Disposición (lib/ejes.ts). */
+  ejes?: { cuadrante: string; necesidad: number; disposicion: number };
 };
 
 export type Riesgo = { titulo: string; detalle: string; nivel: 'alto' | 'medio' };
@@ -36,7 +39,7 @@ const DESAFIOS = [
   'crecer en ventas y llegar a nuevos mercados',
   'ordenar las finanzas y el financiamiento',
   'ganar eficiencia y ordenar la operación para escalar',
-  'redefinir el rumbo (nuevos negocios, sucesión o reinvención)',
+  'redefinir el rumbo (nuevos negocios o cambio de modelo)',
 ];
 
 function pctDim(m1: Modulo1Resultado, key: string): number | undefined {
@@ -54,17 +57,23 @@ export function generarInformeAsesor(e: Entradas): InformeAsesor {
   const disposicion = m4diag?.porcentaje;
   const gobierno = pctDim(m1, 'gobierno') ?? 0;
   const recursos = pctDim(m1, 'disponibilidad');
-  const propiedadIdx = e.respuestasM1?.[IDX.empleados + 1] ?? -1; // 0 dueño único · 1 socios fundadores · 2 familia ampliada · 3 inversores
-  const sucesionIdx = e.respuestasM1?.[IDX.empleados + 2] ?? -1; // 2–3 = en proceso / ya ocurrió con tensiones
+  const propiedadIdx = e.respuestasM1?.[IDX.propiedad] ?? -1; // 0 dueño único · 1 socios fundadores · 2 familia ampliada · 3 inversores
+  const sucesionIdx = e.respuestasM1?.[IDX.sucesion] ?? -1; // 2–3 = en proceso / ya ocurrió con aspectos sin formalizar
+  const conflictoIdx = e.respuestasM1?.[IDX.conflicto] ?? -1; // 2–3 = desacuerdos que frenan decisiones / conflicto abierto
+  const dependenciaIdx = e.respuestasM1?.[IDX.dependencia] ?? -1; // 2–3 = la operación sufriría sin el dueño
   const desafioIdx = e.respuestasM3?.[5] ?? -1;
   const top = m3.topPerfiles.slice(0, 2);
   const nombreDe = (k: string) => PERFILES[k as PerfilKey]?.nombre ?? k;
+
+  const objetivo = OBJETIVOS[e.respuestasM1?.[IDX.objetivo] ?? -1]?.texto;
 
   // ——— Resumen ———
   const resumen = [
     { etiqueta: 'Empresa', valor: e.empresa || 'Sin nombre' },
     ...(perfil ? [{ etiqueta: 'Categoría', valor: `${CATEGORIA_LABEL[perfil.categoria]} · ${industria}` }] : []),
     ...(rolLabel ? [{ etiqueta: 'Respondió', valor: rolLabel.charAt(0).toUpperCase() + rolLabel.slice(1) }] : []),
+    ...(e.ejes ? [{ etiqueta: 'Resultado', valor: `${e.ejes.cuadrante} · necesidad ${e.ejes.necesidad} · disposición ${e.ejes.disposicion}` }] : []),
+    ...(objetivo ? [{ etiqueta: 'Qué espera del consejo', valor: objetivo }] : []),
     { etiqueta: 'Índice de preparación', valor: `${e.indice}/100` },
     { etiqueta: 'Necesidad (Módulo 1)', valor: `${m1.porcentaje ?? 0}% · ${m1.nivel}` },
     { etiqueta: 'Concentración de decisiones', valor: `${concentracion}%` },
@@ -90,6 +99,8 @@ export function generarInformeAsesor(e: Entradas): InformeAsesor {
   const riesgos: Riesgo[] = [];
   if (concentracion >= 60) riesgos.push({ nivel: 'alto', titulo: 'Decisiones concentradas en una persona', detalle: 'Si esa persona falta o se equivoca, no hay contrapeso. Prioridad: acordar qué decisiones pasan por el consejo.' });
   if (sucesionIdx >= 2) riesgos.push({ nivel: 'alto', titulo: 'Sucesión o cambio de control en curso', detalle: 'Es el momento de mayor riesgo en una empresa familiar. El consejo debe acompañar el proceso con reglas claras y un plan por escrito.' });
+  if (conflictoIdx >= 2) riesgos.push({ nivel: 'alto', titulo: 'Desacuerdos entre socios que afectan la empresa', detalle: 'Antes de debatir estrategia, el consejo necesita reglas para tratar diferencias. Considerá un integrante independiente que ordene esas conversaciones.' });
+  if (dependenciaIdx >= 2) riesgos.push({ nivel: 'medio', titulo: 'Alta dependencia del dueño', detalle: 'Una ausencia de pocos meses complicaría la operación. Un tema temprano para el consejo: quién reemplaza a quién y cómo se documenta.' });
   if (disposicion !== undefined && disposicion < 50) riesgos.push({ nivel: 'alto', titulo: 'Baja disposición a rendir cuentas', detalle: 'Un consejo formal impuesto ahora probablemente fracase. Empezá con un formato asesor, sin poder de veto, y ganá confianza.' });
   if (desafioIdx === 1 || top.some(t => t.perfil === 'financiero' && /cr[ií]tico|urgente/i.test(t.urgencia))) riesgos.push({ nivel: 'medio', titulo: 'Frente financiero sensible', detalle: 'Endeudamiento o necesidad de financiamiento. Pedí desde la primera reunión un paquete de información financiera mensual.' });
   if (recursos !== undefined && recursos <= 33) riesgos.push({ nivel: 'medio', titulo: 'Poco presupuesto para el consejo', detalle: 'Sin honorarios para independientes es difícil sumar perfiles de calidad. Proponé arrancar con 2 asesores y revisar al año.' });

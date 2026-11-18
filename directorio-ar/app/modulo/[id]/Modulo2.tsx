@@ -1,7 +1,8 @@
 'use client';
 
 import { registrarModuloCompletado } from '../../../lib/analitica';
-import Pregunta, { IntroModulo } from '../../../components/Pregunta';
+import Pregunta, { IntroModulo, CierreModulo } from '../../../components/Pregunta';
+import type { Modulo2Resultado } from '../../../types';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import ModuleLayout from '../../../components/ModuleLayout';
@@ -14,6 +15,7 @@ export default function Modulo2() {
   const router = useRouter();
   const [current, setCurrent] = useState(0);
   const [respuestas, setRespuestas] = useState<number[]>(new Array(TOTAL).fill(-1));
+  const [cierre, setCierre] = useState<Modulo2Resultado | null>(null);
 
   useEffect(() => {
     const saved = storage.getModulo2Respuestas();
@@ -46,12 +48,29 @@ export default function Modulo2() {
       const res = calcularModulo2(respuestas);
       storage.setModulo2Resultado(res);
       registrarModuloCompletado(2);
-      router.push('/informe-preliminar');
+      setCierre(res);
     }
   }
 
   function handlePrev() {
     if (current > 0) setCurrent(current - 1);
+  }
+
+  if (cierre) {
+    return (
+      <ModuleLayout moduleNumber={2}>
+        <CierreModulo
+          modulo={2}
+          titulo={cierre.perfil}
+          lineas={[
+            `${cierre.porcentaje ?? 0}% de las decisiones que repasaste están concentradas en una persona o no tienen un responsable claro.`,
+            'Siguiente: tu informe preliminar, con la ubicación de tu empresa en la matriz de necesidad y disposición.',
+          ]}
+          siguiente={{ label: 'Ver informe preliminar →', onClick: () => router.push('/informe-preliminar') }}
+          secundario={{ label: 'Revisar respuestas', onClick: () => { setCierre(null); setCurrent(0); } }}
+        />
+      </ModuleLayout>
+    );
   }
 
   const answeredCount = respuestas.filter(v => v >= 0).length;
@@ -61,6 +80,7 @@ export default function Modulo2() {
   return (
     <ModuleLayout moduleNumber={2}>
       <Pregunta
+        modulo={2}
         numero={current + 1}
         total={TOTAL}
         respondidas={answeredCount}

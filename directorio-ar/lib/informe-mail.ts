@@ -10,6 +10,12 @@ export const PedidoInformeSchema = z.object({
     total: z.number().int().min(0).max(100),
     nivel: z.string().max(40),
   }),
+  ejes: z.object({
+    necesidad: z.number().int().min(0).max(100),
+    disposicion: z.number().int().min(0).max(100),
+    cuadrante: z.string().max(60),
+    proximoPaso: z.string().max(300),
+  }).optional(),
   dimensiones: z.array(z.object({
     label: z.string().max(60),
     score: z.number().int().min(0).max(100),
@@ -32,7 +38,7 @@ function esc(s: string): string {
 
 export function armarMailInforme(p: PedidoInforme, siteUrl: string): { asunto: string; html: string; texto: string } {
   const empresa = p.empresa ? ` · ${p.empresa}` : '';
-  const asunto = `Tu informe de Directorio AR${empresa}: Índice ${p.indice.total}/100`;
+  const asunto = `Tu informe de Directorio AR${empresa}: ${p.ejes ? p.ejes.cuadrante : `Índice ${p.indice.total}/100`}`;
 
   const filas = p.dimensiones
     .map(d => `<tr><td style="padding:6px 0;color:#374151">${esc(d.label)}</td><td style="padding:6px 0;text-align:right;font-weight:600;color:#111827">${d.score}/100</td></tr>`)
@@ -45,6 +51,7 @@ export function armarMailInforme(p: PedidoInforme, siteUrl: string): { asunto: s
     <p style="margin:0 0 4px;font-size:12px;font-weight:700;color:#534AB7;text-transform:uppercase;letter-spacing:.05em">Directorio AR${esc(empresa)}</p>
     <h1 style="margin:0 0 4px;font-size:22px;color:#111827">Índice de preparación: ${p.indice.total}/100</h1>
     <p style="margin:0 0 20px;color:#6B7280;font-size:14px">Nivel: ${esc(p.indice.nivel)}</p>
+    ${p.ejes ? `<div style="background:#F5F4FE;border-radius:12px;padding:14px 16px;margin:0 0 20px"><p style="margin:0;font-size:16px;font-weight:700;color:#111827">${esc(p.ejes.cuadrante)}</p><p style="margin:4px 0 8px;font-size:13px;color:#4B5563">Necesidad ${p.ejes.necesidad}/100 · Disposición ${p.ejes.disposicion}/100</p><p style="margin:0;font-size:14px;color:#111827"><strong>Tu próximo paso:</strong> ${esc(p.ejes.proximoPaso)}</p></div>` : ''}
     <table style="width:100%;border-collapse:collapse;font-size:14px;border-top:1px solid #F3F4F6">${filas}</table>
     ${recos ? `<h2 style="font-size:15px;color:#111827;margin:24px 0 8px">Recomendaciones</h2><ul style="padding-left:18px;margin:0;font-size:14px;color:#374151;line-height:1.5">${recos}</ul>` : ''}
     <p style="margin:24px 0 0;font-size:14px"><a href="${esc(siteUrl)}/resultado" style="color:#534AB7;font-weight:700">Ver el resultado completo →</a><br>
@@ -59,6 +66,7 @@ export function armarMailInforme(p: PedidoInforme, siteUrl: string): { asunto: s
 
   const texto = [
     `Directorio AR${empresa}`,
+    ...(p.ejes ? [`Resultado: ${p.ejes.cuadrante} (Necesidad ${p.ejes.necesidad}/100 · Disposición ${p.ejes.disposicion}/100)`, `Tu próximo paso: ${p.ejes.proximoPaso}`] : []),
     `Índice de preparación: ${p.indice.total}/100 (${p.indice.nivel})`,
     '',
     ...p.dimensiones.map(d => `- ${d.label}: ${d.score}/100`),

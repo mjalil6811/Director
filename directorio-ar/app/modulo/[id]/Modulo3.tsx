@@ -1,7 +1,7 @@
 'use client';
 
 import { registrarModuloCompletado } from '../../../lib/analitica';
-import Pregunta, { IntroModulo } from '../../../components/Pregunta';
+import Pregunta, { IntroModulo, CierreModulo } from '../../../components/Pregunta';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import ModuleLayout from '../../../components/ModuleLayout';
@@ -104,10 +104,10 @@ function PerfilCard({ perfilKey, score, urgencia, justificacion, rank, pct }: {
             <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${style.badge}`}>{urgencia}</span>
             <span className="text-xs font-bold" style={{ color: PERFIL_COLORS[perfilKey as PerfilKey] }}>{pct}%</span>
           </div>
-          <p className="text-xs text-gray-400 mt-0.5">{perfil.independencia}</p>
+          <p className="text-xs text-gray-500 mt-0.5">{perfil.independencia}</p>
         </div>
         <div className="flex items-center gap-2 shrink-0">
-          <span className="text-xs font-bold text-gray-300">#{rank}</span>
+          <span className="text-xs font-bold text-gray-500">#{rank}</span>
           <svg
             className={`text-gray-300 transition-transform duration-200 ${open ? 'rotate-180' : ''}`}
             width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"
@@ -123,7 +123,7 @@ function PerfilCard({ perfilKey, score, urgencia, justificacion, rank, pct }: {
             <div className={`h-full rounded-full transition-all duration-500 ${style.bar}`}
               style={{ width: `${Math.min(100, Math.round((score / 20) * 100))}%` }} />
           </div>
-          <span className="text-xs text-gray-400 font-medium shrink-0">Score {score}</span>
+          <span className="text-xs text-gray-500 font-medium shrink-0">Score {score}</span>
         </div>
       </div>
 
@@ -136,19 +136,19 @@ function PerfilCard({ perfilKey, score, urgencia, justificacion, rank, pct }: {
             ))}
           </div>
           <div className="px-5 py-4">
-            <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">Por qué lo necesitás</p>
+            <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Por qué lo necesitás</p>
             <p className="text-sm text-gray-700 leading-relaxed">{justificacion}</p>
           </div>
           <div className="px-5 py-4">
-            <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-1.5">Experiencia requerida</p>
+            <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5">Experiencia requerida</p>
             <p className="text-sm text-gray-700">{perfil.anosExperiencia}</p>
           </div>
           <div className="px-5 py-4">
-            <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">Formación típica</p>
+            <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Formación típica</p>
             <p className="text-sm text-gray-700 leading-relaxed">{perfil.formacion}</p>
           </div>
           <div className="px-5 py-4">
-            <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">Roles y cargos previos</p>
+            <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Roles y cargos previos</p>
             <ul className="space-y-1.5">
               {perfil.rolesPrevios.map((r, i) => (
                 <li key={i} className="flex items-start gap-2 text-sm text-gray-700">
@@ -161,7 +161,7 @@ function PerfilCard({ perfilKey, score, urgencia, justificacion, rank, pct }: {
             </ul>
           </div>
           <div className="px-5 py-4">
-            <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-1.5">Señal clave para identificarlo</p>
+            <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5">Señal clave para identificarlo</p>
             <p className="text-sm text-gray-700 leading-relaxed">{perfil.senalClave}</p>
           </div>
           <div className="px-5 py-4" style={{ backgroundColor: perfil.colorBg }}>
@@ -251,10 +251,20 @@ export default function Modulo3() {
       <ModuleLayout moduleNumber={3}>
         <div className="space-y-4">
 
+          <CierreModulo
+            modulo={3}
+            titulo={`Primer perfil a sumar: ${PERFILES[resultado.topPerfiles[0]?.perfil as PerfilKey]?.nombre ?? 'Asesor estratégico'}`}
+            lineas={[
+              `Urgencia: ${(resultado.topPerfiles[0]?.urgencia ?? 'Recomendado').toLowerCase()}. Abajo tenés el detalle de cada perfil.`,
+              'Siguiente: tu disposición a trabajar con un consejo (Módulo 4).',
+            ]}
+            siguiente={{ label: 'Seguir con el Módulo 4 →', onClick: () => router.push('/modulo/4') }}
+          />
+
           {/* Composition chart */}
           <div className="border border-gray-200 rounded-xl bg-white overflow-hidden">
             <div className="px-5 pt-5 pb-3 border-b border-gray-100">
-              <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-1">Composición recomendada del consejo asesor</p>
+              <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Composición recomendada del consejo asesor</p>
               <p className="text-sm text-gray-500">Porcentaje de relevancia de cada perfil según tu empresa.</p>
             </div>
             <div className="px-5 py-6">
@@ -264,7 +274,7 @@ export default function Modulo3() {
 
           {/* Intro */}
           <div className="border border-gray-200 rounded-xl bg-white px-5 py-4">
-            <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-1">Perfiles detallados</p>
+            <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Perfiles detallados</p>
             <p className="text-sm text-gray-500">
               Expandí cada ficha para ver formación, cargos, experiencia y advertencias para el contexto argentino.
             </p>
@@ -305,6 +315,7 @@ export default function Modulo3() {
   return (
     <ModuleLayout moduleNumber={3}>
       <Pregunta
+        modulo={3}
         numero={current + 1}
         total={TOTAL_PREGUNTAS_M3}
         respondidas={answeredCount}

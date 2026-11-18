@@ -1,3 +1,5 @@
+import { TOTAL_MIN_F1 } from './navegacion';
+
 // Datos del sitio y del titular. Todo lo marcado TODO(matias) se muestra como "pendiente" en la web
 // hasta que se complete acá: no hace falta tocar ningún otro archivo.
 
@@ -8,7 +10,7 @@ export const SITE_URL = (process.env.NEXT_PUBLIC_SITE_URL ?? 'https://director-r
 export const SITIO = {
   nombre: 'Directorio AR',
   titulo: 'Directorio AR — Consejo asesor para PyMEs argentinas',
-  descripcion: 'Diagnóstico gratuito de ~8 minutos para PyMEs argentinas: descubrí si es momento de sumar un consejo asesor y cómo armarlo.',
+  descripcion: `Diagnóstico gratuito de ~${TOTAL_MIN_F1} minutos para PyMEs argentinas: descubrí si es momento de sumar un consejo asesor y cómo armarlo.`,
 
   // TODO(matias): mail de contacto (p. ej. contacto@tudominio.com.ar). Mientras sea null se muestra "pendiente".
   email: null as string | null,
@@ -20,33 +22,16 @@ export const SITIO = {
     domicilio: null as string | null,
   },
 
-  autor: {
-    nombre: 'Matías Jalil',
-    // TODO(matias): bio profesional final (2–3 líneas).
-    bio: null as string | null,
-    // TODO(matias): URL de LinkedIn.
-    linkedin: null as string | null,
-    // TODO(matias): foto opcional en /public (p. ej. '/matias.jpg'). Sin foto se muestran las iniciales.
-    foto: null as string | null,
-  },
 };
 
 /** Fecha de última actualización de Privacidad y Términos. */
 export const LEGALES_ACTUALIZADO = '18 de noviembre de 2026';
 
-/**
- * Feature flags de prueba social. Quedan apagados hasta tener contenido REAL:
- * no se publican testimonios ni logos inventados.
- */
+/** Mientras Privacidad y Términos no tengan revisión legal, se muestra el aviso de borrador. */
 export const FLAGS = {
-  testimonios: false,
-  logosClientes: false,
-  /** Mientras Privacidad y Términos no tengan revisión legal, se muestra el aviso de borrador. */
   legalesEnBorrador: true,
 };
 
-/** Testimonios reales (con autorización). Vacío a propósito. */
-export const TESTIMONIOS: { texto: string; nombre: string; cargo: string; empresa: string }[] = [];
 
 export function mailto(asunto?: string): string | null {
   if (!SITIO.email) return null;

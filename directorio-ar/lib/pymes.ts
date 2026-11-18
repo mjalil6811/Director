@@ -1,23 +1,11 @@
 // Criterios oficiales de categorización PyME (Argentina) y perfil de quien responde.
-//
-// ACTUALIZAR UNA VEZ POR AÑO: cuando salga una nueva resolución, cambiar NORMA_TOPES y TOPES_VENTAS.
-// Fuente: https://www.argentina.gob.ar/produccion/registrar-una-pyme/que-es-una-pyme
-// Ventas = promedio de los últimos 3 ejercicios cerrados, sin IVA ni impuestos internos,
-// deduciendo el 75% de las exportaciones.
+// Los topes y la norma vigente están en lib/topes-pyme.ts (único lugar a actualizar).
+import { NORMA_PYME, TOPES_VENTAS, type SectorOficial } from './topes-pyme';
 
-export const NORMA_TOPES = 'Res. SICYPYME 1/2026, vigente desde el 1/4/2026';
+export { NORMA_PYME, TOPES_VENTAS, type SectorOficial };
 
-export type SectorOficial = 'construccion' | 'servicios' | 'comercio' | 'industria' | 'agropecuario';
-
-/** Tope superior de ventas totales anuales (en pesos) de cada categoría. */
-export const TOPES_VENTAS: Record<SectorOficial, { micro: number; pequena: number; tramo1: number; tramo2: number }> = {
-  construccion: { micro: 743_730_000, pequena: 4_412_940_000, tramo1: 24_621_200_000, tramo2: 36_927_730_000 },
-  servicios:    { micro: 374_060_000, pequena: 2_255_110_000, tramo1: 18_664_740_000, tramo2: 26_655_990_000 },
-  comercio:     { micro: 1_738_060_000, pequena: 12_380_800_000, tramo1: 58_848_790_000, tramo2: 84_070_280_000 },
-  // Industria Tramo 2: algunas fuentes publican 129.764.070.000; verificar en el anexo del Boletín Oficial.
-  industria:    { micro: 1_207_910_000, pequena: 9_025_610_000, tramo1: 64_238_670_000, tramo2: 129_794_070_000 },
-  agropecuario: { micro: 909_260_000, pequena: 3_349_360_000, tramo1: 19_711_080_000, tramo2: 31_263_100_000 },
-};
+export const VIGENCIA = NORMA_PYME.vigenteDesde.split('-').reverse().map(Number).join('/');
+export const NORMA_TOPES = `${NORMA_PYME.nombre}, vigente desde el ${VIGENCIA}`;
 
 // ——— Industrias (6 opciones, cada una mapeada a su sector oficial) ———————————————
 
@@ -76,10 +64,12 @@ export function opcionesFacturacion(sector: SectorOficial): { texto: string; cat
 // ——— Empleados ——————————————————————————————————————————————————————————————
 
 // Criterio propio de Directorio AR (no oficial): más de 50 empleados entra al público objetivo (masDe50).
+// Los tramos de menos de 50 valen 0 los dos: el puntaje de quien respondió "Menos de 50" no cambia.
 export const OPCIONES_EMPLEADOS = [
-  { texto: 'Menos de 50 personas', puntaje: 0, masDe50: false },
-  { texto: 'Entre 50 y 200 personas', puntaje: 1, masDe50: true },
-  { texto: 'Entre 200 y 400 personas', puntaje: 2, masDe50: true },
+  { texto: 'Menos de 10 personas', puntaje: 0, masDe50: false },
+  { texto: 'De 10 a 49 personas', puntaje: 0, masDe50: false },
+  { texto: 'De 50 a 200 personas', puntaje: 1, masDe50: true },
+  { texto: 'De 201 a 400 personas', puntaje: 2, masDe50: true },
   { texto: 'Más de 400 personas', puntaje: 3, masDe50: true },
 ];
 

@@ -7,6 +7,8 @@ import { storage } from '../../lib/storage';
 import { NIVELES, calcularNivel } from '../../lib/modulo1';
 import { CATEGORIA_LABEL, INDUSTRIAS, NORMA_TOPES } from '../../lib/pymes';
 import { pasarARecorridoCompleto } from '../../lib/progreso';
+import { calcularEjes, CUADRANTES } from '../../lib/ejes';
+import MatrizEjes from '../../components/MatrizEjes';
 import type { Modulo1Resultado, Modulo2Resultado } from '../../types';
 
 // ─── Donut Chart ──────────────────────────────────────────────────────────────
@@ -172,7 +174,7 @@ export default function InformePreliminar() {
         titulo="Informe preliminar"
         backHref="/"
         right={<>
-          <span className="text-xs text-gray-400">Módulos 1 y 2 completados</span>
+          <span className="text-xs text-gray-500">Módulos 1 y 2 completados</span>
         </>}
       />
 
@@ -184,7 +186,7 @@ export default function InformePreliminar() {
             ¿Tu empresa necesita un{' '}
             <span className="bg-gradient-to-r from-brand to-brand-light bg-clip-text text-transparent">directorio</span>?
           </h1>
-          <p className="text-sm text-gray-400">Resultado consolidado de los módulos 1 y 2</p>
+          <p className="text-sm text-gray-500">Resultado consolidado de los módulos 1 y 2</p>
         </div>
 
         {/* Perfil de la empresa según criterios oficiales PyME */}
@@ -209,7 +211,7 @@ export default function InformePreliminar() {
                 pero el diagnóstico aplica igual: a tu escala, el directorio suele ser imprescindible.
               </p>
             ) : (
-              <p className="text-xs text-gray-400 mt-2">Categoría según topes de facturación ({NORMA_TOPES}).</p>
+              <p className="text-xs text-gray-500 mt-2">Categoría según topes de facturación ({NORMA_TOPES}).</p>
             )}
           </div>
         )}
@@ -240,6 +242,26 @@ export default function InformePreliminar() {
             {diagSubtitulo}
           </p>
         </div>
+
+        {/* Matriz Necesidad × Disposición (preliminar: sin Módulos 3 a 5) */}
+        {(() => {
+          const ejes = calcularEjes(m1, m2, null, null, null);
+          if (!ejes.cuadrante) return null;
+          const c = CUADRANTES[ejes.cuadrante];
+          return (
+            <section className="border border-gray-200 rounded-2xl bg-white p-5 shadow-sm grid sm:grid-cols-[1fr_minmax(0,16rem)] gap-5 items-center">
+              <div>
+                <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Necesidad × disposición · preliminar</p>
+                <p className="text-lg font-bold mt-1" style={{ color: c.color }}>{c.titulo}</p>
+                <p className="text-sm text-gray-700 leading-relaxed mt-1">{c.resumen}</p>
+                <p className="text-xs text-gray-600 leading-relaxed mt-3">
+                  La disposición sale solo de la pregunta de presupuesto. Los Módulos 3 a 5 la miden en detalle.
+                </p>
+              </div>
+              <MatrizEjes ejes={ejes} compacta />
+            </section>
+          );
+        })()}
 
         {/* Educational box */}
         <div className="border border-gray-200 rounded-2xl bg-white p-5 shadow-sm">
@@ -285,7 +307,7 @@ export default function InformePreliminar() {
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           {/* M1 — Nivel de necesidad */}
           <div className="border border-gray-200 rounded-2xl bg-white p-5 shadow-sm hover:shadow-md transition-shadow">
-            <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-4 text-center">Nivel de necesidad</p>
+            <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-4 text-center">Nivel de necesidad</p>
             <DonutChart
               segments={[
                 { value: pct1, color: nivelColor, label: 'Puntaje' },
@@ -298,7 +320,7 @@ export default function InformePreliminar() {
 
           {/* M2 — Concentración de decisiones */}
           <div className="border border-gray-200 rounded-2xl bg-white p-5 shadow-sm hover:shadow-md transition-shadow">
-            <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-4 text-center">Concentración de decisiones</p>
+            <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-4 text-center">Concentración de decisiones</p>
 
             {/* Resultado principal */}
             <div className="rounded-xl px-4 py-3 text-center mb-4" style={{ backgroundColor: concentracionBg }}>
@@ -324,7 +346,7 @@ export default function InformePreliminar() {
                   <div className="w-3 h-3 rounded-full border-2 border-white shadow-md" style={{ backgroundColor: concentracionColor }} />
                 </div>
               </div>
-              <div className="flex justify-between text-[10px] text-gray-400 mt-1">
+              <div className="flex justify-between text-[10px] text-gray-500 mt-1">
                 <span>Distribuida</span>
                 <span>Parcial</span>
                 <span>Concentrada</span>
@@ -352,7 +374,7 @@ export default function InformePreliminar() {
 
         {/* M1 dimensions as bars */}
         <div className="border border-gray-200 rounded-2xl bg-white p-5 shadow-sm">
-          <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-4">Detalle por dimensión</p>
+          <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-4">Detalle por dimensión</p>
           <div className="space-y-3">
             {dims.map(d => (
               <HBar
@@ -367,7 +389,7 @@ export default function InformePreliminar() {
 
         {/* M2 decision distribution bars */}
         <div className="border border-gray-200 rounded-2xl bg-white p-5 shadow-sm">
-          <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-4">Distribución de decisiones</p>
+          <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-4">Distribución de decisiones</p>
           <div className="space-y-3">
             <HBar label="Concentrada en el dueño" pct={Math.round((m2.conteos.concentrada / totalSit) * 100)} color="#f87171" />
             <HBar label="Parcialmente delegada" pct={Math.round((m2.conteos.parcial / totalSit) * 100)} color="#fbbf24" />
@@ -379,7 +401,7 @@ export default function InformePreliminar() {
         {/* Top 3 tensions */}
         {m2.tensiones.length > 0 && (
           <div className="border border-gray-200 rounded-2xl bg-white p-5 shadow-sm">
-            <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">Principales tensiones detectadas</p>
+            <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">Principales tensiones detectadas</p>
             <div className="space-y-3">
               {m2.tensiones.slice(0, 3).map(t => (
                 <div key={t.pregunta} className="flex items-start gap-3 p-3 rounded-xl bg-brand-50 border border-brand-100">
@@ -431,14 +453,14 @@ export default function InformePreliminar() {
 
         <button
           onClick={() => router.push('/')}
-          className="w-full py-2 text-gray-400 text-xs hover:text-gray-600"
+          className="w-full py-2 text-gray-500 text-xs hover:text-gray-600"
         >
           Volver al inicio
         </button>
 
         {/* Powered by footer */}
         <div className="text-center pt-4 pb-2 border-t border-gray-100">
-          <p className="text-xs text-gray-300 font-medium tracking-wide">Directorio AR · Decisiones con respaldo</p>
+          <p className="text-xs text-gray-500 font-medium tracking-wide">Directorio AR · Decisiones con respaldo</p>
         </div>
       </main>
     </div>
